@@ -1,0 +1,77 @@
+/* Estilos para el body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fcf4ea;
+    margin: 0;
+    padding: 0; 
+    color: #a68d57; /* Este color se aplicará a todo el texto por defecto */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra el contenido horizontalmente */
+    min-height: 100vh; /* Asegura que el body ocupe toda la altura de la ventana */
+}
+
+/* Estilos para el contenedor principal de todo el contenido */
+.main-container {
+    max-width: 960px; /* Ancho máximo para el contenido */
+    width: 100%; /* Ocupa todo el ancho disponible */
+
+    /* ¡SOLUCIÓN! Empuja el contenedor hacia abajo con un valor en píxeles. */
+    /* Puedes ajustar este valor para subirlo o bajarlo. */
+    padding-top: 150px; 
+    
+    /* Centramos los elementos internos */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilos para el contenedor del logo */
+.logo {
+    width: 100%;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* Estilos para la imagen dentro del logo */
+.logo img {
+    display: block;
+    width: 300px;
+    height: auto;
+    margin: 0 auto;
+}
+
+/* Estilos para el título h1 */
+h1 {
+    font-size: 50px;
+    font-family: serif;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 15px; /* Añadimos un margen inferior para separarlo del párrafo */
+}
+
+/* Estilos para el párrafo p */
+p {
+    font-size: 30px;
+    font-family: serif;
+    text-align: center; /* Centramos el texto del párrafo */
+    margin-top: 0; /* Eliminamos el margen superior si lo hay */
+}
+
+/* Estilos para el botón */
+.btn-empezar {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #A37EAB;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    margin-top: 20px;
+    font-size: 20px;
+    font-family: serif;
+}
+.mensaje {
+    text-align: center; /* Centramos el texto del mensaje */
+    margin-top: 60px; /* Añadimos un margen superior para separarlo del logo */
+}
