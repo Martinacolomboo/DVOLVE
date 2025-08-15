@@ -1,0 +1,17 @@
+# Directorios de Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Entorno virtual
+venv/
+env/
+
+# Base de datos
+db.sqlite3
+/media/
+
+# Archivos de configuración y de Django
+local_settings.py
+.env
+.DS_Store
