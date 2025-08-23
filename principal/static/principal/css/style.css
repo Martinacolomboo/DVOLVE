@@ -16,9 +16,8 @@ body {
     max-width: 960px; /* Ancho máximo para el contenido */
     width: 100%; /* Ocupa todo el ancho disponible */
 
-    /* ¡SOLUCIÓN! Empuja el contenedor hacia abajo con un valor en píxeles. */
-    /* Puedes ajustar este valor para subirlo o bajarlo. */
-    padding-top: 150px; 
+    margin: 20px auto; /* Centra el contenedor y le da espacio */
+    flex-grow: 1; 
     
     /* Centramos los elementos internos */
     display: flex;
@@ -77,32 +76,47 @@ p {
 }
 /*ahora va la parte de la segunda pagina*/
 /*el logo en el medio*/
-.logo2 {
-    margin-top: 20px;
-    text-align: center;
+.main-header {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* izquierda - centro - derecha */
+    align-items: center;
+     padding-top: 10px; /* Mantén solo el padding superior si lo necesitas */
+    padding-bottom: 10px;
+     margin-bottom: 20px; 
 }
-.logo2 img{
-    top: 5%;
-    width: 150px; 
+.logo2 {
+    justify-self: center; /* logo al medio */
+    
+}
+.logo2 img {
+    width: 80px; 
     height: auto; 
 }
-.main-header .logo2 img {
-    width: 50px !important;
+
+/* En pantallas chicas (celu), achicamos  */
+@media (max-width: 768px) {
+    .logo2 img {
+        width: 70px; 
+    }
+     /* Achicamos el botón de plan de clases */
+    .plan-btn button {
+        padding: 8px 8px; /* Reduce el espacio interior */
+        font-size: 10px; /* Reduce el tamaño de la letra */
+    }
+    
+    /* También puedes ajustar la posición para pantallas más chicas si es necesario */
+    .plan-btn {
+        right: 20px; /* Mueve el botón más cerca del borde en pantallas chicas */
+    }
 }
 /*ubico las redes sociales*/
 .social-media{
+    justify-self: end; /* redes a la derecha */
+    margin-right: 5%;
     display: flex;
-    justify-content: center; /* Centra los iconos horizontalmente */
-    gap: 20px; /* Espacio entre los iconos */
-   align-items: center;
-    margin-right: 20px; 
-    position: absolute; 
-    /* Lo alinea verticalmente al centro del header */
-    top: 5%;
-    /* Lo coloca a 50px del borde derecho */
-    right: 50px; 
-    /* Ajuste para un centrado vertical perfecto */
-    transform: translateY(-50%); 
+    padding-right: 20px; 
+    gap: 20px; /* espacio entre íconos */
 }
 .social-icon svg {
     fill: #a68d57;
@@ -156,13 +170,10 @@ p {
     display: block;
 }
 .header-left {
+    justify-self: start;
+    margin-left: 5%;
+    padding-left: 20px;
 
-    display: flex;
-    align-items: center;
-    position: absolute; /* Saca este contenedor del flujo normal */
-    top: 5%; /* Lo alinea verticalmente al centro del header */
-    left: 50px; /* Lo coloca a 50px del borde izquierdo */
-    transform: translateY(-50%); /* Ajuste para un centrado vertical perfecto */
 }
 /*boton del plan/*
 /* Estilos para la sección superior de la página (el contenedor padre) */
@@ -177,7 +188,12 @@ p {
 /* Estilos para el contenedor del botón */
 .plan-btn {
     position: absolute; /* Saca el botón del flujo normal de la página */
-   right: 50px; /* Distancia desde el borde izquierdo. */
+    top: 30%; /* Lo mueve a la mitad de la altura del contenedor padre */
+    
+    /* Esta transformación centra el botón perfectamente */
+    transform: translateY(-50%); 
+    right: 50px; /* Puedes ajustar este valor para moverlo más a la izquierda */
+
 }
 
 /* Estilos para el botón en sí, que ya tenías */
@@ -196,4 +212,27 @@ p {
     padding: 30px;
     margin-top: auto; /* Crea un espacio para separarlo de la sección de arriba */
    
+}
+.hero-section {
+    position: relative; /* ¡Esto es crucial! Sirve como el punto de referencia para el botón. */
+    width: 100%;
+}
+/*imagen superior*/
+.top-image-container {
+    width: 100%; /* O el ancho que desees */
+   margin:0 /* Espacio debajo de la imagen */
+}
+
+.top-image-container img {
+   width: 100%; 
+    height: 400px; /* Define una altura fija, ajusta este valor */
+     display: block;
+    /* Esta propiedad es clave para que la imagen no se distorsione al cambiar de tamaño */
+    object-fit: cover; 
+}
+img {
+    max-width: 100%; /* Haz la imagen responsiva */
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
 }
