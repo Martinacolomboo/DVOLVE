@@ -1,238 +1,207 @@
-/* Estilos para el body */
+/* ======= BODY ======= */
 body {
     font-family: Arial, sans-serif;
     background-color: #fcf4ea;
     margin: 0;
     padding: 0; 
-    color: #a68d57; /* Este color se aplicará a todo el texto por defecto */
+    color: #a68d57;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centra el contenido horizontalmente */
-    min-height: 100vh; /* Asegura que el body ocupe toda la altura de la ventana */
+    align-items: center;
+    min-height: 100vh;
 }
 
-/* Estilos para el contenedor principal de todo el contenido */
+/* ======= MAIN CONTAINER ======= */
 .main-container {
-    max-width: 960px; /* Ancho máximo para el contenido */
-    width: 100%; /* Ocupa todo el ancho disponible */
-
-    margin: 20px auto; /* Centra el contenedor y le da espacio */
+    max-width: 960px;
+    width: 100%;
+    margin: 20px auto;
     flex-grow: 1; 
-    
-    /* Centramos los elementos internos */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* Estilos para el contenedor del logo */
+/* ======= LOGO INDEX ======= */
 .logo {
     width: 100%;
     margin-bottom: 30px;
     text-align: center;
 }
-
-/* Estilos para la imagen dentro del logo */
 .logo img {
     display: block;
-    width: 300px;
+    width: 400px;
     height: auto;
     margin: 0 auto;
 }
 
-/* Estilos para el título h1 */
+/* ======= TITULOS Y PARRAFOS ======= */
 h1 {
     font-size: 50px;
     font-family: serif;
     text-align: center;
     margin-top: 20px;
-    margin-bottom: 15px; /* Añadimos un margen inferior para separarlo del párrafo */
+    margin-bottom: 15px;
 }
-
-/* Estilos para el párrafo p */
 p {
     font-size: 30px;
     font-family: serif;
-    text-align: center; /* Centramos el texto del párrafo */
-    margin-top: 0; /* Eliminamos el margen superior si lo hay */
+    text-align: center;
+    margin-top: 0;
 }
 
-/* Estilos para el botón */
+/* ======= BOTON INDEX ======= */
 .btn-empezar {
     display: inline-block;
     padding: 15px 30px;
-    background-color: #A37EAB;
-    color: white;
+    color: #fff;
     text-decoration: none;
     border-radius: 50px;
-    font-weight: bold;
-    margin-top: 20px;
-    font-size: 20px;
-    font-family: serif;
+    background: linear-gradient(45deg, #c875ac, #7e2864);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.mensaje {
-    text-align: center; /* Centramos el texto del mensaje */
-    margin-top: 60px; /* Añadimos un margen superior para separarlo del logo */
+.btn-empezar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
-/*ahora va la parte de la segunda pagina*/
-/*el logo en el medio*/
-.main-header {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr; /* izquierda - centro - derecha */
-    align-items: center;
-     padding-top: 10px; /* Mantén solo el padding superior si lo necesitas */
-    padding-bottom: 10px;
-     margin-bottom: 20px; 
-}
-.logo2 {
-    justify-self: center; /* logo al medio */
-    
-}
-.logo2 img {
-    width: 80px; 
-    height: auto; 
-}
+.mensaje { text-align: center; margin-top: 60px; }
 
-/* En pantallas chicas (celu), achicamos  */
-@media (max-width: 768px) {
-    .logo2 img {
-        width: 70px; 
-    }
-     /* Achicamos el botón de plan de clases */
-    .plan-btn button {
-        padding: 8px 8px; /* Reduce el espacio interior */
-        font-size: 10px; /* Reduce el tamaño de la letra */
-    }
-    
-    /* También puedes ajustar la posición para pantallas más chicas si es necesario */
-    .plan-btn {
-        right: 20px; /* Mueve el botón más cerca del borde en pantallas chicas */
-    }
+/* ======= HEADER ======= */
+.main-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 70px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 10px 20px;
+    z-index: 1000;
+    background: transparent;
 }
-/*ubico las redes sociales*/
-.social-media{
-    justify-self: end; /* redes a la derecha */
+.logo2 { justify-self: center; }
+.logo2 img { width: 180px; height: auto; }
+
+/* ======= REDES ======= */
+.social-media {
+    justify-self: end;
     margin-right: 5%;
     display: flex;
-    padding-right: 20px; 
-    gap: 20px; /* espacio entre íconos */
+    gap: 20px;
 }
-.social-icon svg {
-    fill: #a68d57;
-    transition: fill 0.3s ease; /* Transición suave para el color */
+.social-icon i {
+  font-size: 28px;
+  color: #a68d57;
+  transition: color 0.3s ease;
 }
+.social-icon i:hover { color: #A37EAB; }
 
-.social-icon:hover svg {
-    fill: #4a4a4a; /* Cambia el color al pasar el mouse */
-}
-/*menu*/
-/* Estilos para el menú desplegable */
-.menu-desplegable {
-    position: relative; /* Es la base para que el menú se despegue de aquí */
-    display: inline-block;
-  
-    
-}
-
+/* ======= MENU DESPLEGABLE ======= */
+.menu-desplegable { position: relative; display: inline-block; }
 .menu-btn {
     background-color: transparent;
     border: none;
     color: #a68d57;
-    font-size: 18px;
+    font-size: 28px;
     cursor: pointer;
-    font-family: Arial, sans-serif;
 }
-
 .menu-content {
-    display: none; /* Por defecto, el menú está oculto */
+    display: none;
     position: absolute;
-    background-color: #a68d57e0;;
+    background-color: #a68d57e0;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1; /* Asegura que esté por encima de otros elementos */
-    left: 0; /* Lo alinea a la derecha del botón */
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    left: 0;
 }
-
 .menu-content a {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
 }
+.menu-content a:hover { background-color: #caac6ae0; }
+.menu-desplegable:hover .menu-content { display: block; }
+.header-left { justify-self: start; margin-left: 5%; }
 
-.menu-content a:hover {
-    background-color: #caac6ae0;
-}
-
-/* Muestra el menú cuando se pasa el cursor sobre el botón o el contenedor */
-.menu-desplegable:hover .menu-content {
-    display: block;
-}
-.header-left {
-    justify-self: start;
-    margin-left: 5%;
-    padding-left: 20px;
-
-}
-/*boton del plan/*
-/* Estilos para la sección superior de la página (el contenedor padre) */
-.header-section {
-    position: relative; /* ¡Esto es crucial! Sirve como punto de referencia para el botón. */
+/* ======= HERO ======= */
+.hero-section {
+    position: relative;
     width: 100%;
-    margin-top: 50px; /* Espacio para separar del encabezado */
-    padding: 0 50px; /* Mantener el contenido dentro de los márgenes */
-    box-sizing: border-box;
+    min-height: 400px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-/* Estilos para el contenedor del botón */
+/* ======= BOTÓN PLAN ======= */
 .plan-btn {
-    position: absolute; /* Saca el botón del flujo normal de la página */
-    top: 30%; /* Lo mueve a la mitad de la altura del contenedor padre */
-    
-    /* Esta transformación centra el botón perfectamente */
-    transform: translateY(-50%); 
-    right: 50px; /* Puedes ajustar este valor para moverlo más a la izquierda */
-
+  position: absolute;
+  top: 140px;   /* más abajo */
+  right: 2%;    /* más a la derecha */
+  z-index: 900;
 }
 
-/* Estilos para el botón en sí, que ya tenías */
-.plan-btn button {
-    padding: 15px 30px;
-    background-color: #A37EAB;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
-    border-radius: 5px;
+.btn-plan {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 50px;
+  background: linear-gradient(45deg, #c875ac, #7e2864);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.btn-plan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* ======= CERTIFICACION ======= */
 .certification-section {
     width: 100%;
     text-align: center;
     padding: 30px;
-    margin-top: auto; /* Crea un espacio para separarlo de la sección de arriba */
-   
-}
-.hero-section {
-    position: relative; /* ¡Esto es crucial! Sirve como el punto de referencia para el botón. */
-    width: 100%;
-}
-/*imagen superior*/
-.top-image-container {
-    width: 100%; /* O el ancho que desees */
-   margin:0 /* Espacio debajo de la imagen */
+    margin-top: auto;
 }
 
-.top-image-container img {
-   width: 100%; 
-    height: 400px; /* Define una altura fija, ajusta este valor */
-     display: block;
-    /* Esta propiedad es clave para que la imagen no se distorsione al cambiar de tamaño */
-    object-fit: cover; 
-}
+/* ======= IMAGENES ======= */
 img {
-    max-width: 100%; /* Haz la imagen responsiva */
+    max-width: 100%;
     height: auto;
     display: block;
     margin-bottom: 20px;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 768px) {
+    .logo2 img { width: 100px; }
+    .plan-btn {
+        top: 120px;
+        right: 50%;
+        transform: translateX(50%);
+    }
+    .btn-plan {
+        padding: 10px 18px;
+        font-size: 14px;
+    }
+}
+/* Colores oficiales */
+.social-icon.instagram i {
+  color: #E4405F;   /* Instagram */
+}
+
+.social-icon.tiktok i {
+  color: #EE1D52;   /* TikTok */
+}
+
+/* Hover opcional */
+.social-icon.instagram i:hover {
+  color: #C13584;  /* tono púrpura más oscuro */
+}
+
+.social-icon.tiktok i:hover {
+  color: #69C9D0;  /* turquesa alternativo */
 }
