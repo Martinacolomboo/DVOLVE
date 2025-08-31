@@ -205,3 +205,78 @@ img {
 .social-icon.tiktok i:hover {
   color: #69C9D0;  /* turquesa alternativo */
 }
+/* ======= SECCIÓN VIDEO + DESCRIPCIÓN ======= */
+.video-section {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 60px 10%;
+  background-color: #fcf4ea;
+}
+
+.video-container,
+.description-container {
+  flex: 1;
+  max-width: 500px;
+  padding: 20px;
+  border: 2px solid #a68d57;   /* borde dorado */
+  border-radius: 12px;         /* esquinas redondeadas */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* sombra suave */
+  background-color: #fffaf0;   /* fondo clarito */
+  height: 100%; 
+}
+
+.video-container video {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.description-container h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #a68d57;
+  margin-bottom: 15px;
+}
+
+.description-container p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #6a5630;
+  text-align: justify;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .video-section {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .video-container,
+  .description-container {
+    max-width: 100%;
+  }
+}
+/* ======= SECCIÓN CARTAS ======= */
+.card {
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-overlay {
+  background: rgba(0, 0, 0, 0.5); /* oscurece la imagen */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
