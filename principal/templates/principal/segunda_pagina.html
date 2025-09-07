@@ -6,9 +6,114 @@
   <title>Plan de Clases DVOLVE</title>
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  {% load static %}
   <link rel="stylesheet" href="{% static 'principal/css/style.css' %}">
+  <style>
+    .imagen-portada {
+      position: relative;
+      height: 70vh;              /* controla el alto del bloque */
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      width: 100% !important;  /* controla el ancho (ej: 100% de la pantalla) */
+    }
+    
+
+    /* Fondo borroso que ocupa todo el ancho */
+    .imagen-portada-fondo {
+      background-image: url("{% static 'principal/img/LulafotoPrincipal.jpg' %}");
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      background-position: center;
+      filter: blur(15px) brightness(0.8); /* difuminado + oscurecido */
+      position: absolute;
+      top: -10px;   /* leve desplazamiento para que el blur no deje bordes transparentes */
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      z-index: 1;
+     
+    }
+
+    /* Foto nítida en frente */
+    .imagen-portada-frente {
+      position: relative;
+      z-index: 2;
+      width: 110vh;
+      height: 65vh;
+      max-height: 70vh;           
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      display: block;
+      margin-top: 10vh;
+      margin-bottom: 10vh;
+    }
+    .plan-btn {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 900;
+        margin-top: 10vh;
+      }
+
+      .btn-plan {
+        display: inline-block;
+        padding: 12px 24px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 50px;
+        background: linear-gradient(45deg, #c875ac, #7e2864);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .btn-plan:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      }
+      /* ---------- RESPONSIVE ---------- */
+      @media (max-width: 992px) {  /* tablets */
+        .imagen-portada {
+          height: 60vh;
+          width: 100% ;  /* que ocupe todo el ancho en pantallas chicas */
+        }
+        .imagen-portada-frente {
+          max-height: 55vh;
+        }
+        .imagen-portada-fondo {
+        filter: blur(12px) brightness(0.75);
+        }
+        .plan-btn {
+          top: 100px;
+          right: 20px;
+        }
+      }
+
+      @media (max-width: 768px) {  /* celulares */
+        .imagen-portada {
+          height: 50vh;
+          width: 100% ;  /* que ocupe todo el ancho en pantallas chicas */
+        }
+        .imagen-portada-frente {
+          max-height: 40vh;
+          width: 90%;          /* que no se corte en pantallas angostas */
+        }
+        .imagen-portada-fondo {
+          filter: blur(8px) brightness(0.7); /* menos blur en pantallas chicas */
+        }
+        .plan-btn {
+          top: auto;
+          bottom: 20px;        /* se baja al fondo de la foto */
+          right: 50%;
+          transform: translateY(-50%); /* lo centra */
+        }
+      }
+  </style>
 </head>
 <body>
 
@@ -44,13 +149,19 @@
 
   </header>
 
-  <!-- HERO -->
-  <section class="hero-section" style="background-image:url('{% static 'principal/img/ejemplo.jpg' %}');">
-    <!-- Botón dentro del hero -->
+  <!-- imagen portada -->
+ 
+  <section class="imagen-portada">
+    <div class="imagen-portada-fondo"></div>
+    <img src="{% static 'principal/img/imagenesUnidas.jpg' %}" 
+        alt="Imagen portada" 
+        class="imagen-portada-frente">
     <div class="plan-btn">
       <a href="{% url 'segunda_pagina' %}" class="btn-plan">Quiero mi plan de clases</a>
     </div>
   </section>
+
+
   <!-- CONTENIDO -->
   <main class="main-container">
     <!-- Sección de video y descripción -->
@@ -85,62 +196,73 @@
 
         <!-- Grupo 1 -->
         <div class="carousel-item active">
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center flex-wrap">
+            
             <!-- Card 1 -->
-            <div class="card text-white mx-2" style="width: 300px; height: 200px; background-image: url('{% static "principal/img/ejemplo.jpg" %}'); background-size: cover; background-position: center;">
+            <div class="card text-white mx-2" 
+                style="background-image: url('{% static "principal/img/cartas/fotoLula_entrenando.jpg" %}'); background-size: cover; background-position: center;">
               <div class="card-overlay d-flex justify-content-center align-items-center">
-                <h5 class="card-title">OUR SERVICES</h5>
+                <h5 class="card-title">NUESTROS SERVICIOS</h5>
               </div>
             </div>
 
             <!-- Card 2 -->
-            <div class="card text-white mx-2" style="width: 300px; height: 200px; background-image: url('{% static "principal/img/ejemplo.jpg" %}'); background-size: cover; background-position: center;">
+            <div class="card text-white mx-2" 
+                style="background-image: url('{% static "principal/img/cartas/fotoLula_calendario.jpg" %}'); background-size: cover; background-position: center;">
               <div class="card-overlay d-flex justify-content-center align-items-center">
-                <h5 class="card-title">VIRTUAL CLASSES</h5>
+                <h5 class="card-title">ENCUENTROS VIRTUALES</h5>
               </div>
             </div>
 
             <!-- Card 3 -->
-            <div class="card text-white mx-2" style="width: 300px; height: 200px; background-image: url('{% static "principal/img/ejemplo.jpg" %}'); background-size: cover; background-position: center;">
+            <div class="card text-white mx-2" 
+                style="background-image: url('{% static "principal/img/cartas/fotoLula_lives.jpg" %}'); background-size: cover; background-position: center;">
               <div class="card-overlay d-flex justify-content-center align-items-center">
-                <h5 class="card-title">VIEW THE BLOG</h5>
+                <h5 class="card-title">CLASES EN VIVO</h5>
               </div>
             </div>
+
           </div>
         </div>
 
         <!-- Grupo 2 -->
         <div class="carousel-item">
-          <div class="d-flex justify-content-center">
+          <div class="d-flex justify-content-center flex-wrap">
+            
             <!-- Card 4 -->
-            <div class="card text-white mx-2" style="width: 300px; height: 200px; background-image: url('{% static "principal/img/ejemplo.jpg" %}'); background-size: cover; background-position: center;">
+            <div class="card text-white mx-2" 
+                style="background-image: url('{% static "principal/img/cartas/fotoLula_comida.jpg" %}'); background-size: cover; background-position: center;">
               <div class="card-overlay d-flex justify-content-center align-items-center">
-                <h5 class="card-title">RESULTS</h5>
+                <h5 class="card-title">ALIMENTACION</h5>
               </div>
             </div>
 
             <!-- Card 5 -->
-            <div class="card text-white mx-2" style="width: 300px; height: 200px; background-image: url('{% static "principal/img/card5.jpg" %}'); background-size: cover; background-position: center;">
+            <div class="card text-white mx-2" 
+                style="background-image: url('{% static "principal/img/cartas/fotoLula_sentadillas.jpg" %}'); background-size: cover; background-position: center;">
               <div class="card-overlay d-flex justify-content-center align-items-center">
-                <h5 class="card-title">COMMUNITY</h5>
+                <h5 class="card-title">COMUNIDAD</h5>
               </div>
             </div>
 
             <!-- Card 6 -->
-            <div class="card text-white mx-2" style="width: 300px; height: 200px; background-image: url('{% static "principal/img/card6.jpg" %}'); background-size: cover; background-position: center;">
+            <div class="card text-white mx-2" 
+                style="background-image: url('{% static "principal/img/cartas/fotoLula_pesas.jpg" %}'); background-size: cover; background-position: center;">
               <div class="card-overlay d-flex justify-content-center align-items-center">
-                <h5 class="card-title">WELLNESS</h5>
+                <h5 class="card-title">SALUD</h5>
               </div>
             </div>
+
           </div>
         </div>
 
       </div>
 
+
       <!-- Controles -->
       <button class="carousel-control-prev" type="button" data-bs-target="#cardsCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
-      </button>
+
       <button class="carousel-control-next" type="button" data-bs-target="#cardsCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon"></span>
       </button>
@@ -154,9 +276,23 @@
 
 
 
+
   </main>
   
-  
+  <!-- Sección Certificación -->
+<section class="certification-section">
+  <h2>Certificada en Personal Trainer y Health Coach</h2>
+  <h3>
+    Número de Matricula <strong>AR-1445/25</strong> 
+  </h3>
+  <p>
+    Actualmente curso la <strong>carrera de Nutrición en la UADE</strong>, sumando herramientas académicas para ofrecerte un enfoque más completo.
+  </p>
+  <p>
+    En DVOLVE vas a encontrar planes de entrenamiento y nutrición pensados para tu estilo de vida, con rutinas prácticas, motivación constante y el equilibrio que necesitás para evolucionar hacia tu mejor versión. Mi misión es acompañarte a que logres tus objetivos de entrenamiento y bienestar de una forma real y sostenible.
+  </p>
+</section>
+
 
 </body>
 
