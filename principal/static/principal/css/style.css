@@ -20,6 +20,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    
 }
 
 /* ======= LOGO INDEX ======= */
@@ -97,48 +98,59 @@ p {
 .social-icon i:hover { color: #A37EAB; }
 
 /* ======= MENU DESPLEGABLE ======= */
-.menu-desplegable { position: relative; display: inline-block; }
-.menu-btn {
-    background-color: transparent;
-    border: none;
-    color: #a68d57;
-    font-size: 28px;
-    cursor: pointer;
+.menu-desplegable { 
+  position: relative; 
+  display: inline-block; 
 }
-.menu-content {
-    display: none;
-    position: absolute;
-    background-color: #a68d57e0;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
-    z-index: 1;
-    left: 0;
-}
-.menu-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-.menu-content a:hover { background-color: #caac6ae0; }
-.menu-desplegable:hover .menu-content { display: block; }
-.header-left { justify-self: start; margin-left: 5%; }
 
-/* ======= HERO ======= */
-.hero-section {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.menu-btn {
+  border: none;
+  background-color: rgba(164, 164, 164, 0.832);
+  color: #fc0834;           /* el ícono o texto del botón */
+  font-size: 28px;
+  cursor: pointer;
+  padding: 8px 12px;        /* un poco de espacio para que se vea mejor */
+  border-radius: 8px;       /* opcional: esquinas redondeadas */
 }
+
+.menu-content {
+  display: none;
+  position: absolute;
+  background: #d6697dce;  
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  left: 0;
+}
+
+.menu-content a {
+  color: black;             /* blanco para que contraste con el fondo */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.menu-content a:hover { 
+  background: rgba(255,255,255,0.2); /* hover sutil transparente */
+}
+
+.menu-desplegable:hover .menu-content { 
+  display: block; 
+}
+
+.header-left { 
+  justify-self: start; 
+  margin-left: 5%; 
+}
+
+
 
 /* ======= BOTÓN PLAN ======= */
+
 .plan-btn {
   position: absolute;
-  top: 140px;   /* más abajo */
-  right: 2%;    /* más a la derecha */
+  top: 20px;
+  right: 20px;
   z-index: 900;
 }
 
@@ -167,13 +179,6 @@ p {
     margin-top: auto;
 }
 
-/* ======= IMAGENES ======= */
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin-bottom: 20px;
-}
 
 /* ======= RESPONSIVE ======= */
 @media (max-width: 768px) {
@@ -215,22 +220,27 @@ img {
   background-color: #fcf4ea;
 }
 
-.video-container,
+.video-container {
+   all: unset;             /* resetea todos los estilos */
+  display: block;        /* sin fondo */
+}
+
 .description-container {
   flex: 1;
   max-width: 500px;
   padding: 20px;
-  border: 2px solid #a68d57;   /* borde dorado */
-  border-radius: 12px;         /* esquinas redondeadas */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* sombra suave */
-  background-color: #fffaf0;   /* fondo clarito */
-  height: 100%; 
+  border: 2px solid #a68d57;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #fffaf0;
 }
 
 .video-container video {
   width: 100%;
-  border-radius: 8px;
   display: block;
+  border: none;
+  box-shadow: none;
+  background: none;
 }
 
 .description-container h2 {
@@ -256,6 +266,7 @@ img {
   .video-container,
   .description-container {
     max-width: 100%;
+    margin: 5vh 0;
   }
 }
 /* ======= SECCIÓN CARTAS ======= */
@@ -263,20 +274,107 @@ img {
   border-radius: 8px;
   overflow: hidden;
   position: relative;
+  flex: 1 1 300px;     /* se adapta pero mantiene ancho mínimo */
+  height: 40vh;       /* un poco más alto */
+  width: 80vh;   /* no crecen demasiado */
+  background-size: cover;       /* en desktop rellena */
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .card-overlay {
-  background: rgba(0, 0, 0, 0.5); /* oscurece la imagen */
+  background: rgba(0, 0, 0, 0.5);
   width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
   left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
 .card-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   color: white;
 }
+
+/* Responsive */
+@media (max-width: 992px) {   /* tablets */
+  .d-flex.justify-content-center {
+    flex-wrap: wrap;         /* que bajen a varias filas */
+    gap: 20px;
+  }
+  .card {
+    flex: 1 1 45%;          /* dos por fila */
+    max-width: 45%;
+    height: 30vh;
+  }
+}
+
+@media (max-width: 576px) {   /* celulares */
+  .card {
+    flex: 1 1 100%;         /* una por fila */
+    max-width: 100%;
+    height: 15vh;
+  }
+}
+/* Responsive: en pantallas chicas que no se corten */
+@media (max-width: 768px) {
+  .card {
+    width: 90%;                 /* ocupa casi todo el ancho */
+    height: auto;               /* se ajusta en alto */
+    aspect-ratio: 4 / 3;        /* mantiene proporción */
+    background-size: contain;   /* muestra la foto completa */
+    background-color: #fcf4ea;  /* fondo beige si sobra espacio */
+    margin: 0 auto 20px;        /* centrado con espacio abajo */
+  }
+
+  /* El carrusel en mobile que muestre una sola carta por fila */
+  .carousel-item .d-flex {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+/*certificación*/
+.certification-section {
+  width: 100%;
+  max-width: 900px;    /* mantiene un ancho legible */
+  margin: 60px auto;
+  padding: 0 20px;
+  text-align: left !important;   /* fuerza el alineado a la izquierda */
+  color: #a68d57;
+  border: 2px solid #b0b0b0; /* solo el borde */
+  border-radius: 10px;       /* esquinas redondeadas */
+  background: transparent;   /* sin color de fondo */
+
+  text-align: left;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* sutil, opcional */
+}
+
+
+.certification-section h2 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #a68d57;
+  margin-bottom: 20px;
+  text-align: left !important;   /* también el título */
+  position: relative;
+  padding-bottom: 10px;
+  border-bottom: 3px solid #c875ac; /* subrayado moderno */
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.certification-section p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  text-align: left !important;   /* fuerza cada párrafo */
+}
+
+
+
+
