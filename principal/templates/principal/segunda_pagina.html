@@ -53,11 +53,11 @@
       margin-bottom: 10vh;
     }
     .plan-btn {
-        position: fixed;
-        top: 100px;
-        right: 20px;
+        position: absolute;
+        top: 140px;   /* más abajo */
+        right: 2%;    /* más a la derecha */
         z-index: 900;
-        margin-top: 10vh;
+        font-family: Arial, sans-serif;
       }
 
       .btn-plan {
@@ -70,12 +70,15 @@
         border-radius: 50px;
         background: linear-gradient(45deg, #c875ac, #7e2864);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        font-family: Arial, sans-serif;
+        
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
       .btn-plan:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.3);
       }
+      .mensaje { text-align: center; margin-top: 60px; }
       /* ---------- RESPONSIVE ---------- */
       @media (max-width: 992px) {  /* tablets */
         .imagen-portada {
@@ -125,8 +128,10 @@
         <i class="bi bi-list"></i>
       </button>
       <div class="menu-content">
-        <a href="#">Opción 1</a>
-        <a href="#">Opción 2</a>
+        <a href="{% url 'home' %}">Inicio</a>
+        <a href="#sobre Dvolve">Sobre DVOLVE</a>
+        <a href="#cardsCarousel">Servicios</a>
+        <a href="#certificacion">Certificación</a>
       </div>
     </div>
 
@@ -165,31 +170,34 @@
   <!-- CONTENIDO -->
   <main class="main-container">
     <!-- Sección de video y descripción -->
-    <div class="content-section">
+    <section class="about-section" id="sobre Dvolve">
       <div class="container my-5">
         <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="video-container">
-                  <video controls>
-                    <source src="{% static 'principal/videos/ejemplo.mp4' %}" type="video/mp4">
-                    Tu navegador no soporta el video.
-                  </video>
-                </div>
+          
+          <!-- Columna izquierda: Texto -->
+          <div class="col-md-6 text-content">
+            <h2><span class="highlight">Entrená</span> con DVOLVE</h2>
+            <p>
+              Planes personalizados de entrenamiento y nutrición diseñados para que 
+              alcances tus objetivos de forma eficiente. Evolucioná con rutinas prácticas, 
+              motivación constante y equilibrio en tu día a día.
+            </p>
             </div>
-              
-            <div class="col-md-6">
-                <div class="description-container">
-                  <h2>Entrená con DVOLVE</h2>
-                  <p>
-                    Te damos planes personalizados de entrenamiento y nutrición para que 
-                    alcances tus objetivos de la forma más eficiente. 
-                    Evolucioná con rutinas adaptadas a tu estilo de vida.
-                  </p>
-                </div>
+
+          <!-- Columna derecha: Video -->
+          <div class="col-md-6">
+            <div class="video-container">
+              <video controls>
+                <source src="{% static 'principal/videos/ejemplo.mp4' %}" type="video/mp4">
+                Tu navegador no soporta el video.
+              </video>
             </div>
+          </div>
+
         </div>
       </div>
-    </div>
+    </section>
+
     <!-- SECCIÓN CARTAS -->
     <div id="cardsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
       <div class="carousel-inner">
@@ -269,29 +277,29 @@
     </div>
 
 
-
-
-
-
-
-
-
-
   </main>
   
   <!-- Sección Certificación -->
-<section class="certification-section">
-  <h2>Certificada en Personal Trainer y Health Coach</h2>
-  <h3>
-    Número de Matricula <strong>AR-1445/25</strong> 
-  </h3>
-  <p>
-    Actualmente curso la <strong>carrera de Nutrición en la UADE</strong>, sumando herramientas académicas para ofrecerte un enfoque más completo.
-  </p>
-  <p>
-    En DVOLVE vas a encontrar planes de entrenamiento y nutrición pensados para tu estilo de vida, con rutinas prácticas, motivación constante y el equilibrio que necesitás para evolucionar hacia tu mejor versión. Mi misión es acompañarte a que logres tus objetivos de entrenamiento y bienestar de una forma real y sostenible.
-  </p>
-</section>
+  <section class="certificacion-split"id="certificacion">
+    <div class="texto">
+      <h3>Certificada en Personal Trainer y Health Coach</h3>
+      <p><strong>Número de Matrícula AR-1445/25</strong></p>
+      <p>
+        Actualmente curso la <strong>carrera de Nutrición en la UADE</strong>, sumando herramientas académicas 
+        para ofrecerte un enfoque más completo.
+      </p>
+      <p>
+        En DVOLVE vas a encontrar planes de entrenamiento y nutrición pensados para tu estilo de vida, 
+        con rutinas prácticas, motivación constante y el equilibrio que necesitás para evolucionar hacia tu mejor versión. 
+        Mi misión es acompañarte a que logres tus objetivos de entrenamiento y bienestar de una forma real y sostenible.
+      </p>
+      <a href="#contacto" class="btn-split">Quiero saber más</a>
+    </div>
+    <div class="imagen">
+      <img src="{% static 'principal/img/cartas/fotoLula_footer.jpg' %}" alt="Personal Trainer">
+    </div>
+  </section>
+
 
 
 </body>

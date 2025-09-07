@@ -148,16 +148,18 @@ p {
 /* ======= BOTÓN PLAN ======= */
 
 .plan-btn {
-  position: absolute;
-  top: 20px;
+  position: fixed;
+  top: 120px;
   right: 20px;
-  z-index: 900;
+  z-index: 1000;
+  font-family: Arial, sans-serif;
 }
 
 .btn-plan {
   display: inline-block;
   padding: 12px 24px;
   font-size: 15px;
+  font-family: Arial, sans-serif;
   font-weight: bold;
   color: #fff;
   text-decoration: none;
@@ -211,72 +213,67 @@ p {
   color: #69C9D0;  /* turquesa alternativo */
 }
 /* ======= SECCIÓN VIDEO + DESCRIPCIÓN ======= */
-.video-section {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  padding: 60px 10%;
-  background-color: #fcf4ea;
+.about-section {
+  background-color: #fcf4ea; /* beige suave como tu página */
+  padding: 80px 0;
 }
 
+.text-content h2 {
+  font-size:40px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.text-content h2 .highlight {
+  color: #c875ac; /* mismo tono que tu botón */
+}
+
+.text-content p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #555;
+  margin: 20px 0;
+  margin-bottom: 30px;  /* espacio debajo del texto */
+}
+
+
+.btn-learn-more {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 30px;
+  text-decoration: none;
+  background: linear-gradient(45deg, #c875ac, #7e2864);
+  transition: all 0.3s ease;
+}
+
+.btn-learn-more:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
 .video-container {
-   all: unset;             /* resetea todos los estilos */
-  display: block;        /* sin fondo */
+  margin-left: 40px;   /* separa el video del texto */
 }
-
-.description-container {
-  flex: 1;
-  max-width: 500px;
-  padding: 20px;
-  border: 2px solid #a68d57;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #fffaf0;
-}
-
 .video-container video {
   width: 100%;
-  display: block;
-  border: none;
-  box-shadow: none;
-  background: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.description-container h2 {
-  font-size: 28px;
-  font-weight: 800;
-  color: #a68d57;
-  margin-bottom: 15px;
-}
-
-.description-container p {
-  font-size: 18px;
-  line-height: 1.6;
-  color: #6a5630;
-  text-align: justify;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .video-section {
-    flex-direction: column;
-    gap: 20px;
-  }
-  .video-container,
-  .description-container {
-    max-width: 100%;
-    margin: 5vh 0;
-  }
-}
 /* ======= SECCIÓN CARTAS ======= */
 .card {
   border-radius: 8px;
+  min-height: 300px;  /* asegura que siempre tenga altura mínima */
+  min-width: 300px;
   overflow: hidden;
   position: relative;
   flex: 1 1 300px;     /* se adapta pero mantiene ancho mínimo */
   height: 40vh;       /* un poco más alto */
-  width: 80vh;   /* no crecen demasiado */
+  max-width: 300px;   /* límite en ancho */
+  aspect-ratio: 4 / 3;     /* mantiene proporción */
   background-size: cover;       /* en desktop rellena */
   background-position: center;
   background-repeat: no-repeat;
@@ -310,15 +307,22 @@ p {
   .card {
     flex: 1 1 45%;          /* dos por fila */
     max-width: 45%;
-    height: 30vh;
+    height: 250px;
   }
 }
 
 @media (max-width: 576px) {   /* celulares */
+  .d-flex.justify-content-center {
+    flex-direction: column;
+    align-items: center;
+  }
   .card {
     flex: 1 1 100%;         /* una por fila */
-    max-width: 100%;
-    height: 15vh;
+    max-width: 90%;
+    height: auto;             /* altura automática */
+    aspect-ratio: 4 / 3;      /* mantiene proporción */
+    background-size: cover;   /* rellena bien */
+    margin-bottom: 20px;
   }
 }
 /* Responsive: en pantallas chicas que no se corten */
@@ -339,42 +343,70 @@ p {
   }
 }
 /*certificación*/
-.certification-section {
+.certificacion-split {
+  display: flex;
+  font-family: Arial, sans-serif;
+  flex-wrap: wrap;
   width: 100%;
-  max-width: 900px;    /* mantiene un ancho legible */
-  margin: 60px auto;
-  padding: 0 20px;
-  text-align: left !important;   /* fuerza el alineado a la izquierda */
-  color: #a68d57;
-  border: 2px solid #b0b0b0; /* solo el borde */
-  border-radius: 10px;       /* esquinas redondeadas */
-  background: transparent;   /* sin color de fondo */
-
-  text-align: left;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* sutil, opcional */
+  margin: 50px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-
-.certification-section h2 {
-  font-size: 28px;
-  font-weight: bold;
-  color: #a68d57;
-  margin-bottom: 20px;
-  text-align: left !important;   /* también el título */
-  position: relative;
-  padding-bottom: 10px;
-  border-bottom: 3px solid #c875ac; /* subrayado moderno */
-  display: inline-block;
-  padding-bottom: 5px;
+.certificacion-split .texto {
+  flex: 1;
+  font-family: Arial, sans-serif;
+  background-color: #2c2c2c; /* fondo oscuro */
+  color: #f5f5f5;
+  padding: 40px;
 }
 
-.certification-section p {
-  font-size: 18px;
-  line-height: 1.6;
+.certificacion-split .texto h3 {
+  font-size: 26px;
   margin-bottom: 15px;
-  text-align: left !important;   /* fuerza cada párrafo */
+  color: #fff;
+  font-family: Arial, sans-serif;
 }
 
+.certificacion-split .texto p {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
 
+.certificacion-split .btn-split {
+  padding: 12px 30px;
+  background: linear-gradient(45deg, #c875ac, #7e2864);
+  color: #fff;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+  text-align: center;
+}
 
+.certificacion-split .btn-split:hover {
+  background: linear-gradient(45deg, #7e2864, #c875ac);
+}
 
+.certificacion-split .imagen {
+  flex: 1;
+}
+
+.certificacion-split .imagen img {
+  width:100%;
+  height: 50vh;
+  object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .certificacion-split {
+    flex-direction: column;
+  }
+  .certificacion-split .imagen {
+    height: 300px;
+  }
+}
