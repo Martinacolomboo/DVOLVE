@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'principal',
+    'email_verification',
 ]
 
 MIDDLEWARE = [
@@ -98,6 +99,23 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+import os
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = '96fb27001@smtp-brevo.com'     
+EMAIL_HOST_PASSWORD = "xsmtpsib-125a8194e6aefe448909b2107a0ea6a02bcd871716bfd3e47a5f5b962835fb5f-29rJ8BaUb4X1N5QZ" 
+DEFAULT_FROM_EMAIL = 'DVOLVE <dvolvefit@gmail.com>'  
+
+# Verificación
+EMAIL_CODE_TTL_MINUTES = 10
+EMAIL_CODE_MAX_ATTEMPTS = 5
+EMAIL_CODE_RESEND_COOLDOWN_SECONDS = 60
+EMAIL_CODE_SECRET = 'cambiame-por-una-frase-secreta-larga'
 
 
 # Internationalization

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Métodos de pago</title>
+  <style>
+    :root { font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif; }
+    body { min-height: 100vh; display: grid; place-items: center; background:#0f172a; color:#e2e8f0; }
+    .card { width:min(92vw,520px); background:#0b1220; border:1px solid #172554;
+            border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.35); padding:20px; }
+    h1 { margin:0 0 8px; font-size:22px; }
+    p { margin:0 0 16px; color:#94a3b8; }
+    .grid { display:grid; gap:10px; }
+    .btn { padding:12px 14px; border-radius:10px; border:1px solid #1e293b; background:#111827;
+           color:#e5e7eb; cursor:pointer; text-align:center; }
+    .btn:hover { background:#0b1220; }
+    .muted { font-size:12px; color:#94a3b8; margin-top:8px; }
+    .back { margin-top:12px; text-align:center; }
+    .link { color:#93c5fd; text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Seleccioná un método de pago</h1>
+    <p>Esto es un placeholder. Elegí cualquiera y te redirigimos.</p>
+
+    <div class="grid">
+      <button class="btn" data-href="{% url 'principal:home' %}">Mercado Pago</button>
+      <button class="btn" data-href="{% url 'principal:home' %}">Transferencia</button>
+      <button class="btn" data-href="{% url 'principal:home' %}">Tarjeta</button>
+    </div>
+
+    <div class="muted">Podés cambiar las URLs de destino cuando integres tu pasarela real.</div>
+    <div class="back"><a class="link" href="{% url 'principal:home' %}">← Volver al inicio</a></div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.btn[data-href]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        b.disabled = true; b.textContent = 'Redirigiendo…';
+        window.location.href = b.dataset.href;
+      });
+    });
+  </script>
+</body>
+</html>

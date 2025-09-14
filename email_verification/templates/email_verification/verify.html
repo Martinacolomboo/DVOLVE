@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresá el código</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;display:grid;place-items:center;min-height:100vh;background:#0f172a;color:#e2e8f0}
+    .card{width:min(92vw,440px);background:#0b1220;border:1px solid #172554;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:20px}
+    .input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #1e293b;background:#0b1220;color:#e2e8f0}
+    button{margin-top:10px;width:100%;padding:12px 14px;border-radius:10px;border:0;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+    .row{display:grid;gap:10px}
+    .msg{margin-top:10px}.muted{color:#94a3b8;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    {% if messages %}
+      <div class="msg">{% for m in messages %}<div>{{ m }}</div>{% endfor %}</div>
+    {% endif %}
+    <h1>Ingresá el código</h1>
+    <p class="muted">Enviamos el código a <b>{{ email }}</b>. Revisá Spam si no lo ves.</p>
+
+    <form method="post" class="row" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="email" value="{{ email }}">
+      {{ form.code.label_tag }}
+      {{ form.code }}
+      <button type="submit">Verificar</button>
+    </form>
+  </div>
+</body>
+</html>

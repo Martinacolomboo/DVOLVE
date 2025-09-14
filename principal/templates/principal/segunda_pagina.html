@@ -128,7 +128,7 @@
         <i class="bi bi-list"></i>
       </button>
       <div class="menu-content">
-        <a href="{% url 'home' %}">Inicio</a>
+        <a href="{% url 'principal:home' %}">Inicio</a>
         <a href="#sobre Dvolve">Sobre DVOLVE</a>
         <a href="#cardsCarousel">Servicios</a>
         <a href="#certificacion">Certificación</a>
@@ -137,7 +137,7 @@
 
     <!-- Logo -->
     <div class="logo2">
-      <a href="{% url 'home' %}">
+      <a href="{% url 'principal:home' %}">
         <img src="{% static 'principal/img/logo-sin.png' %}" alt="Logo de DVOLVE">
       </a>
     </div>
@@ -162,7 +162,7 @@
         alt="Imagen portada" 
         class="imagen-portada-frente">
     <div class="plan-btn">
-      <a href="{% url 'pagos' %}" class="btn-plan">Quiero mi plan</a>
+      <a href="{% url 'principal:pagos' %}" class="btn-plan">Quiero mi plan</a>
     </div>
   </section>
 
@@ -306,7 +306,7 @@
       <p class="footer-colab">
       Con la colaboración de <strong>Aritz Blesa</strong><a href="https://www.linkedin.com/in/aritz-blesa-384561309/" target="_blank"><strong>LinkedIn</strong></a>
       </p> 
-    <a href="{% url 'privacidad' %}">Política de Privacidad</a>
+    <a href="{% url 'principal:privacidad' %}">Política de Privacidad</a>
 
 
    
