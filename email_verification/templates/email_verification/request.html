@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verificá tu email</title>
+
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;display:grid;place-items:center;min-height:100vh;background:#0f172a;color:#e2e8f0}
+    .card{width:min(92vw,440px);background:#0b1220;border:1px solid #172554;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:20px}
+    .input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #1e293b;background:#0b1220;color:#e2e8f0}
+    button{margin-top:10px;width:100%;padding:12px 14px;border-radius:10px;border:0;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+    .msg{margin-top:10px}
+  /* ...tu CSS actual... */
+  .back { margin-bottom: 12px; }
+  .back-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #172554;
+    color: #93c5fd;
+    text-decoration: none;
+  }
+  .back-btn:hover { background: #0b1220; }
+  </style>
+
+</head>
+<body>
+  <div class="card">
+    <div class="back">
+      <a href="{% url 'principal:pagos' %}" class="back-btn">&larr; Volver</a>
+    </div>
+    {% if messages %}
+      <div class="msg">{% for m in messages %}<div>{{ m }}</div>{% endfor %}</div>
+    {% endif %}
+    <h1>Verificá tu email</h1>
+    <p>Te enviaremos un código de 6 dígitos para confirmar tu correo.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.email.label_tag }}
+      {{ form.email }}
+      <button type="submit">Enviar código</button>
+    </form>
+  </div>
+  
+</body>
+</html>

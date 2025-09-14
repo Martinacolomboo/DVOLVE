@@ -19,6 +19,7 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('principal.urls')),
+    path('', include(('principal.urls', 'principal'), namespace='principal')),
+    path('verify-email/', include(('email_verification.urls', 'email_verification'), namespace='email_verification')),
 
 ]
