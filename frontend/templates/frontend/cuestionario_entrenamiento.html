@@ -1,0 +1,163 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="cuestionario-section">
+  <div class="container d-flex flex-column align-items-center justify-content-center">
+    <div class="cuestionario-box">
+
+      <!-- Encabezado -->
+      <div class="text-center mb-4">
+        <i class="bi bi-activity icono-cuestionario"></i>
+        <h3 class="fw-bold">Cuestionario de Entrenamiento</h3>
+        <p class="text-muted">Contanos sobre tu estado físico actual y objetivos</p>
+      </div>
+
+      <!-- Cartel de error -->
+      <div id="error-box" class="alert alert-danger text-center" style="display:none;"></div>
+      {% if error %}
+        <div class="alert alert-danger text-center">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" id="entrenamientoForm">
+        {% csrf_token %}
+
+        <!-- Condiciones de salud -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Tenés alguna lesión o condición física?</label>
+          <select name="health_conditions" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="ninguna">Ninguna</option>
+            <option value="hernia">Hernia</option>
+            <option value="rodilla">Lesión de rodilla</option>
+            <option value="hombro">Lesión de hombro</option>
+            <option value="escoliosis">Escoliosis</option>
+          </select>
+        </div>
+
+        <!-- Peso -->
+        <div class="mb-4">
+          <label class="fw-bold">Peso (kg)</label>
+          <input type="number" name="weight" class="form-control" min="30" max="200" required>
+        </div>
+
+        <!-- Edad -->
+        <div class="mb-4">
+          <label class="fw-bold">Edad</label>
+          <input type="number" name="age" class="form-control" min="10" max="100" required>
+        </div>
+
+        <!-- Altura -->
+        <div class="mb-4">
+          <label class="fw-bold">Altura (cm)</label>
+          <input type="number" name="height" class="form-control" min="100" max="230" required>
+        </div>
+
+        <!-- Objetivo -->
+        <div class="mb-4">
+          <label class="fw-bold">Objetivo principal:</label>
+          <select name="training_goal" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="resistencia">Resistencia</option>
+            <option value="fuerza">Ganar fuerza</option>
+            <option value="adiposidad">Bajar adiposidad</option>
+            <option value="bienestar">Bienestar general</option>
+          </select>
+        </div>
+
+        <!-- Nivel -->
+        <div class="mb-4">
+          <label class="fw-bold">Nivel actual de entrenamiento:</label>
+          <select name="training_level" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="nunca">Nunca entrené</option>
+            <option value="intermedio">Intermedio</option>
+            <option value="avanzado">Avanzado</option>
+          </select>
+        </div>
+
+        <!-- Actividad extra -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Complementás con otra actividad?</label>
+          <select name="other_activity" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="no">No</option>
+            <option value="correr">Correr</option>
+            <option value="natacion">Natación</option>
+            <option value="ciclismo">Ciclismo</option>
+            <option value="futbol">Fútbol</option>
+            <option value="otra">Otra</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">¿Dónde solés entrenar?</label>
+          <select name="training_place" class="form-select" required>
+            <option value="casa">En casa</option>
+            <option value="gimnasio">En gimnasio</option>
+            <option value="ambos">Ambos</option>
+          </select>
+        </div>
+        <!-- Días de entrenamiento -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Cuántos días entrenarías por semana?</label>
+          <input type="number" name="training_days" class="form-control" min="1" max="7" required>
+        </div>
+
+        <!-- Sueño -->
+        <div class="mb-4">
+          <label class="fw-bold">Sueño y descanso:</label>
+          <select name="sleep" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="7-8">7/8 horas</option>
+            <option value="dificil">Me cuesta descansar</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-cuestionario w-100 mt-4">
+          Continuar al Cuestionario de Alimentación 
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Validación visual -->
+  <script>
+  document.getElementById("entrenamientoForm").addEventListener("submit", function (e) {
+    const form = e.target;
+    const inputs = form.querySelectorAll("input[required], select[required]");
+    const errorBox = document.getElementById("error-box");
+    let valido = true;
+
+    // reset error visual
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+
+    for (const input of inputs) {
+      if (!input.value.trim()) {
+        valido = false;
+        input.classList.add("is-invalid");
+      } else {
+        input.classList.remove("is-invalid");
+      }
+    }
+
+    if (!valido) {
+      e.preventDefault();
+      errorBox.textContent = "⚠️ Debes completar todos los campos antes de continuar.";
+      errorBox.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  </script>
+
+  <style>
+    .is-invalid {
+      border-color: #dc3545 !important;
+      box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
+    }
+  </style>
+</section>
+{% endblock %}
+
+

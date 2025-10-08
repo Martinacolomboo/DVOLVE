@@ -1,0 +1,191 @@
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
+
+{% block content %}
+<section class="dashboard-section">
+  <div class="container py-5">
+    <!-- Bienvenida -->
+    <div class="text-center mb-5">
+      <h2 class="fw-bold">¡Hola, {{ user.username|capfirst }}!</h2>
+      <p class="text-muted">Bienvenida a tu espacio personalizado de <span class="highlight">DVOLVE</span></p>
+    </div>
+
+    <!-- Bloques principales -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8">
+        <div class="dashboard-card">
+          <h5><i class="bi bi-bullseye"></i> Objetivo</h5>
+          <p class="tag">{{ cuestionario.get_training_goal_display }}</p>
+        </div>
+
+        <div class="dashboard-card">
+          <h5><i class="bi bi-activity"></i> Nivel</h5>
+          <p class="tag">{{ cuestionario.get_training_level_display }}</p>
+        </div>
+
+        <div class="dashboard-card">
+          <h5><i class="bi bi-calendar-heart"></i> Frecuencia</h5>
+          <p class="tag">{{ cuestionario.training_days }} días/semana</p>
+        </div>
+
+        <div class="dashboard-card">
+          <h5><i class="bi bi-droplet"></i> Hidratación</h5>
+          <p class="tag">{{ cuestionario.get_hydration_display }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recomendaciones -->
+    <div class="recomendaciones mb-5">
+      <h4><i class="bi bi-lightbulb"></i> Recomendaciones Personalizadas</h4>
+      <p class="text-muted">Basadas en tus respuestas de los cuestionarios</p>
+
+      <div class="recomendacion">
+        <i class="bi bi-heart-pulse"></i>
+        <div>
+          <strong>Entrenamiento Cardiovascular <span class="badge-prio">Prioritario</span></strong>
+          <p>Enfocate en ejercicios aeróbicos de intensidad moderada</p>
+        </div>
+      </div>
+
+      <div class="recomendacion">
+        <i class="bi bi-egg-fried"></i>
+        <div>
+          <strong>Plan de Alimentación Estructurado <span class="badge-prio">Prioritario</span></strong>
+          <p>Organizá tus comidas con horarios regulares y alimentos naturales</p>
+        </div>
+      </div>
+
+      {% if cuestionario.hydration == "poca" %}
+      <div class="recomendacion">
+        <i class="bi bi-droplet-half"></i>
+        <div>
+          <strong>Aumentar Hidratación <span class="badge-prio">Prioritario</span></strong>
+          <p>Objetivo: 2-3 litros de agua por día</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if cuestionario.meal_schedule == "irregulares" %}
+      <div class="recomendacion">
+        <i class="bi bi-clock-history"></i>
+        <div>
+          <strong>Regularizar Horarios <span class="badge-rec">Recomendado</span></strong>
+          <p>Establecé horarios fijos para mejorar el metabolismo</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Progreso -->
+    <div class="progreso mb-5">
+      <h4><i class="bi bi-graph-up-arrow"></i> Tu Progreso Semanal</h4>
+      <ul class="list-unstyled mt-3">
+        <li>Entrenamientos completados <span class="badge">3/4</span></li>
+        <li>Comidas registradas <span class="badge">12/21</span></li>
+        <li>Hidratación diaria <span class="badge">1.8L / 2.5L</span></li>
+      </ul>
+    </div>
+
+    <!-- Próximos Objetivos -->
+    <div class="proximos">
+      <h4><i class="bi bi-check2-square"></i> Próximos Objetivos</h4>
+      <div class="proximo-item">
+        <strong>Aumentar frecuencia de entrenamiento</strong>
+        <p>Objetivo: 4 días por semana</p>
+      </div>
+      <div class="proximo-item">
+        <strong>Mejorar hidratación</strong>
+        <p>Objetivo: 2.5L diarios</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  body { background-color: #fff7f8; }
+  .highlight { color: #9f6ba0; font-weight: 600; }
+  .dashboard-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .dashboard-card h5 {
+    color: #864f8a;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .tag {
+    background: #f2e4f6;
+    color: #864f8a;
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-weight: 500;
+  }
+  .recomendaciones {
+    background: #fff;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  }
+  .recomendacion {
+    display: flex;
+    align-items: start;
+    gap: 12px;
+    border: 1px solid #f5ecf8;
+    background: #fcf9fd;
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+  }
+  .recomendacion i {
+    color: #9f6ba0;
+    font-size: 22px;
+  }
+  .badge-prio {
+    background: #e6d3ed;
+    color: #864f8a;
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-weight: 500;
+  }
+  .badge-rec {
+    background: #f9e1e8;
+    color: #b85168;
+    font-size: 12px;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-weight: 500;
+  }
+  .progreso, .proximos {
+    background: #fff;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  }
+  .progreso li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+  .badge {
+    background: #f2e4f6;
+    color: #864f8a;
+    border-radius: 10px;
+    padding: 3px 10px;
+    font-weight: 500;
+  }
+  .proximo-item {
+    background: #fcf9fd;
+    border-radius: 12px;
+    padding: 10px 15px;
+    margin-top: 10px;
+  }
+</style>
+{% endblock %}
+
+

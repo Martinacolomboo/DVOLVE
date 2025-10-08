@@ -8,4 +8,4 @@ class CheckoutService:
         if not request.session.get('checkout_email'):
             messages.warning(request, 'Primero verificá tu email.')
             return redirect('email_verification:request')
-        return render(request, 'principal/metodos_pago.html')
+        return None

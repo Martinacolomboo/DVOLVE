@@ -1,0 +1,10 @@
+
+{% block content %}
+{% if user.is_authenticated %}
+  <h1>Hola {{ user.username }}, bienvenido a tu área de cliente</h1>
+  <a href="{% url 'clientes:formulario' %}">Ir al formulario</a>
+  <a href="{% url 'clientes:logout' %}">Cerrar sesión</a>
+{% else %}
+  <p>No estás logueado. <a href="{% url 'clientes:login' %}">Iniciar sesión</a></p>
+{% endif %}
+{% endblock %}

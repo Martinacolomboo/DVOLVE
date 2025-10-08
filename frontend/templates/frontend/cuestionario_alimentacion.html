@@ -1,0 +1,147 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="cuestionario-section">
+  <div class="container d-flex flex-column align-items-center justify-content-center">
+    <div class="cuestionario-box">
+
+      <!-- Encabezado -->
+      <div class="text-center mb-4">
+        <i class="bi bi-heart icono-cuestionario"></i>
+        <h3 class="fw-bold">Cuestionario de Alimentación</h3>
+        <p class="text-muted">Contanos sobre tus hábitos alimentarios</p>
+      </div>
+
+      <!-- Cartel de error visual -->
+      <div id="error-box" class="alert alert-danger text-center" style="display:none;"></div>
+
+      {% if error %}
+        <div class="alert alert-danger text-center">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" id="alimentacionForm">
+        {% csrf_token %}
+
+        <!-- Alimentación actual -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Cómo describirías tu alimentación actual?</label>
+          <select name="current_diet" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="equilibrada">Ordenada y equilibrada</option>
+            <option value="desordenada">Desordenada</option>
+            <option value="procesados">Muchos ultraprocesados</option>
+            <option value="casera">Comida casera</option>
+            <option value="nose">No sé qué comer</option>
+          </select>
+        </div>
+
+        <!-- Restricciones -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Tenés alguna restricción alimentaria?</label>
+          <select name="diet_restrictions" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="ninguna">Ninguna</option>
+            <option value="diabetes">Diabetes</option>
+            <option value="celiaquia">Celiquía</option>
+            <option value="veganismo">Veganismo</option>
+            <option value="vegetarianismo">Vegetarianismo</option>
+          </select>
+        </div>
+
+        <!-- Tiroides -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Tenés patología en tiroides?</label>
+          <select name="thyroid" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="ninguna">Ninguna</option>
+            <option value="hiper">Hipertiroidismo</option>
+            <option value="hipo">Hipotiroidismo</option>
+          </select>
+        </div>
+
+        <!-- Comidas por día -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Cuántas comidas al día hacés?</label>
+          <input type="number" name="meals" class="form-control" min="1" max="10" required>
+        </div>
+
+        <!-- Snacks -->
+        <div class="mb-4">
+          <label class="fw-bold">¿Suelen haber colaciones/snacks?</label>
+          <select name="snacks" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="si">Sí</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+
+        <!-- Horarios -->
+        <div class="mb-4">
+          <label class="fw-bold">Horarios de comida</label>
+          <select name="meal_schedule" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="regulares">Regulares</option>
+            <option value="irregulares">No regulables</option>
+          </select>
+        </div>
+
+        <!-- Hidratación -->
+        <div class="mb-4">
+          <label class="fw-bold">Hidratación</label>
+          <select name="hydration" class="form-select" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="poca">Consumo poca agua</option>
+            <option value="buena">Consumo buena cantidad</option>
+          </select>
+        </div>
+
+        <!-- Botón -->
+        <button type="submit" class="btn btn-cuestionario w-100 mt-4">
+          Finalizar y ver tu Dashboard 
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Validación visual -->
+  <script>
+  document.getElementById("alimentacionForm").addEventListener("submit", function (e) {
+    const form = e.target;
+    const inputs = form.querySelectorAll("input[required], select[required]");
+    const errorBox = document.getElementById("error-box");
+    let valido = true;
+
+    // Ocultar mensaje previo
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+
+    // Revisar campos
+    inputs.forEach(input => {
+      if (!input.value.trim()) {
+        valido = false;
+        input.classList.add("is-invalid");
+      } else {
+        input.classList.remove("is-invalid");
+      }
+    });
+
+    // Mostrar error si falta algo
+    if (!valido) {
+      e.preventDefault();
+      errorBox.textContent = "⚠️ Debes completar todos los campos antes de continuar.";
+      errorBox.style.display = "block";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+  </script>
+
+  <style>
+    .is-invalid {
+      border-color: #dc3545 !important;
+      box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
+    }
+  </style>
+</section>
+{% endblock %}
+

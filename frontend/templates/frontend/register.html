@@ -1,0 +1,35 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block title %}Registrarse{% endblock %}
+{% block content %}
+
+<section class="register-section">
+  <div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="register-box">
+      <!-- Logo + Nombre -->
+      <div class="text-center mb-4">
+        <img src="{% static 'img/logo-sin.png' %}" alt="DVOLVE Logo" class="logo-small mb-2">
+        <h2 class="fw-bold">Nueva Cuenta</h2>
+        <p class="text-muted">Crea tu cuenta para comenzar tu evolución</p>
+      </div>
+
+      <!-- Formulario -->
+      <form method="post">
+        {% csrf_token %}
+        <input type="email" class="form-control mb-3" placeholder="Correo electrónico" name="email" required>
+        <input type="text" class="form-control mb-3" placeholder="Nombre de usuario" name="username" required>
+        <input type="password" class="form-control mb-3" placeholder="Contraseña" name="password" required>
+        <button type="submit" class="btn btn-register w-100">Crear</button>
+      </form>
+
+      <!-- Link login -->
+      <div class="text-center mt-3">
+        <small>¿Ya tenés cuenta? <a href="{% url 'frontend:login' %}">Iniciá sesión</a></small>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "frontend/base.html" %}
+{% load static %} 
+{% block title %}Iniciar Sesión{% endblock %}
+{% block content %}
+
+<section class="login-section">
+  <div class="container-fluid vh-100 d-flex align-items-center">
+    <div class="row w-100">
+      
+      <!-- Columna izquierda: Logo -->
+      <div class="col-md-6 d-flex justify-content-center align-items-center">
+        <img src="{% static 'principal/img/logo-sin.png' %}" alt="DVOLVE Logo" class="logo-login">
+      </div>
+
+      <!-- Columna derecha: Formulario -->
+      <div class="col-md-6 d-flex justify-content-center align-items-center">
+        <div class="login-box">
+          <h2>Bienvenida a <span class="highlight">DVOLVE</span></h2>
+          <p>Entrená. Evolucioná. Conectá.</p>
+
+          <form method="post">
+            {% csrf_token %}
+            <input type="text" class="form-control mb-3" placeholder="nombre de usuario" name="username">
+            <input type="password" class="form-control mb-3" placeholder="contraseña" name="password">
+            <button type="submit" class="btn btn-login w-100">Ingresar</button>
+          </form>
+          <small>¿No tenés cuenta? <a href="{% url 'frontend:registro' %}">Registrate</a></small>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}

@@ -1,0 +1,378 @@
+:root {
+  --bg: #c392a7;
+  --title: #b28ac3;
+  --muted: #6f6a72;
+  --btn-bg: #c392a7;
+  --btn-bg-hover: #b57e96;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: #3a3340;
+}
+
+/* ====== Auth ====== */
+.auth-wrapper {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr minmax(420px, 520px);
+}
+.auth-left { display: flex; align-items: flex-end; padding: 0 0 16vh 12vw; }
+.brand-mark { height: 120px; }
+.auth-right { display: flex; align-items: center; justify-content: center; }
+.auth-card { width: 100%; max-width: 480px; }
+.auth-title { font-size: 32px; font-weight: 700; color: var(--title); text-align: right; }
+.auth-subtitle { color: var(--muted); text-align: right; margin-bottom: 20px; }
+.auth-form { display: grid; gap: 16px; }
+.pill-input { height: 52px; border-radius: 9999px; border: none; background: #f6e7e4; padding: 0 22px; }
+.pill-button { height: 48px; border-radius: 9999px; border: none; background: var(--btn-bg); color: #fff; font-weight: 600; cursor: pointer; }
+.pill-button:hover { background: var(--btn-bg-hover); }
+.auth-alt { margin-top: 12px; text-align: right; font-size: 14px; color: var(--muted); }
+.auth-link { color: var(--title); text-decoration: underline; }
+.form-error { color: red; text-align: right; }
+/*---login--*/
+.login-section {
+  background-color:  #fff3f3; /* Fondo suave rosado */
+}
+
+.logo-login {
+  max-width: 900px;  /* probá 350px si querés más grande */
+  width: 100%;
+  height: auto;
+}
+
+
+.login-box {
+    background: #f7dbe4f0; 
+      backdrop-filter: blur(10px);           /* efecto borroso */
+  -webkit-backdrop-filter: blur(10px);   /* compatibilidad Safari */
+        /* fondo rosado/lila */
+    padding: 60px;             /* más espacio interno */
+  border-radius: 20px;       
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.15);
+  text-align: center;
+  max-width: 400px;   /* 👈 limita el ancho */
+  width: 100%;      
+}
+
+.login-box h2 {
+    color:  #7a3d63;
+  font-size: 2rem; 
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+.login-box p {
+     color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+}
+
+.login-box input {
+  padding: 12px;
+  font-size: 1rem;
+
+}
+.login-box button{
+    background-color: #9778a3a4;
+}
+.btn-login {
+   background-color: #c18397;
+  color: white;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 12px;
+  border: none;
+  transition: 0.3s ease;
+}
+.btn-login:hover {
+  background-color: #a368a3;
+}
+/*---registro--*/
+.register-section {
+  background-color: #fff3f3; /* Fondo suave */
+}
+
+.register-box {
+  background: #fedbdba9;
+  border-radius: 20px;
+  padding: 40px 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0px 8px 25px rgba(0,0,0,0.1);
+}
+.register-box img{
+  max-width: 200px;
+  margin-bottom: 20px;
+}
+.register-box h2 {
+  color: #7a3d63;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.register-box p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.logo-small {
+  max-width: 50px;
+}
+
+.form-control {
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.btn.btn-register {
+  background-color: #c18397c4;
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  transition: 0.3s ease;
+}
+.btn.btn-register:hover {
+  background-color: #a368a3c7;
+}
+
+/* ====== Cards ====== */
+.cuestionario-box {
+  background: #f7e0e0c6;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 700px;
+  width: 100%;
+  box-shadow: 0px 6px 20px rgba(0,0,0,0.1);
+}
+
+.cuestionario-box label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+.icono-cuestionario {
+  font-size: 2.5rem;
+  color: #a368a3;
+  margin-bottom: 10px;
+}
+.form-check {
+  margin-bottom: 6px;
+}
+.text-muted p {
+  color: #edcff2;
+}
+.btn.btn-cuestionario {
+  background-color: #a368a3;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 12px;
+  transition: 0.3s ease;
+}
+.btn.btn-cuestionario:hover {
+  background-color: #974d7a;
+}
+.btn.btn-cuestionario a {
+  color: white;
+  text-decoration: none;
+}
+.alert {
+  border-radius: 12px;
+  font-weight: 600;
+}
+/* Dashboard */
+.dashboard-section {
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--title);
+}
+.btn-add {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--title);
+  text-decoration: none;
+  padding: 2px 8px;
+  border-radius: 50%;
+  border: 2px solid var(--title);
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-add:hover {
+  background: var(--title);
+  color: #fff;
+}
+
+
+/* Quick Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  padding: 20px;
+  text-align: center;
+  background: #fff;
+  color: #333;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Recomendaciones */
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.rec-card {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Recipes */
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.recipe-card {
+  position: relative;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.recipe-card .overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+}
+
+/* Videos */
+.videos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.video-card {
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  color: #333;
+}
+.recipes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.recipe-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.recipe-card h4 {
+  margin-bottom: 8px;
+}
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.rec-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.bienvenida-section {
+  background: linear-gradient(135deg, #fde2e2, #f9f0ff);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.bienvenida-box {
+  background: #fcf4fd;
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.cuestionario-card {
+  background: #fcecec;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
+}
+
+.cuestionario-card h5 {
+  margin-top: 10px;
+  color: #7a3d63;
+}
+.btn.btn-primary {
+  background-color: #d796abc4;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1.1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
+  transition: background-color 0.3s ease;
+}
+.btn.btn-primary:hover {
+  background-color: #a368a3c7;
+}.bienvenida-titulo {
+  font-size: 2rem;
+  color: #7a3d63;
+  margin-bottom: 10px;
+}
+
+.bienvenida-subtitulo {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.cuestionario-card h5 {
+  color: #7a3d63;
+  font-size: 1.1rem;
+}
+
+.fw-bold {
+  font-weight: 700;  /* asegura negrita fuerte */
+}

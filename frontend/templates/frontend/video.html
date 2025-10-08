@@ -1,0 +1,95 @@
+{% extends "frontend/pagina_principal.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Título -->
+  <h3 class="fw-bold mb-4 text-dark"><i class="bi bi-collection-play"></i> Videos</h3>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm border-0 mb-4 p-3 rounded-4">
+    <h5 class="fw-semibold mb-3"><i class="bi bi-funnel"></i> Filtrar por Categoría</h5>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-light border rounded-pill active" data-filter="todos">Todos</button>
+      <button class="btn btn-light border rounded-pill" data-filter="fuerza">Fuerza</button>
+      <button class="btn btn-light border rounded-pill" data-filter="resistencia">Resistencia</button>
+      <button class="btn btn-light border rounded-pill" data-filter="adiposidad">Cardio</button>
+      <button class="btn btn-light border rounded-pill" data-filter="bienestar">Bienestar</button>
+    </div>
+  </div>
+
+  <!-- Todos los videos -->
+  <h4 class="fw-semibold mb-3 text-dark"><i class="bi bi-collection"></i> Todos los Videos</h4>
+
+  {% if request.user.is_superuser %}
+    <div class="mb-4 text-end">
+      <a href="{% url 'frontend:panel_admin' %}" class="btn text-white rounded-pill px-4"
+      style="background-color: #b48cc3;">
+      <i class="bi bi-gear"></i> Administrar Videos
+      </a>
+    </div>
+  {% endif %}
+  <div class="row g-4" id="videos-container">
+    {% for video in videos %}
+    <div class="col-md-6 video-card" data-objetivo="{{ video.objetivo }}">
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+        <!-- Imagen -->
+        {% if video.thumbnail %}
+          <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="{{ video.titulo }}">
+        {% else %}
+          <div class="d-flex align-items-center justify-content-center bg-light" 
+              style="height: 200px; background-color: #f6effa;">
+            <i class="bi bi-play-circle" style="font-size: 3rem; color: #b48cc3;"></i>
+          </div>
+        {% endif %}
+
+
+        <!-- Cuerpo -->
+        <div class="card-body">
+          <h5 class="fw-bold">{{ video.titulo }}</h5>
+          <p class="text-muted small mb-2">
+            {{ video.descripcion|default:"Entrenamiento diseñado para mejorar tu rendimiento."|truncatechars:100 }}
+          </p>
+
+          <!-- Etiquetas -->
+          <div class="d-flex justify-content-between mb-3">
+            <span class="badge bg-secondary">{{ video.nivel|title }}</span>
+            <span class="badge bg-light text-dark">{{ video.objetivo|title }}</span>
+          </div>
+
+          <!-- Botón -->
+          <a href="{{ video.archivo.url }}" target="_blank" class="btn w-100 text-white"
+            style="background-color: #b48cc3;">
+            <i class="bi bi-play-circle"></i> Ver Video
+          </a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">No hay videos disponibles aún.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Filtro JS -->
+<script>
+const buttons = document.querySelectorAll('[data-filter]');
+const cards = document.querySelectorAll('.video-card');
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    buttons.forEach(b => b.classList.remove('active', 'btn-primary'));
+    btn.classList.add('active', 'btn-primary');
+    const filtro = btn.dataset.filter;
+
+    cards.forEach(card => {
+      const objetivo = card.dataset.objetivo;
+      card.style.display = (filtro === 'todos' || filtro === objetivo) ? '' : 'none';
+    });
+  });
+});
+</script>
+
+{% endblock %}

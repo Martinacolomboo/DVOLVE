@@ -1,0 +1,24 @@
+{% extends 'principal/base.html' %}
+{% block title %}Pago exitoso - DVOLVE{% endblock %}
+
+{% block content %}
+<div class="card" style="background:#0b1220;border:1px solid #172554;border-radius:16px;padding:40px;box-shadow:0 10px 30px rgba(0,0,0,.4);text-align:center;max-width:420px;">
+  <i class="bi bi-check-circle" style="font-size:48px;color:#22c55e"></i>
+  <h1>¡Pago exitoso!</h1>
+  <p>Tu pago por <strong>${{ monto }}</strong> se procesó correctamente.</p>
+  <p>Gracias por entrenar con <b>DVOLVE</b>.</p>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:25px;">
+    <a href="{% url 'clientes:index' %}" 
+       style="display:inline-block;padding:12px 18px;border-radius:10px;background:#22c55e;color:#0f172a;text-decoration:none;font-weight:600;">
+       🏋️ Empezar a entrenar
+    </a>
+
+    <a href="{% url 'principal:home' %}" 
+       style="display:inline-block;padding:10px 18px;border-radius:10px;background:#2563eb;color:#fff;text-decoration:none;font-weight:600;">
+       Volver al inicio
+    </a>
+  </div>
+</div>
+{% endblock %}
+

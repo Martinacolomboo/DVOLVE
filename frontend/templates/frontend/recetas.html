@@ -1,0 +1,22 @@
+{% extends "frontend/base.html" %}
+{% block title %}Todas las Recetas{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">Todas las Recetas</h2>
+  <div class="recipes-grid">
+    {% for receta in recetas %}
+      <div class="card recipe-card">
+        <h4>{{ receta.titulo }}</h4>
+        {% if receta.descripcion %}
+          <p>{{ receta.descripcion }}</p>
+        {% endif %}
+        <a href="{{ receta.archivo.url }}" target="_blank" class="pill-button">
+          📄 Ver receta
+        </a>
+      </div>
+    {% empty %}
+      <p>No hay recetas cargadas todavía.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "frontend/pagina_principal.html" %}
+
+{% load static %}
+{% block content %}
+
+<section class="gestion-section py-5">
+  <div class="container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold"><i class="bi bi-camera-reels-fill text-primary"></i> Gestión de Videos</h2>
+      <a href="{% url 'frontend:panel_admin' %}" class="btn btn-outline-secondary rounded-pill px-3">← Volver al Panel</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-5">
+        <h5 class="fw-bold mb-4 text-muted">
+            {% if video_edit %}Editar video{% else %}Agregar nuevo video{% endif %}
+        </h5>
+
+        {% if error %}
+            <div class="alert alert-danger text-center">{{ error }}</div>
+        {% endif %}
+        {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} text-center">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row mb-3">
+            <div class="col-md-8">
+                <label class="form-label fw-semibold">Título *</label>
+                <input type="text" name="titulo" class="form-control" value="{{ video_edit.titulo|default:'' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Portada (opcional)</label>
+                <input type="file" name="portada" class="form-control" accept="image/*">
+            </div>
+            </div>
+
+            <div class="mb-3">
+            <label class="form-label fw-semibold">Descripción (opcional)</label>
+            <textarea name="descripcion" class="form-control" rows="2">{{ video_edit.descripcion|default:'' }}</textarea>
+            </div>
+
+            <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Objetivo *</label>
+                <select name="objetivo" class="form-select" required>
+                <option value="">Seleccionar...</option>
+                <option value="resistencia" {% if video_edit and video_edit.objetivo == "resistencia" %}selected{% endif %}>Resistencia</option>
+                <option value="fuerza" {% if video_edit and video_edit.objetivo == "fuerza" %}selected{% endif %}>Fuerza</option>
+                <option value="adiposidad" {% if video_edit and video_edit.objetivo == "adiposidad" %}selected{% endif %}>Bajar adiposidad</option>
+                <option value="bienestar" {% if video_edit and video_edit.objetivo == "bienestar" %}selected{% endif %}>Bienestar general</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Nivel *</label>
+                <select name="nivel" class="form-select" required>
+                <option value="nunca" {% if video_edit and video_edit.nivel == "nunca" %}selected{% endif %}>Nunca entrené</option>
+                <option value="intermedio" {% if video_edit and video_edit.nivel == "intermedio" %}selected{% endif %}>Intermedio</option>
+                <option value="avanzado" {% if video_edit and video_edit.nivel == "avanzado" %}selected{% endif %}>Avanzado</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Entorno *</label>
+                <select name="entorno" class="form-select" required>
+                <option value="casa" {% if video_edit and video_edit.entorno == "casa" %}selected{% endif %}>En casa</option>
+                <option value="gimnasio" {% if video_edit and video_edit.entorno == "gimnasio" %}selected{% endif %}>En gimnasio</option>
+                <option value="ambos" {% if video_edit and video_edit.entorno == "ambos" %}selected{% endif %}>Ambos entornos</option>
+                </select>
+            </div>
+            </div>
+
+            <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Apto para *</label>
+                <select name="apto_para" class="form-select" required>
+                <option value="ninguna" {% if video_edit and video_edit.apto_para == "ninguna" %}selected{% endif %}>Sin restricciones</option>
+                <option value="hernia" {% if video_edit and video_edit.apto_para == "hernia" %}selected{% endif %}>Hernia</option>
+                <option value="rodilla" {% if video_edit and video_edit.apto_para == "rodilla" %}selected{% endif %}>Lesión de rodilla</option>
+                <option value="hombro" {% if video_edit and video_edit.apto_para == "hombro" %}selected{% endif %}>Lesión de hombro</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-center mt-4">
+                <div class="form-check">
+                <input type="checkbox" name="requiere_equipo" class="form-check-input" id="requiere_equipo" {% if video_edit and video_edit.requiere_equipo %}checked{% endif %}>
+                <label for="requiere_equipo" class="form-check-label">Requiere equipamiento</label>
+                </div>
+            </div>
+            </div>
+
+            <div class="mb-4">
+            <label class="form-label fw-semibold">Archivo de video *</label>
+            <input type="file" name="archivo" class="form-control" accept="video/*" {% if not video_edit %}required{% endif %}>
+            </div>
+
+            <div class="text-end">
+            <button type="submit" class="btn btn-primary rounded-pill px-4 mt-2">
+                {% if video_edit %}Guardar cambios{% else %}Subir video{% endif %}
+            </button>
+            </div>
+        </form>
+        </div>
+
+
+    <!-- Lista de videos -->
+    <div>
+        <h5 class="fw-bold text-muted mb-3">Videos existentes</h5>
+        {% if videos %}
+            <div class="row">
+            {% for video in videos %}
+                <div class="col-md-4 mb-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    {% if video.thumbnail %}
+                    <img src="{{ video.thumbnail.url }}" class="card-img-top rounded-top" alt="{{ video.titulo }}">
+                    {% else %}
+                    <div class="p-5 text-center text-muted">🎬 Sin portada</div>
+                    {% endif %}
+                    <div class="card-body">
+                    <h6 class="fw-bold">{{ video.titulo }}</h6>
+                    <p class="small text-muted">{{ video.descripcion|truncatewords:10 }}</p>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="?edit={{ video.id }}" class="btn btn-sm btn-outline-primary px-3">Editar</a>
+                        <a href="?delete={{ video.id }}" class="btn btn-sm btn-outline-danger px-3"
+                        onclick="return confirm('¿Seguro que querés eliminar este video?');">Eliminar</a>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted fst-italic">No hay videos cargados aún.</p>
+        {% endif %}
+    </div>
+
+  </div>
+</section>
+
+<style>
+.gestion-section { background-color: #fff6f8; min-height: 100vh; }
+.btn-outline-primary { color: #8d63d1; border-color: #8d63d1; }
+.btn-outline-primary:hover { background-color: #8d63d1; color: white; }
+.btn-outline-danger:hover { background-color: #e35d6a; color: white; }
+</style>
+<script>
+document.querySelector("form").addEventListener("submit", function(e) {
+  let campos = this.querySelectorAll("[required]");
+  let incompletos = Array.from(campos).filter(c => !c.value.trim());
+
+  if (incompletos.length > 0) {
+    e.preventDefault();
+    incompletos[0].focus();
+    alert("Por favor, completá todos los campos obligatorios antes de guardar.");
+  }
+});
+</script>
+
+{% endblock %}

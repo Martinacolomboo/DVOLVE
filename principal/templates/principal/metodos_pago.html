@@ -23,16 +23,15 @@
 <body>
   <div class="card">
     <h1>Seleccioná un método de pago</h1>
-    <p>Esto es un placeholder. Elegí cualquiera y te redirigimos.</p>
+   
 
+    <p>Vas a abonar <b>${{ monto }}</b>.Serás redirigido a la plataforma correspondiente para completar tu compra.</p>
     <div class="grid">
-      <button class="btn" data-href="{% url 'principal:home' %}">Mercado Pago</button>
-      <button class="btn" data-href="{% url 'principal:home' %}">Transferencia</button>
-      <button class="btn" data-href="{% url 'principal:home' %}">Tarjeta</button>
+      <button class="btn" data-href="{% url 'principal:pagar_mercadopago' %}?monto={{ monto }}">Mercado Pago</button>
+      <button class="btn" data-href="{% url 'principal:pagar_paypal' %}?monto={{ monto }}">Paypal</button>
     </div>
 
-    <div class="muted">Podés cambiar las URLs de destino cuando integres tu pasarela real.</div>
-    <div class="back"><a class="link" href="{% url 'principal:home' %}">← Volver al inicio</a></div>
+   <div class="back"><a class="link" href="{% url 'principal:home' %}">← Volver al inicio</a></div>
   </div>
 
   <script>

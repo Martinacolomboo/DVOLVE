@@ -5,13 +5,51 @@ body {
   padding: 0;
   color: #333;
 }
+.promo-banner {
+  background: linear-gradient(90deg,  #8a199e, #ee46a8);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 2rem;
+ 
+}
+
+.promo-title {
+  font-size: 1.6rem;
+  display: block;
+}
+
+.promo-text {
+  font-size: 1rem;
+  opacity: 0.9;
+}
 
 .pagos-header {
   text-align: center;
   padding: 40px 20px;
-  background: linear-gradient(45deg, #c875ac, #7e2864);
-  color: white;
+  color: rgb(12, 12, 12);
 }
+.pagos-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 1rem 0 2rem;
+  color: #333;
+  position: relative;
+}
+
+.pagos-header h1::after {
+  content: "";
+  width: 10%;
+  height: 4px;
+  background: #d63384;
+  display: block;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
 .flecha {
   display: inline-block;
   margin-right: 10px;
@@ -33,6 +71,11 @@ body {
   margin-bottom: 30px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.pricing-card h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .pricing-card:hover {

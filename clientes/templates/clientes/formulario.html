@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Formulario de entrenamiento</h1>
+<form method="post">
+  {% csrf_token %}
+  <label for="nombre">Nombre:</label>
+  <input type="text" id="nombre" name="nombre" required>
+  <button type="submit">Enviar</button>
+</form>
+{% endblock %}

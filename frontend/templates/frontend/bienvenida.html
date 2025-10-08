@@ -1,0 +1,37 @@
+
+{% extends "frontend/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="bienvenida-section">
+  <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+    
+    <h2>¡Hola  <span class="fw-bold">{{ request.user.username|upper }}</span>!</h2>
+    <p>Completá estos <strong>cuestionarios</strong> para <span class="fw-bold">personalizar</span> tu experiencia</p>
+
+    <div class="bienvenida-box mt-4">
+      <h4 class="fw-bold">Cuestionarios de Evaluación</h4>
+      <p class="text-muted">Necesitamos<strong> conocerte mejor</strong> para crear tu <span class="fw-bold">plan personalizado</span></p>
+
+      <div class="row mt-3">
+        <div class="col-6">
+          <div class="cuestionario-card">
+            <i class="bi bi-activity"></i>
+            <h5><span class="fw-bold">Entrenamiento</span></h5>
+            <small>Objetivos y nivel actual</small>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="cuestionario-card">
+            <i class="bi bi-heart"></i>
+            <h5><span class="fw-bold">Alimentación</span></h5>
+            <small>Hábitos y restricciones</small>
+          </div>
+        </div>
+      </div>
+
+      <a href="{% url 'frontend:cuestionario_entrenamiento' %}" class="btn btn-primary mt-4">Comenzar Cuestionarios</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

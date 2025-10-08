@@ -16,6 +16,15 @@ def _client_ip(request):
 
 @require_http_methods(["GET", "POST"])
 def request_code_view(request):
+    monto = request.GET.get("monto")
+    print("🟦 GET monto recibido:", monto)
+    if monto:
+        try:
+            request.session["monto"] = float(monto)
+            request.session.modified = True  # fuerza el guardado inmediato
+            print("🟩 Monto guardado en sesión:", request.session.get("monto"))
+        except ValueError:
+            print("⚠️ Valor de monto no numérico:", monto)
     if request.method == 'POST':
         form = RequestCodeForm(request.POST)
         if form.is_valid():
@@ -94,7 +103,8 @@ def verify_code_view(request):
             from principal.models import VerifiedEmail
             VerifiedEmail.objects.get_or_create(email=email)
 
-            return redirect('principal:metodos_pago') 
+            monto = request.session.get("monto") or 0
+            return redirect(f"/checkout/?monto={monto}") 
     else:
         form = VerifyCodeForm()
 

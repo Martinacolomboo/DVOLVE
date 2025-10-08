@@ -256,6 +256,14 @@ p {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
+/* Fondo con blur */
+.blur-background {
+  background: rgba(255, 255, 255, 0.1); /* un fondo semitransparente */
+  backdrop-filter: blur(10px);          /* efecto borroso */
+  border-radius: 15px;                  /* bordes redondeados */
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
 .video-container {
   margin-left: 40px;   /* separa el video del texto */
 }
@@ -263,6 +271,7 @@ p {
   width: 100%;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  object-fit: cover;  /* recorta el video para que no quede aplastado */
 }
 
 /* ======= SECCIÓN CARTAS ======= */
