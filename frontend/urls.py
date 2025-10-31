@@ -21,5 +21,8 @@ urlpatterns = [
     path("admin/videos/", views.gestion_videos, name="gestion_videos"),
     path("admin/recetas/", views.gestion_recetas, name="gestion_recetas"),
     path("admin/videos/eliminar/<int:video_id>/", views.eliminar_video, name="eliminar_video"),
+    path('admin/recetas/editar/<int:receta_id>/', views.gestion_recetas_edit, name='editar_receta'),
+    path('admin/recetas/eliminar/<int:receta_id>/', views.gestion_recetas_delete, name='eliminar_receta'),
+
 
 ]

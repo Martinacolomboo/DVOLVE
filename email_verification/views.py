@@ -62,6 +62,7 @@ def request_code_view(request):
 
 @require_http_methods(["GET", "POST"])
 def verify_code_view(request):
+    print("LLAMADA verify_code_view, method:", request.method, "session ev_email:", request.session.get('ev_email'))
     email = request.session.get('ev_email')
     if request.method == 'POST':
         email = (request.POST.get('email') or email or '').lower()
@@ -112,3 +113,39 @@ def verify_code_view(request):
         'form': form,
         'email': email,
     })
+from django.http import HttpResponseRedirect
+
+@require_http_methods(["POST"])
+def resend_code_view(request):
+    """Reenvía el código al mismo email guardado en sesión."""
+    email = request.session.get('ev_email')
+    if not email:
+        messages.error(request, 'No hay un correo asociado. Volvé a solicitar un código.')
+        return redirect('email_verification:request')
+
+    # Control de cooldown (evita spam)
+    from django.utils import timezone
+    last = (EmailVerification.objects
+            .filter(email=email)
+            .order_by('-sent_at')
+            .first())
+
+    if last and (timezone.now() - last.sent_at).total_seconds() < RESEND_COOLDOWN:
+        wait = int(RESEND_COOLDOWN - (timezone.now() - last.sent_at).total_seconds())
+        messages.warning(request, f"Esperá {wait}s para volver a reenviar el código.")
+        return redirect('email_verification:verify')
+
+    # Generamos nuevo código
+    code = gen_code()
+    EmailVerification.objects.create(
+        email=email,
+        code_hash=hash_code(code, email),
+        attempts_left=MAX_ATTEMPTS,
+        sent_at=timezone.now(),
+        expires_at=now_plus_minutes(DEFAULT_TTL_MIN),
+        ip_address=_client_ip(request),
+    )
+
+    send_code_email(email, code)
+    messages.success(request, f"Se reenviaron las instrucciones a {email}. Revisá tu correo.")
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/verify-email/check/'))

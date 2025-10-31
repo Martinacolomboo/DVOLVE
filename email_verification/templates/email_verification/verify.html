@@ -1,33 +1,91 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ingresá el código</title>
-  <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;display:grid;place-items:center;min-height:100vh;background:#0f172a;color:#e2e8f0}
-    .card{width:min(92vw,440px);background:#0b1220;border:1px solid #172554;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:20px}
-    .input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #1e293b;background:#0b1220;color:#e2e8f0}
-    button{margin-top:10px;width:100%;padding:12px 14px;border-radius:10px;border:0;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
-    .row{display:grid;gap:10px}
-    .msg{margin-top:10px}.muted{color:#94a3b8;font-size:12px}
-  </style>
-</head>
-<body>
-  <div class="card">
-    {% if messages %}
-      <div class="msg">{% for m in messages %}<div>{{ m }}</div>{% endfor %}</div>
-    {% endif %}
-    <h1>Ingresá el código</h1>
-    <p class="muted">Enviamos el código a <b>{{ email }}</b>. Revisá Spam si no lo ves.</p>
+{% extends "email_verification/base.html" %}
+{% load static %}
 
-    <form method="post" class="row" novalidate>
-      {% csrf_token %}
-      <input type="hidden" name="email" value="{{ email }}">
-      {{ form.code.label_tag }}
-      {{ form.code }}
-      <button type="submit">Verificar</button>
-    </form>
-  </div>
-</body>
-</html>
+{% block verify_content %}
+<style>
+/* estilos locales que fuerzan visibilidad */
+.ev-card { max-width:560px; margin:6vh auto; padding:28px; background:#fffaf0; border-radius:12px; color:#5a4630; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+.ev-code { padding:12px 14px; border-radius:10px; border:1px solid #d1c4b2; min-width:160px; font-size:16px; display:inline-block !important; visibility:visible !important; opacity:1 !important; }
+.ev-submit { padding:10px 16px; border:none; border-radius:10px; background:linear-gradient(45deg,#c875ac,#7e2864); color:white; font-weight:700; cursor:pointer; }
+.ev-msg { color:#b53f3f; margin-bottom:12px; }
+.ev-resend {
+  display:inline-block;
+  margin-top:10px;
+  background:transparent;
+  border:2px solid #c875ac;
+  color:#7e2864;
+  font-weight:600;
+  padding:8px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  transition:all .2s ease;
+}
+.ev-resend:hover {
+  background:#c875ac;
+  color:white;
+  transform:translateY(-1px);
+  box-shadow:0 3px 8px rgba(0,0,0,0.2);
+}
+.ev-volver{
+  position:absolute;
+  top:20px;
+  left:20px;
+  background:transparent;
+  border:none;
+  color:#7e2864;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:underline;
+}
+@media (max-width:520px){ .ev-form { flex-direction:column } .ev-code{width:100%!important} .ev-submit{width:100%} }
+</style>
+
+<div class="ev-card">
+  {% if messages %}
+    <div class="ev-msg">{% for m in messages %}{{ m }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</div>
+  {% endif %}
+  
+  <h2 style="color:#7e2864">Ingresá el código</h2>
+  <p style="color:#a88a66">Enviamos el código a <strong>{{ email }}</strong>. Revisá Spam si no lo ves.</p>
+
+  <form method="post" class="ev-form" novalidate style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center;">
+    {% csrf_token %}
+    <input type="hidden" name="email" value="{{ email }}">
+
+    <div style="min-width:160px;">
+      {% if form.code.errors %}
+        <div class="ev-msg">{{ form.code.errors }}</div>
+      {% endif %}
+
+     {% if form.code %}
+        {{ form.code }}
+        <script>
+          // si el widget tiene clase genérica, lo actualizamos a ev-code en runtime
+          (function(){
+            try{
+              const el = document.querySelector('[name="code"]');
+              if(el) el.classList.add('ev-code');
+            }catch(e){}
+          })();
+        </script>
+      {% else %}
+        <input name="code" class="ev-code" placeholder="000000" inputmode="numeric" required
+               value="{{ form.code.value|default:'' }}">
+      {% endif %}
+    </div>
+
+    <button type="submit" class="ev-submit">Verificar</button>
+  </form>
+  <div style="display: flex; gap: 10px; margin-top: 16px;justify-content: center;">
+  <form method="post" action="{% url 'email_verification:request' %}">
+    {% csrf_token %}
+    <button type="submit" class="ev-resend">Cambiar el email</button>
+  </form>
+  <form method="post" action="{% url 'email_verification:resend' %}">
+    {% csrf_token %}
+    <button type="submit" class="ev-resend">Reenviar código</button>
+  </form>
+</div>
+
+</div>
+{% endblock %}

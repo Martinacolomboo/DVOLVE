@@ -10,3 +10,12 @@ class VerifyCodeForm(forms.Form):
                            widget=forms.TextInput(attrs={
                                'placeholder': '000000', 'inputmode': 'numeric', 'class': 'input'
                            }))
+class EmailRequestForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'ev-input',
+            'placeholder': 'tu@correo.com',
+            'required': True,
+            'autofocus': True,
+        })
+    )

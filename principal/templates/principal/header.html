@@ -1,0 +1,33 @@
+
+{% load static %}
+
+
+<header class="main-header">
+  <div class="menu-desplegable">
+    <button class="menu-btn" aria-label="Menú">
+      <i class="bi bi-list"></i>
+    </button>
+    <div class="menu-content">
+      <a href="{% url 'principal:segunda_pagina' %}">Inicio</a>
+      <a href="{% url 'principal:segunda_pagina' %}#sobre Dvolve">Sobre DVOLVE</a>
+      <a href="{% url 'principal:segunda_pagina' %}#cardsCarousel">Servicios</a>
+      <a href="{% url 'principal:segunda_pagina' %}#certificacion">Certificación</a>
+    </div>
+  </div>
+
+  <div class="logo2">
+    <a href="{% url 'principal:home' %}">
+      <img src="{% static 'principal/img/logo-sin.png' %}" alt="Logo de DVOLVE" >
+    </a>
+  </div>
+
+  <div class="social-media">
+    <a href="https://www.instagram.com/dvolve.ar/" target="_blank" class="social-icon instagram">
+      <i class="bi bi-instagram"></i>
+    </a>
+    <a href="https://www.tiktok.com/@lula_dvfit" target="_blank" class="social-icon tiktok">
+      <i class="bi bi-tiktok"></i>
+    </a>
+  </div>
+</header>
+

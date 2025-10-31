@@ -1,0 +1,71 @@
+{% load static %}
+
+<div id="cardsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+  <div class="carousel-inner">
+
+    <!-- Grupo 1 -->
+    <div class="carousel-item active">
+      <div class="d-flex justify-content-center flex-wrap">
+
+        <div class="card text-white mx-2" 
+             style="background-image: url('{% static "principal/img/cartas/fotoLula_entrenando.jpg" %}'); background-size: cover; background-position: center;">
+          <div class="card-overlay d-flex justify-content-center align-items-center">
+            <h5 class="card-title">NUESTROS SERVICIOS</h5>
+          </div>
+        </div>
+
+        <div class="card text-white mx-2" 
+             style="background-image: url('{% static "principal/img/cartas/fotoLula_calendario.jpg" %}'); background-size: cover; background-position: center;">
+          <div class="card-overlay d-flex justify-content-center align-items-center">
+            <h5 class="card-title">ENCUENTROS VIRTUALES</h5>
+          </div>
+        </div>
+
+        <div class="card text-white mx-2" 
+             style="background-image: url('{% static "principal/img/LulafotoPrincipal.jpg" %}'); background-size: cover; background-position: center;">
+          <div class="card-overlay d-flex justify-content-center align-items-center">
+            <h5 class="card-title">COACHING</h5>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Grupo 2 -->
+    <div class="carousel-item">
+      <div class="d-flex justify-content-center flex-wrap">
+
+        <div class="card text-white mx-2" 
+             style="background-image: url('{% static "principal/img/cartas/fotoLula_comida.jpg" %}'); background-size: cover; background-position: center;">
+          <div class="card-overlay d-flex justify-content-center align-items-center">
+            <h5 class="card-title">ALIMENTACION</h5>
+          </div>
+        </div>
+
+        <div class="card text-white mx-2" 
+             style="background-image: url('{% static "principal/img/cartas/fotoLula_sentadillas.jpg" %}'); background-size: cover; background-position: center;">
+          <div class="card-overlay d-flex justify-content-center align-items-center">
+            <h5 class="card-title">COMUNIDAD</h5>
+          </div>
+        </div>
+
+        <div class="card text-white mx-2" 
+             style="background-image: url('{% static "principal/img/cartas/fotoLula_pesas.jpg" %}'); background-size: cover; background-position: center;">
+          <div class="card-overlay d-flex justify-content-center align-items-center">
+            <h5 class="card-title">SALUD</h5>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#cardsCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+
+  <button class="carousel-control-next" type="button" data-bs-target="#cardsCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>

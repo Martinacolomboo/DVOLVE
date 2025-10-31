@@ -1,0 +1,261 @@
+{% extends "frontend/pagina_principal.html" %}
+
+{% load static %}
+{% block content %}
+
+<section class="gestion-section py-5">
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold"><i class="bi bi-book-fill text-success"></i> Gestión de Recetas</h2>
+            <a href="{% url 'frontend:panel_admin' %}" class="btn btn-outline-secondary rounded-pill px-3">← Volver al Panel</a>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger text-center">{{ error }}</div>
+        {% endif %}
+        {% if messages %}
+            <div class="mb-3">
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} text-center">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card shadow-sm border-0 rounded-4 p-4 mb-5">
+            <h5 class="fw-bold mb-4 text-muted">
+                {% if receta_edit %}Editar receta (ID: {{ receta_edit.id }}){% else %}Agregar nueva receta{% endif %}
+            </h5>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Título *</label>
+                    <input type="text" name="titulo" class="form-control" value="{{ receta_edit.titulo|default:'' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Descripción (opcional)</label>
+                    <textarea name="descripcion" class="form-control" rows="3">{{ receta_edit.descripcion|default:'' }}</textarea>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Objetivo *</label>
+                        <select name="objetivo" class="form-select" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="resistencia" {% if receta_edit and receta_edit.objetivo == "resistencia" %}selected{% endif %}>Resistencia</option>
+                            <option value="fuerza" {% if receta_edit and receta_edit.objetivo == "fuerza" %}selected{% endif %}>Fuerza</option>
+                            <option value="adiposidad" {% if receta_edit and receta_edit.objetivo == "adiposidad" %}selected{% endif %}>Bajar adiposidad</option>
+                            <option value="bienestar" {% if receta_edit and receta_edit.objetivo == "bienestar" %}selected{% endif %}>Bienestar general</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tipo de Comida *</label>
+                        <select name="categoria_comida" class="form-select" required>
+                            <option value="desayuno" {% if receta_edit and receta_edit.categoria_comida == "desayuno" %}selected{% endif %}>Desayuno</option>
+                            <option value="almuerzo" {% if receta_edit and receta_edit.categoria_comida == "almuerzo" %}selected{% endif %}>Almuerzo</option>
+                            <option value="cena" {% if receta_edit and receta_edit.categoria_comida == "cena" %}selected{% endif %}>Cena</option>
+                            <option value="snack" {% if receta_edit and receta_edit.categoria_comida == "snack" %}selected{% endif %}>Snack</option>
+                            <option value="post-entreno" {% if receta_edit and receta_edit.categoria_comida == "post-entreno" %}selected{% endif %}>Post-entreno</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Apto para Restricción Alimentaria *</label>
+                        <select name="diet_restrictions" class="form-select" required>
+                            <option value="ninguna" {% if receta_edit and receta_edit.diet_restrictions == "ninguna" %}selected{% endif %}>Ninguna</option>
+                            <option value="diabetes" {% if receta_edit and receta_edit.diet_restrictions == "diabetes" %}selected{% endif %}>Diabetes</option>
+                            <option value="celiaquia" {% if receta_edit and receta_edit.diet_restrictions == "celiaquia" %}selected{% endif %}>Celiaquía</option>
+                            <option value="veganismo" {% if receta_edit and receta_edit.diet_restrictions == "veganismo" %}selected{% endif %}>Veganismo</option>
+                            <option value="vegetarianismo" {% if receta_edit and receta_edit.diet_restrictions == "vegetarianismo" %}selected{% endif %}>Vegetarianismo</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Apto para Patología de Tiroides *</label>
+                        <select name="thyroid" class="form-select" required>
+                            <option value="ninguna" {% if receta_edit and receta_edit.thyroid == "ninguna" %}selected{% endif %}>Ninguna</option>
+                            <option value="hiper" {% if receta_edit and receta_edit.thyroid == "hiper" %}selected{% endif %}>Hipertiroidismo</option>
+                            <option value="hipo" {% if receta_edit and receta_edit.thyroid == "hipo" %}selected{% endif %}>Hipotiroidismo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-4 border-top pt-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Imagen de Portada (Opcional)</label>
+                        
+                        {% if receta_edit and receta_edit.imagen_portada %}
+                            <div class="mb-2">
+                                <p class="small text-muted mb-1">Portada Actual:</p>
+                                <img src="{{ receta_edit.imagen_portada.url }}" alt="Portada de {{ receta_edit.titulo }}" 
+                                     style="max-height: 120px; width: auto; border-radius: 8px; object-fit: cover; display: block;">
+                            </div>
+                            <input type="file" name="imagen_portada" class="form-control" accept="image/*">
+                            <small class="text-info">Subir un archivo para reemplazar la portada.</small>
+                        {% else %}
+                            <input type="file" name="imagen_portada" class="form-control" accept="image/*">
+                            <small class="text-muted">No se ha subido ninguna portada.</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 d-flex align-items-center pt-md-4 pt-2">
+                        <div class="form-check">
+                            <input type="checkbox" name="destacado" class="form-check-input" id="destacado" {% if receta_edit and receta_edit.destacado %}checked{% endif %}>
+                            <label for="destacado" class="form-check-label fw-semibold">Destacar Receta (Dashboard)</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 border-top pt-3">
+                    <label class="form-label fw-semibold">Archivo de Receta (PDF/Imagen) *</label>
+                    
+                    {% if not receta_edit %}
+                        <input type="file" name="archivo" class="form-control" accept=".pdf,image/*" required>
+                    {% else %}
+                        <p class="form-control-static border p-2 rounded bg-light">
+                            Archivo actual: 
+                            {% if receta_edit.archivo %}
+                                <a href="{{ receta_edit.archivo.url }}" target="_blank" class="fw-semibold text-success">
+                                    <i class="bi bi-file-earmark-text"></i> Ver archivo ({{ receta_edit.archivo.name|default:"N/A"|slice:":30" }}...)
+                                </a>
+                                <small class="text-muted ms-3">| Para cambiar, debes eliminar y crear de nuevo.</small>
+                            {% else %}
+                                <span class="text-danger">Archivo no encontrado.</span>
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <h6 class="fw-bold mt-4 mb-3 text-muted border-top pt-3">Valores Nutricionales y Tiempos</h6>
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Tiempo Prep. (min)</label>
+                        <input type="number" name="tiempo_prep" class="form-control" value="{{ receta_edit.tiempo_prep|default:'' }}" min="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Porciones</label>
+                        <input type="number" name="porciones" class="form-control" value="{{ receta_edit.porciones|default:'' }}" min="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Calorías (kcal)</label>
+                        <input type="number" name="calorias" class="form-control" value="{{ receta_edit.calorias|default:'' }}" min="0">
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Proteínas (g)</label>
+                        <input type="number" name="proteinas" class="form-control" value="{{ receta_edit.proteinas|default:'' }}" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Carbohidratos (g)</label>
+                        <input type="number" name="carbohidratos" class="form-control" value="{{ receta_edit.carbohidratos|default:'' }}" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Grasas (g)</label>
+                        <input type="number" name="grasas" class="form-control" value="{{ receta_edit.grasas|default:'' }}" min="0">
+                    </div>
+                </div>
+                
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success rounded-pill px-4 mt-2">
+                        {% if receta_edit %}Guardar cambios{% else %}Subir Receta{% endif %}
+                    </button>
+                </div>
+            </form>
+            
+            {% if receta_edit %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'frontend:gestion_recetas' %}" class="btn btn-sm btn-outline-secondary">← Cancelar Edición y volver a la lista</a>
+                </div>
+            {% endif %}
+        </div>
+
+
+        <div>
+            <h5 class="fw-bold text-muted mb-3">Recetas existentes</h5>
+            {% if recetas %}
+                <div class="row">
+                {% for receta in recetas %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            
+                            {% if receta.imagen_portada %}
+                                <img src="{{ receta.imagen_portada.url }}" class="card-img-top rounded-top" alt="{{ receta.titulo }}" 
+                                    style="height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="p-4 text-center text-muted" style="background-color: #f0f8f0;">
+                                    <i class="bi bi-image" style="font-size: 1.5rem;"></i> Sin Portada
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body">
+                                <h6 class="fw-bold text-success"><i class="bi bi-card-text"></i> {{ receta.titulo }}</h6>
+                                
+                                <p class="small text-muted mb-2">
+                                    Objetivo: 
+                                    <span class="badge bg-light text-dark">{{ receta.get_objetivo_display|default:"No definido" }}</span>
+                                    <br>
+                                    Restricción: 
+                                    <span class="badge bg-info text-dark">{{ receta.get_diet_restrictions_display }}</span>
+                                    <br>
+                                    Tiroides: 
+                                    <span class="badge bg-info text-dark">{{ receta.get_thyroid_display }}</span>
+                                </p>
+                                
+                                <p class="small text-muted">{{ receta.descripcion|default:"Sin descripción."|truncatewords:10 }}</p>
+
+                                <div class="d-flex justify-content-between mt-3">
+                                    <a href="{% url 'frontend:editar_receta' receta_id=receta.id %}" class="btn btn-sm btn-outline-primary px-3">Editar</a>
+                                    <form method="post" action="{% url 'frontend:eliminar_receta' receta_id=receta.id %}" onsubmit="return confirm('¿Seguro que querés eliminar esta receta?');" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger px-3">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                            </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted fst-italic">No hay recetas cargadas aún.</p>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+<style>
+/* Estilos adicionales/modificados para recetas */
+.gestion-section { background-color: #f8fff6; min-height: 100vh; }
+.btn-success { background-color: #5cb85c; border-color: #5cb85c; }
+.btn-success:hover { background-color: #4cae4c; }
+
+.btn-outline-primary { color: #8d63d1; border-color: #8d63d1; }
+.btn-outline-primary:hover { background-color: #8d63d1; color: white; }
+.btn-outline-danger:hover { background-color: #e35d6a; color: white; }
+</style>
+
+<script>
+// Validación simple para campos obligatorios del formulario
+document.querySelector("form").addEventListener("submit", function(e) {
+    let campos = this.querySelectorAll("input[required], select[required]");
+    let incompletos = Array.from(campos).filter(c => !c.value.trim());
+
+    if (incompletos.length > 0) {
+        e.preventDefault();
+        alert("Por favor, completá todos los campos obligatorios antes de guardar.");
+        incompletos[0].focus();
+    }
+});
+</script>
+
+{% endblock %}

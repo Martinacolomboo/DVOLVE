@@ -1,16 +1,21 @@
 {% extends "principal/base.html" %}
-
+{% load static %}
 {% block title %}Home - DVOLVE{% endblock %}
 
-{% block mensaje %}
+{% block header %}
+
+{% endblock %}
+{% block content %}
 <div class="mensaje">
+    <img src="{% static 'principal/img/logo.png' %}" alt="DVOLVE Logo" class="logo">
     <h1>Bienvenida a DVOLVE</h1>
     <p>Entrená. Evolucioná. Conectá.</p>
     <a href="{% url 'principal:segunda_pagina' %}" class="btn-empezar">Empezar</a>
 </div>
 
 {% endblock %}
-
-{% block content %}
+{% block footer %}
 
 {% endblock %}
+
+

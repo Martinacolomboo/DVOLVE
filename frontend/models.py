@@ -64,14 +64,11 @@ class Questionario(models.Model):
     ], blank=True, null=True)
 
     # ================== ALIMENTACIÓN ==================
-    current_diet = models.CharField(max_length=50, choices=[
-        ("equilibrada", "Ordenada y equilibrada"),
-        ("desordenada", "Desordenada"),
-        ("procesados", "Muchos ultraprocesados"),
-        ("casera", "Comida casera"),
-        ("nose", "No sé qué comer"),
-    ], blank=True, null=True)
-
+    current_diet = models.TextField(
+        blank=True,  # permite que quede vacío
+        null=True,   # permite que sea nulo en la base de datos
+        help_text="Describe tu dieta actual"
+    )
     diet_restrictions = models.CharField(max_length=50, choices=[
         ("ninguna", "Ninguna"),
         ("diabetes", "Diabetes"),
@@ -79,7 +76,7 @@ class Questionario(models.Model):
         ("veganismo", "Veganismo"),
         ("vegetarianismo", "Vegetarianismo"),
     ], default="ninguna")
-
+    diet_goal = models.CharField(max_length=255,blank=True,null=True     ) 
     thyroid = models.CharField(max_length=50, choices=[
         ("ninguna", "Ninguna"),
         ("hiper", "Hipertiroidismo"),
@@ -159,12 +156,59 @@ class Receta(models.Model):
         ("adiposidad", "Bajar adiposidad"),
         ("bienestar", "Bienestar general"),
     ]
+
+    RESTRICCIONES = [
+        ("ninguna", "Ninguna"),
+        ("diabetes", "Diabetes"),
+        ("celiaquia", "Celiaquía"),
+        ("veganismo", "Veganismo"),
+        ("vegetarianismo", "Vegetarianismo"),
+    ]
+
+    TIROIDES = [
+        ("ninguna", "Ninguna"),
+        ("hiper", "Hipertiroidismo"),
+        ("hipo", "Hipotiroidismo"),
+    ]
+
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    archivo = models.FileField(upload_to="recetas/")  # 👈 guarda PDFs en /media/recetas/
+    archivo = models.FileField(upload_to="recetas/")
     creado_en = models.DateTimeField(auto_now_add=True)
-    objetivo = models.CharField(max_length=50, choices=OBJETIVOS, blank=True, null=True)  # 👈 relacion con cuestionario
+
+    objetivo = models.CharField(max_length=50, choices=OBJETIVOS, blank=True, null=True)
+    categoria_comida = models.CharField(
+        max_length=20,
+        choices=[
+            ("desayuno", "Desayuno"),
+            ("almuerzo", "Almuerzo"),
+            ("cena", "Cena"),
+            ("snack", "Snack"),
+            ("post-entreno", "Post-entreno"),
+        ],
+        default="almuerzo",
+        verbose_name="Tipo de Comida"
+    )
+
+    # 👇 NUEVOS CAMPOS
+    diet_restrictions = models.CharField(
+        max_length=50, choices=RESTRICCIONES, default="ninguna", verbose_name="Restricción Alimentaria"
+    )
+    thyroid = models.CharField(
+        max_length=50, choices=TIROIDES, default="ninguna", verbose_name="Patología de Tiroides"
+    )
+
     destacado = models.BooleanField(default=False)
+    imagen_portada = models.ImageField(upload_to="recetas/portadas/", blank=True, null=True)
+
+    # Valores nutricionales
+    tiempo_prep = models.IntegerField(blank=True, null=True)
+    porciones = models.IntegerField(blank=True, null=True)
+    calorias = models.IntegerField(blank=True, null=True)
+    proteinas = models.IntegerField(blank=True, null=True)
+    carbohidratos = models.IntegerField(blank=True, null=True)
+    grasas = models.IntegerField(blank=True, null=True)
+
     def __str__(self):
         return self.titulo
 

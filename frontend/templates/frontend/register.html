@@ -1,35 +1,46 @@
 {% extends "frontend/base.html" %}
 {% load static %}
-
-{% block title %}Registrarse{% endblock %}
+{% block title %}Registro{% endblock %}
 {% block content %}
 
 <section class="register-section">
-  <div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="register-box">
-      <!-- Logo + Nombre -->
-      <div class="text-center mb-4">
-        <img src="{% static 'img/logo-sin.png' %}" alt="DVOLVE Logo" class="logo-small mb-2">
-        <h2 class="fw-bold">Nueva Cuenta</h2>
-        <p class="text-muted">Crea tu cuenta para comenzar tu evolución</p>
+  <div class="container-fluid vh-100 d-flex align-items-center">
+    <div class="row w-100">
+      
+      <!-- Columna izquierda -->
+      <div class="col-md-6 d-flex justify-content-center align-items-center">
+        <img src="{% static 'principal/img/logo-sin.png' %}" alt="DVOLVE Logo" class="logo-login">
       </div>
 
-      <!-- Formulario -->
-      <form method="post">
-        {% csrf_token %}
-        <input type="email" class="form-control mb-3" placeholder="Correo electrónico" name="email" required>
-        <input type="text" class="form-control mb-3" placeholder="Nombre de usuario" name="username" required>
-        <input type="password" class="form-control mb-3" placeholder="Contraseña" name="password" required>
-        <button type="submit" class="btn btn-register w-100">Crear</button>
-      </form>
+      <!-- Columna derecha -->
+      <div class="col-md-6 d-flex justify-content-center align-items-center">
+        <div class="register-box">
+          <h2>Creá tu cuenta</h2>
 
-      <!-- Link login -->
-      <div class="text-center mt-3">
-        <small>¿Ya tenés cuenta? <a href="{% url 'frontend:login' %}">Iniciá sesión</a></small>
+          {% if error %}
+            <div class="alert alert-danger text-center">{{ error }}</div>
+          {% endif %}
+
+          <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <label class="form-label">Correo verificado</label>
+              <input type="email" class="form-control" value="{{ verified_email }}" readonly>
+            </div>
+
+            <input type="text" class="form-control mb-3" placeholder="nombre de usuario" name="username" required>
+            <input type="password" class="form-control mb-3" placeholder="contraseña" name="password" required>
+
+            <button type="submit" class="btn btn-login w-100">Registrarme</button>
+          </form>
+
+          <small>¿Ya tenés cuenta? <a href="{% url 'frontend:login' %}">Iniciá sesión</a></small>
+        </div>
       </div>
+
     </div>
   </div>
 </section>
-
 
 {% endblock %}

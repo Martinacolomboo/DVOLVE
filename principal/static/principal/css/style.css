@@ -24,16 +24,26 @@ body {
 }
 
 /* ======= LOGO INDEX ======= */
-.logo {
-    width: 100%;
-    margin-bottom: 30px;
+.mensaje {
+    margin-top: 150px; /* ajusta según necesites */
     text-align: center;
 }
-.logo img {
-    display: block;
-    width: 400px;
-    height: auto;
-    margin: 0 auto;
+
+.mensaje .logo {
+    width: 50%; /* tamaño del logo */
+    margin-bottom: 20px;
+}
+
+.btn-empezar {
+    padding: 10px 25px;
+    border-radius: 25px;
+    background: #a0469b;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.main-container {
+    padding-top: 100px; /* empuja todo hacia abajo */
 }
 
 /* ======= TITULOS Y PARRAFOS ======= */
@@ -83,7 +93,79 @@ p {
     background: transparent;
 }
 .logo2 { justify-self: center; }
-.logo2 img { width: 180px; height: auto; }
+.logo2 img { width: 200px;  height: auto; /* altura máxima */}
+.imagen-portada {
+  position: relative;
+  height: auto;
+  top: 0;
+  margin-top: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+
+/* Fondo borroso */
+.imagen-portada-fondo {
+  background-image: url('../img/cartas/fotoLula_footer.jpg');
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  background-position: center;
+  filter: blur(6px) brightness(0.8);
+  position: absolute; 
+  top: 0;
+  left: 0;
+  background-size: cover; 
+  background-repeat: no-repeat;
+   
+  right: -10px;
+  bottom: -10px;
+  z-index: 1;
+  margin: 0;
+  
+}
+
+/* Foto nítida en frente */
+.imagen-portada-frente {
+  position: relative;
+  z-index: 2;
+  width: 50%; 
+  height: auto;
+  max-width: 1100px;
+  max-height: 70vh;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  display: block;
+  margin:40px auto;
+  object-fit: cover;
+}
+
+/* Botón flotante */
+.plan-btn {
+  position: fixed;
+  top: 140px;
+  right: 2%;
+  z-index: 900;
+  font-family: Arial, sans-serif;
+}
+
+.btn-plan {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 50px;
+  background: linear-gradient(45deg, #c875ac, #7e2864);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-plan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
 
 /* ======= REDES ======= */
 .social-media {
@@ -177,26 +259,14 @@ p {
 
 /* ======= CERTIFICACION ======= */
 .certification-section {
-    width: 100%;
+    width: 100vw;
     text-align: center;
     padding: 30px;
     margin-top: auto;
 }
 
 
-/* ======= RESPONSIVE ======= */
-@media (max-width: 768px) {
-    .logo2 img { width: 100px; }
-    .plan-btn {
-        top: 120px;
-        right: 50%;
-        transform: translateX(50%);
-    }
-    .btn-plan {
-        padding: 10px 18px;
-        font-size: 14px;
-    }
-}
+
 /* Colores oficiales */
 .social-icon.instagram i {
   color: #E4405F;   /* Instagram */
@@ -282,8 +352,8 @@ p {
   overflow: hidden;
   position: relative;
   flex: 1 1 300px;     /* se adapta pero mantiene ancho mínimo */
-  height: 40vh;       /* un poco más alto */
-  max-width: 300px;   /* límite en ancho */
+  height: 50vh;       /* un poco más alto */
+  max-width: 350px;   /* límite en ancho */
   aspect-ratio: 4 / 3;     /* mantiene proporción */
   background-size: cover;       /* en desktop rellena */
   background-position: center;
@@ -309,56 +379,14 @@ p {
   color: white;
 }
 
-/* Responsive */
-@media (max-width: 992px) {   /* tablets */
-  .d-flex.justify-content-center {
-    flex-wrap: wrap;         /* que bajen a varias filas */
-    gap: 20px;
-  }
-  .card {
-    flex: 1 1 45%;          /* dos por fila */
-    max-width: 45%;
-    height: 250px;
-  }
-}
 
-@media (max-width: 576px) {   /* celulares */
-  .d-flex.justify-content-center {
-    flex-direction: column;
-    align-items: center;
-  }
-  .card {
-    flex: 1 1 100%;         /* una por fila */
-    max-width: 90%;
-    height: auto;             /* altura automática */
-    aspect-ratio: 4 / 3;      /* mantiene proporción */
-    background-size: cover;   /* rellena bien */
-    margin-bottom: 20px;
-  }
-}
-/* Responsive: en pantallas chicas que no se corten */
-@media (max-width: 768px) {
-  .card {
-    width: 90%;                 /* ocupa casi todo el ancho */
-    height: auto;               /* se ajusta en alto */
-    aspect-ratio: 4 / 3;        /* mantiene proporción */
-    background-size: contain;   /* muestra la foto completa */
-    background-color: #fcf4ea;  /* fondo beige si sobra espacio */
-    margin: 0 auto 20px;        /* centrado con espacio abajo */
-  }
 
-  /* El carrusel en mobile que muestre una sola carta por fila */
-  .carousel-item .d-flex {
-    flex-direction: column;
-    align-items: center;
-  }
-}
 /*certificación*/
 .certificacion-split {
   display: flex;
   font-family: Arial, sans-serif;
   flex-wrap: wrap;
-  width: 100%;
+  width: 100vw;
   margin: 50px 0;
   border-radius: 10px;
   overflow: hidden;
@@ -371,6 +399,9 @@ p {
   background-color: #caaa73d0; /* fondo oscuro */
   color: #f5f5f5;
   padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  
 }
 
 .certificacion-split .texto h3 {
@@ -404,6 +435,7 @@ p {
 
 .certificacion-split .imagen {
   flex: 1;
+  height: 100%;
 }
 
 .certificacion-split .imagen img {
@@ -412,15 +444,8 @@ p {
   object-fit: cover;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .certificacion-split {
-    flex-direction: column;
-  }
-  .certificacion-split .imagen {
-    height: 300px;
-  }
-}
+
+
 .footer {
   background-color: #f5ebdf;
   color: #7e2864;
@@ -457,4 +482,235 @@ p {
   color: #9a987b;
   margin-top: 8px;
 }
+/* ====== PAGOS HEADER ====== */
+.pagos-header {  
+  color: #b67d54; 
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+}
 
+.pagos-header .flecha {
+  position: absolute;
+  left: 1rem;
+  top: 1.2rem;
+}
+
+.pagos-header a svg {
+  color: #fff;
+  transition: transform 0.2s;
+}
+
+.pagos-header a svg:hover {
+  transform: translateX(-3px);
+}
+
+/* ====== PROMO ====== */
+.promo-banner {
+  background-color: hsla(252, 94%, 65%, 0.668);
+  color: white;
+  border-radius: 10px;
+  padding: 1.2rem;
+  font-weight: 500;
+}
+
+.promo-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.promo-text {
+  font-size: 1rem;
+}
+
+/* ====== TARJETAS ====== */
+.pricing-card {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.pricing-card:hover {
+  transform: scale(1.02);
+}
+
+.price {
+  font-size: 2rem;
+  color: #ff007f;
+  margin: 1rem 0;
+}
+
+.btn-plan {
+  display: inline-block;
+  background-color: #ff007f;
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-plan:hover {
+  background-color: #e60073;
+}
+
+/* ====== DESTACADO ====== */
+.popular {
+  border: 2px solid #ff007f;
+  position: relative;
+}
+
+.badge-popular {
+  position: absolute;
+  top: -12px;
+  right: 15px;
+  background-color: #ff007f;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+/* Responsive */
+@media (max-width: 992px) {
+  .imagen-portada { min-height: 40vh; }
+  .imagen-portada-frente { width: 70%; max-width: 900px; border-radius: 16px; }
+  .pricing-card {
+    max-width: 90%;
+  }
+  .certificacion-split {
+    flex-direction: column;
+  }
+  .certificacion-split .imagen {
+    height: 300px;        /* altura proporcional en tablet */
+  }
+  .d-flex.justify-content-center {
+    flex-wrap: wrap;
+  }
+  .card {
+    flex: 1 1 45%;
+    max-width: 45%;
+    height: 250px;
+  }
+}
+
+/* Móviles medianos */
+@media (max-width: 768px) {
+  .certificacion-split .texto {
+    padding: 20px;        /* menos padding */
+  }
+  .imagen-portada { min-height: 35vh; }
+  .pagos-header h1 {
+    font-size: 3rem;
+  }
+
+  .promo-banner {
+    padding: 1rem;
+  }
+
+  .promo-title {
+    font-size: 1.2rem;
+  }
+
+  .promo-text {
+    font-size: 0.9rem;
+  }
+
+  .price {
+    font-size: 1.6rem;
+  }
+
+ 
+
+  .flecha {
+    top: 0.8rem;
+  }
+
+  .imagen-portada-frente {
+    width: 90%;
+    max-width: none;
+    border-radius: 12px;
+  }
+  .logo2 img {
+    width: 100px;         /* logo más pequeño */
+  }
+
+  .plan-btn {
+    top: 120px;
+    right: 50%;
+    transform: translateX(50%);
+  }
+  .usd {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin-left: 6px;
+  }
+
+  .btn-plan {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+  .card {
+    width: 90%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    background-size: contain;
+    background-color: #fcf4ea;
+    margin: 0 auto 20px;
+  }
+}
+
+/* Celulares pequeños */
+@media (max-width: 576px) {
+  .pricing-card {
+    padding: 1.5rem;
+  }
+
+  .price {
+    font-size: 1.4rem;
+  }
+
+  .pagos-header h1 {
+    font-size: 2rem;
+  }
+  .certificacion-split .texto h3 {
+    font-size: 22px;
+  }
+  .imagen-portada-frente {
+    width: 95%;
+    max-height: 40vh;
+    object-fit: cover;
+  }
+  .certificacion-split .texto {
+    padding: 20px;
+  }
+  .certificacion-split .texto p {
+    font-size: 16px;
+  }
+
+  .certificacion-split .btn-split {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .certificacion-split .imagen {
+    height: 250px;      /* altura más pequeña en móvil */
+  }
+  .d-flex.justify-content-center {
+    flex-direction: column;
+    align-items: center;
+  }
+  .card {
+    flex: 1 1 100%;
+    max-width: 90%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    background-size: cover;
+    margin-bottom: 20px;
+  }
+}

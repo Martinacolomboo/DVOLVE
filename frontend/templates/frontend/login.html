@@ -30,6 +30,15 @@
 
     </div>
   </div>
+  {% if messages %}
+    <div class="alert-messages mb-3">
+      {% for message in messages %}
+        <div class="alert alert-danger text-center" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 </section>
 
 

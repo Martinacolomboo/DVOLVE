@@ -1,0 +1,12 @@
+{% extends "principal/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'email_verification/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Este bloque se sobreescribe desde los templates de email_verification -->
+{% block email_content %}{% endblock %}
+{% block verify_content %}{% endblock %}
+{% endblock %}

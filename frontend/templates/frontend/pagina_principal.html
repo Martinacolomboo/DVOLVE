@@ -41,7 +41,7 @@
 </head>
 <body>
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
+  <nav class="navbar navbar-expand">
     <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'frontend:dashboard' %}">DVOLVE</a>
       <div class="collapse navbar-collapse justify-content-center">
@@ -58,7 +58,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link {% if request.resolver_match.url_name == 'recetas' %}active{% endif %}" href="{% url 'frontend:recetas' %}">
-              <i class="bi bi-book"></i> Recetas
+              <i class="fas fa-apple-alt"></i> Planes 
             </a>
           </li>
           <li class="nav-item">

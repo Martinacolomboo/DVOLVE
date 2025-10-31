@@ -1,46 +1,71 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Métodos de pago</title>
-  <style>
-    :root { font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif; }
-    body { min-height: 100vh; display: grid; place-items: center; background:#0f172a; color:#e2e8f0; }
-    .card { width:min(92vw,520px); background:#0b1220; border:1px solid #172554;
-            border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.35); padding:20px; }
-    h1 { margin:0 0 8px; font-size:22px; }
-    p { margin:0 0 16px; color:#94a3b8; }
-    .grid { display:grid; gap:10px; }
-    .btn { padding:12px 14px; border-radius:10px; border:1px solid #1e293b; background:#111827;
-           color:#e5e7eb; cursor:pointer; text-align:center; }
-    .btn:hover { background:#0b1220; }
-    .muted { font-size:12px; color:#94a3b8; margin-top:8px; }
-    .back { margin-top:12px; text-align:center; }
-    .link { color:#93c5fd; text-decoration:underline; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Seleccioná un método de pago</h1>
-   
+{% extends "principal/base.html" %}
+{% load static %}
 
-    <p>Vas a abonar <b>${{ monto }}</b>.Serás redirigido a la plataforma correspondiente para completar tu compra.</p>
-    <div class="grid">
-      <button class="btn" data-href="{% url 'principal:pagar_mercadopago' %}?monto={{ monto }}">Mercado Pago</button>
-      <button class="btn" data-href="{% url 'principal:pagar_paypal' %}?monto={{ monto }}">Paypal</button>
+{% block title %}Métodos de pago - DVOLVE{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* tus estilos previos, con pequeños ajustes para moneda */
+  .pm-wrapper { min-height: calc(100vh - 160px); display:flex; align-items:center; justify-content:center; padding:40px 0; }
+  .pm-card { width:100%; max-width:540px; background:#fff8f0; border:3px solid #c875ac; border-radius:12px; padding:22px; color:#5a4630; box-shadow:0 12px 30px rgba(2,6,23,0.06); }
+  .pm-card h1 { font-size:1.4rem; margin-bottom:8px; }
+  .pm-card p { color:#5a4630; margin-bottom:12px; }
+  .monto-ars { font-weight:700; color:#7e2864; }
+  .monto-usd { color:#6c6c6c; font-size:0.95rem; margin-left:8px; }
+  .pm-btn { width:100%; display:block; padding:12px 14px; border-radius:10px; background:linear-gradient(45deg,#c875ac,#7e2864); color:#fff; text-decoration:none; text-align:center; margin-bottom:10px; }
+  .pm-note { font-size:.9rem; color:#94a3b8; margin-top:8px; }
+  .pm-back { margin-top:14px; text-align:center; }
+  @media (max-width:576px){ .pm-card{ padding:18px;} }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="pm-wrapper">
+  <div class="pm-card">
+    <h1>Seleccioná un método de pago</h1>
+
+    <p>
+      Vas a abonar
+      <span class="monto-ars">${{ monto_ars|floatformat:0 }}</span>
+      <span class="monto-usd">(USD {{ monto_usd }})</span>.
+      Serás redirigido a la plataforma correspondiente para completar tu compra.
+    </p>
+
+    <div class="d-grid gap-2">
+      <a role="button" class="pm-btn" id="mp-btn"
+         data-href="{% url 'principal:pagar_mercadopago' %}?amount={{ monto_ars|urlencode }}&currency=ARS">
+        Mercado Pago — Pagar en ARS
+      </a>
+
+      <a role="button" class="pm-btn" id="pp-btn"
+         data-href="{% url 'principal:pagar_paypal' %}?amount={{ monto_usd|urlencode }}&currency=USD">
+        PayPal — Pagar en USD
+      </a>
     </div>
 
-   <div class="back"><a class="link" href="{% url 'principal:home' %}">← Volver al inicio</a></div>
+    <div class="pm-note">
+      Si necesitás otra forma de pago contactanos por <a href="mailto:contacto@dvolve.ar">contacto@dvolve.ar</a>.
+    </div>
   </div>
+</section>
+{% endblock %}
 
-  <script>
-    document.querySelectorAll('.btn[data-href]').forEach(b=>{
-      b.addEventListener('click', ()=>{
-        b.disabled = true; b.textContent = 'Redirigiendo…';
-        window.location.href = b.dataset.href;
+{% block extra_scripts %}
+<script>
+  (function(){
+    const buttons = document.querySelectorAll('.pm-btn[data-href]');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        if (btn.disabled) return;
+        btn.disabled = true;
+        const label = btn.textContent.trim();
+        btn.textContent = 'Redirigiendo…';
+        const href = btn.getAttribute('data-href') || btn.href;
+        if (!href) { btn.textContent = label; btn.disabled = false; return; }
+        window.location.href = href;
       });
     });
-  </script>
-</body>
-</html>
+  })();
+</script>
+{% endblock %}

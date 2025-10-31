@@ -1,48 +1,41 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Verificá tu email</title>
+{% extends "email_verification/base.html" %}
 
-  <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;display:grid;place-items:center;min-height:100vh;background:#0f172a;color:#e2e8f0}
-    .card{width:min(92vw,440px);background:#0b1220;border:1px solid #172554;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:20px}
-    .input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #1e293b;background:#0b1220;color:#e2e8f0}
-    button{margin-top:10px;width:100%;padding:12px 14px;border-radius:10px;border:0;background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
-    .msg{margin-top:10px}
-  /* ...tu CSS actual... */
-  .back { margin-bottom: 12px; }
-  .back-btn {
-    display: inline-block;
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid #172554;
-    color: #93c5fd;
-    text-decoration: none;
-  }
-  .back-btn:hover { background: #0b1220; }
-  </style>
+{% block email_content %}
+<style>
+  .ev-resend {
+  display:inline-block;
+  margin-top:10px;
+  background:transparent;
+  border:2px solid #c875ac;
+  color:#7e2864;
+  font-weight:500;
+  padding:8px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  transition:all .2s ease;
+}
+</style>
+<div class="ev-card">
+   <h2>Verificá tu email</h2>
+  <p class="muted">Ingresá tu correo para recibir el código de verificación</p>
 
-</head>
-<body>
-  <div class="card">
-    <div class="back">
-      <a href="{% url 'principal:pagos' %}" class="back-btn">&larr; Volver</a>
+  {% if messages %}
+    <div class="ev-msg">
+      {% for m in messages %}<div class="error">{{ m }}</div>{% endfor %}
     </div>
-    {% if messages %}
-      <div class="msg">{% for m in messages %}<div>{{ m }}</div>{% endfor %}</div>
-    {% endif %}
-    <h1>Verificá tu email</h1>
-    <p>Te enviaremos un código de 6 dígitos para confirmar tu correo.</p>
+  {% endif %}
 
-    <form method="post" novalidate>
-      {% csrf_token %}
-      {{ form.email.label_tag }}
-      {{ form.email }}
-      <button type="submit">Enviar código</button>
-    </form>
-  </div>
-  
-</body>
-</html>
+  <form method="post" action="" class="ev-form" novalidate>
+    {% csrf_token %}
+    {% if form %}
+      {{ form.email}}
+    {% else %}
+      <input name="email" type="email" class="ev-resend" placeholder="tu@mail.com" required>
+    {% endif %}
+    <button href="{% url 'email_verification:verify' %}" type="submit" class="ev-resend">Enviar código</button>
+  </form>  
+   <div class="ev-success" aria-hidden="true">
+      <small>Te enviaremos un código que vence en unos minutos.</small>
+    </div>
+</div>
+{% endblock %}

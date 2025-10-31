@@ -1,22 +1,173 @@
-{% extends "frontend/base.html" %}
-{% block title %}Todas las Recetas{% endblock %}
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
 {% block content %}
-<div class="container py-5">
-  <h2 class="mb-4">Todas las Recetas</h2>
-  <div class="recipes-grid">
-    {% for receta in recetas %}
-      <div class="card recipe-card">
-        <h4>{{ receta.titulo }}</h4>
-        {% if receta.descripcion %}
-          <p>{{ receta.descripcion }}</p>
-        {% endif %}
-        <a href="{{ receta.archivo.url }}" target="_blank" class="pill-button">
-          📄 Ver receta
-        </a>
-      </div>
-    {% empty %}
-      <p>No hay recetas cargadas todavía.</p>
-    {% endfor %}
-  </div>
+<div class="container py-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} text-center rounded-4 mb-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h3 class="fw-bold mb-4 text-dark"><i class="bi bi-book-fill text-success"></i> Recetas Saludables</h3>
+
+    <div class="card shadow-sm border-0 mb-4 p-3 rounded-4">
+        <h5 class="fw-semibold mb-3"><i class="bi bi-funnel"></i> Filtrar por Categoría</h5>
+        <div class="d-flex flex-wrap gap-2" id="categoria-filtros">
+            <button class="btn btn-outline-secondary border rounded-pill active" data-filter-cat="todos">Todos</button>
+            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="desayuno">Desayuno</button>
+            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="almuerzo">Almuerzo</option>
+            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="cena">Cena</button>
+            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="snack">Snack</button>
+            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="post-entreno">Post-entreno</button>
+        </div>
+    </div>
+    
+    {% if request.user.is_superuser %}
+        <div class="mb-4 text-end">
+            <a href="{% url 'frontend:gestion_recetas' %}" class="btn text-white rounded-pill px-4"
+            style="background-color: #5cb85c;">
+            <i class="bi bi-gear"></i> Administrar Recetas
+            </a>
+        </div>
+    {% endif %}
+
+    <h4 class="fw-semibold mb-3 text-dark"><i class="bi bi-grid-3x3-gap"></i> Recetas disponibles</h4>
+
+    <div class="row g-4" id="recetas-container">
+        {% for receta in recetas %}
+        <div class="col-md-6 receta-card" data-objetivo="{{ receta.objetivo }}" data-categoria="{{ receta.categoria_comida }}">
+            
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden h-100">
+                
+                {% if receta.destacado %}
+                    <span class="badge text-white px-3 py-2 position-absolute top-0 start-0 m-3 rounded-pill" style="background-color: #8d63d1;">
+                        <i class="bi bi-star-fill"></i> Recomendada
+                    </span>
+                {% endif %}
+
+                {% if receta.imagen_portada %}
+                    <img src="{{ receta.imagen_portada.url }}" class="card-img-top" alt="{{ receta.titulo }}" style="height: 250px; object-fit: cover;">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center bg-light" style="height: 250px; background-color: #f0f0f0;">
+                        <i class="bi bi-image" style="font-size: 3rem; color: #aaa;"></i>
+                    </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="fw-bold">{{ receta.titulo }}</h5>
+                    <p class="text-muted small mb-3">
+                        {{ receta.descripcion|default:"Plato completo para tu nutrición diaria."|truncatechars:100 }}
+                    </p>
+
+                    <div class="d-flex small text-muted mb-4 gap-4">
+                        {% if receta.tiempo_prep %}
+                            <span><i class="bi bi-clock"></i> {{ receta.tiempo_prep }} min</span>
+                        {% endif %}
+                        {% if receta.porciones %}
+                            <span><i class="bi bi-person"></i> {{ receta.porciones }} pers.</span>
+                        {% endif %}
+                        {% if receta.calorias %}
+                            <span><i class="bi bi-heart"></i> {{ receta.calorias }} cal</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-4">
+                            <div class="p-3 text-center rounded" style="background-color: #e3f2fd;">
+                                <span class="fw-bold d-block">{{ receta.proteinas|default:'0' }}g</span>
+                                <small class="text-muted">Proteína</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 text-center rounded" style="background-color: #e8f5e9;">
+                                <span class="fw-bold d-block">{{ receta.carboidratos|default:'0' }}g</span>
+                                <small class="text-muted">Carbos</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-3 text-center rounded" style="background-color: #fff3e0;">
+                                <span class="fw-bold d-block">{{ receta.grasas|default:'0' }}g</span>
+                                <small class="text-muted">Grasas</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+                        <a href="{{ receta.archivo.url }}" target="_blank" class="btn btn-sm text-white"
+                            style="background-color: #5cb85c;">
+                            <i class="bi bi-file-earmark-text"></i> Ver Receta
+                        </a>
+                        <span class="badge bg-secondary">{{ receta.get_categoria_comida_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-muted">No hay recetas disponibles aún.</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const objectiveButtons = document.querySelectorAll('[data-filter]');
+    const categoryButtons = document.querySelectorAll('[data-filter-cat]');
+    const recipeCards = document.querySelectorAll('.receta-card');
+
+    let currentObjective = 'todos';
+    let currentCategory = 'todos';
+
+    function updateFilters() {
+        recipeCards.forEach(card => {
+            const cardObjective = card.dataset.objetivo;
+            const cardCategory = card.dataset.categoria;
+
+            const matchesObjective = (currentObjective === 'todos' || currentObjective === cardObjective);
+            const matchesCategory = (currentCategory === 'todos' || currentCategory === cardCategory);
+
+            card.style.display = (matchesObjective && matchesCategory) ? '' : 'none';
+        });
+    }
+
+    objectiveButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Estilo para Objetivo
+            objectiveButtons.forEach(b => {
+                b.classList.remove('active', 'btn-success');
+                b.classList.add('btn-outline-success');
+            });
+            btn.classList.add('active', 'btn-success');
+            btn.classList.remove('btn-outline-success');
+            
+            currentObjective = btn.dataset.filter;
+            updateFilters();
+        });
+    });
+
+    categoryButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Estilo para Categoría
+            categoryButtons.forEach(b => {
+                b.classList.remove('active', 'btn-secondary');
+                b.classList.add('btn-outline-secondary');
+            });
+            btn.classList.add('active', 'btn-secondary');
+            btn.classList.remove('btn-outline-secondary');
+            
+            currentCategory = btn.dataset.filterCat;
+            updateFilters();
+        });
+    });
+
+    // Inicializar estilos
+    document.querySelector('[data-filter="todos"]').classList.add('active', 'btn-success');
+    document.querySelector('[data-filter="todos"]').classList.remove('btn-outline-success');
+
+    document.querySelector('[data-filter-cat="todos"]').classList.add('active', 'btn-secondary');
+    document.querySelector('[data-filter-cat="todos"]').classList.remove('btn-outline-secondary');
+});
+</script>
 {% endblock %}

@@ -21,26 +21,41 @@ def pagos(request):
 def privacidad(request):
     return render(request, "principal/privacidad.html")
 def metodos_pago(request):
+    # Si el flujo de checkout exige email verificado, lo chequeamos
     response = CheckoutService.chequear_email_verificado(request)
     if response is not None:
         return response
 
-    
-    # Si el email está verificado y hay que mostrar los métodos de pago:
-    monto = request.GET.get("monto") or request.session.get("monto")
-    print("🟩 (metodos_pago) monto en sesión:", monto)
-    if not monto:
-        monto = request.session.get("monto")
-        print("🟩 monto desde sesión:", monto)
-    else:
-        # Guardamos en sesión para los pasos siguientes
-        request.session["monto"] = monto
-        request.session.modified = True
-    if not monto:
+    # Obtener monto (viene por GET desde el paso anterior o desde sesión)
+    monto_raw = request.GET.get("monto") or request.session.get("monto_ars") or request.session.get("monto")
+    print("🟩 (metodos_pago) monto_raw recibido:", monto_raw)
+
+    if monto_raw is None:
         print("⚠️ No hay monto, redirigiendo a /pagos/")
         return redirect("principal:pagos")
 
-    return render(request, "principal/metodos_pago.html", {"monto": monto})
+    # Normalizamos y guardamos en sesión (monto_ars y monto_usd)
+    try:
+        monto_ars = float(monto_raw)
+    except (ValueError, TypeError):
+        # si no es parseable, redirigimos a pagar/seleccionar plan
+        print("⚠️ monto no numérico:", monto_raw)
+        return redirect("principal:pagos")
+
+    tasa = getattr(settings, "ARS_PER_USD", 1000.0)
+    monto_usd = round(monto_ars / tasa, 2)
+
+    # Guardar en sesión (para pasos siguientes)
+    request.session["monto_ars"] = monto_ars
+    request.session["monto_usd"] = monto_usd
+    request.session.modified = True
+    print("🟩 monto guardado en sesión:", monto_ars, "ARS ->", monto_usd, "USD")
+
+    # Renderizar template con ambos valores
+    return render(request, "principal/metodos_pago.html", {
+        "monto_ars": monto_ars,
+        "monto_usd": monto_usd,
+    })
 import requests
 def pagar_mercadopago(request):
     monto = request.GET.get("monto") or request.session.get("monto")
