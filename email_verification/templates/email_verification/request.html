@@ -2,40 +2,178 @@
 
 {% block email_content %}
 <style>
+  /* === ESTILOS UNIFICADOS === */
+  .pm-wrapper { 
+    min-height: calc(100vh - 160px); 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    padding:40px 0; 
+  }
+  .pm-card { 
+    width:100%; 
+    max-width:540px; 
+    background:#fff8f0; 
+    border:3px solid #c875ac; 
+    border-radius:12px; 
+    padding:22px; 
+    color:#5a4630; 
+    box-shadow:0 12px 30px rgba(2,6,23,0.06); 
+    text-align:center;
+  }
+  .pm-card h1 { font-size:1.4rem; margin-bottom:8px; color:#7e2864; }
+  .pm-card p { color:#5a4630; margin-bottom:12px; }
+  .monto-ars { font-weight:700; color:#7e2864; }
+  .monto-usd { color:#6c6c6c; font-size:0.95rem; margin-left:8px; }
+  .pm-btn { 
+    width:100%; 
+    display:block; 
+    padding:12px 14px; 
+    border-radius:10px; 
+    background:linear-gradient(45deg,#c875ac,#7e2864); 
+    color:#fff; 
+    text-decoration:none; 
+    text-align:center; 
+    margin-top:10px; 
+    font-weight:600;
+    border:none;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .pm-btn:hover { 
+    transform:translateY(-1px); 
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  }
+  .pm-note { font-size:.9rem; color:#94a3b8; margin-top:8px; }
+  .pm-back { margin-top:14px; text-align:center; }
+  @media (max-width:576px){ .pm-card{ padding:18px;} }
+  .ev-msg { color:#b53f3f; margin-bottom:10px; }
   .ev-resend {
   display:inline-block;
   margin-top:10px;
   background:transparent;
   border:2px solid #c875ac;
   color:#7e2864;
-  font-weight:500;
+  font-weight:600;
   padding:8px 14px;
   border-radius:10px;
   text-decoration:none;
   transition:all .2s ease;
 }
+.ev-resend:hover {
+  background:#c875ac;
+  color:white;
+  transform:translateY(-1px);
+  box-shadow:0 3px 8px rgba(0,0,0,0.2);
+}
 </style>
-<div class="ev-card">
-   <h2>Verificá tu email</h2>
-  <p class="muted">Ingresá tu correo para recibir el código de verificación</p>
 
-  {% if messages %}
-    <div class="ev-msg">
-      {% for m in messages %}<div class="error">{{ m }}</div>{% endfor %}
-    </div>
-  {% endif %}
+<div class="pm-wrapper">
+  <div class="pm-card">
 
-  <form method="post" action="" class="ev-form" novalidate>
-    {% csrf_token %}
-    {% if form %}
-      {{ form.email}}
+    {% if already_verified %}
+      <h1>Correo verificado</h1>
+      <p>El correo <strong>{{ form.cleaned_data.email|default:request.session.ev_email }}</strong> ya fue verificado.</p>
+      <a href="{{ verified_redirect }}" class="pm-btn">Ir a pagar</a>
+      <p class="pm-note">Si querés cambiar el plan, podés volver atrás.</p>
+      <div class="pm-back" style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
+       <a href="{% url 'principal:pagos' %}{% if request.session.monto %}?monto={{ request.session.monto|urlencode }}{% endif %}"
+          class="ev-resend">Volver a seleccionar plan</a>
+      </div>
+
     {% else %}
-      <input name="email" type="email" class="ev-resend" placeholder="tu@mail.com" required>
+      <h1>Verificá tu email</h1>
+      <p>Ingresá tu correo para recibir el código de verificación.</p>
+
+      {% if messages %}
+        <div class="ev-msg">
+          {% for m in messages %}
+            <div>{{ m }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post" action="" class="ev-form" novalidate>
+        {% csrf_token %}
+        {% if form %}
+          {{ form.email }}
+        {% else %}
+          <input name="email" type="email" class="pm-input" placeholder="tu@mail.com" required>
+        {% endif %}
+        <button type="submit" class="pm-btn" {% if already_verified %}disabled{% endif %}>Enviar código</button>
+      </form>
+
+      <p class="pm-note">Te enviaremos un código que vence en unos minutos.</p>
     {% endif %}
-    <button href="{% url 'email_verification:verify' %}" type="submit" class="ev-resend">Enviar código</button>
-  </form>  
-   <div class="ev-success" aria-hidden="true">
-      <small>Te enviaremos un código que vence en unos minutos.</small>
-    </div>
+  </div>
 </div>
+<script>
+(function(){
+  // elementos
+  const wrapper = document.getElementById('request-wrapper');
+  const infoEl = document.getElementById('request-info');
+  const secondsSpan = document.getElementById('request-seconds');
+  const btnSend = document.getElementById('btn-send');
+
+  // leer wait seguro desde data-attribute
+  let wait = 0;
+  if (wrapper) {
+    const raw = wrapper.getAttribute('data-wait');
+    wait = parseInt(raw === null ? '0' : raw, 10);
+    if (Number.isNaN(wait)) wait = 0;
+  }
+
+  function setDisabled(disabled) {
+    if (!btnSend) return;
+    if (disabled) {
+      btnSend.classList.add('disabled');
+      btnSend.disabled = true;
+    } else {
+      btnSend.classList.remove('disabled');
+      btnSend.disabled = false;
+    }
+  }
+
+  function updateInfo(seconds) {
+    if (!infoEl) return;
+    if (seconds > 0) {
+      if (secondsSpan) {
+        secondsSpan.textContent = seconds;
+      } else {
+        infoEl.innerHTML = 'Envío disponible en <span id="request-seconds">'+seconds+'</span>s';
+      }
+    } else {
+      infoEl.textContent = 'Podés enviar el código.';
+    }
+  }
+
+  // iniciar comportamiento automático
+  if (wait > 0) {
+    setDisabled(true);
+    updateInfo(wait);
+    const interval = setInterval(()=>{
+      wait -= 1;
+      if (wait < 0) wait = 0;
+      updateInfo(wait);
+      if (wait <= 0) {
+        clearInterval(interval);
+        setDisabled(false);
+      }
+    }, 1000);
+  } else {
+    setDisabled(false);
+    updateInfo(0);
+  }
+
+  // UX: evitar doble-submit
+  if (btnSend) {
+    btnSend.addEventListener('click', function(e){
+      if (btnSend.disabled) { e.preventDefault(); return; }
+      // feedback inmediato
+      btnSend.textContent = 'Enviando…';
+      // el envío continúa y la vista del servidor decidirá si reenvía o aplica cooldown.
+    });
+  }
+})();
+</script>
 {% endblock %}

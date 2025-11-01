@@ -54,15 +54,30 @@
 <script>
   (function(){
     const buttons = document.querySelectorAll('.pm-btn[data-href]');
-    buttons.forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
+    
+    function enableButtons() {
+      buttons.forEach(btn => {
+        btn.disabled = false;
+        if (btn.textContent.trim() === 'Redirigiendo…') {
+          // Restaurar texto original según el botón
+          if (btn.id === 'mp-btn') btn.textContent = 'Mercado Pago — Pagar en ARS';
+          if (btn.id === 'pp-btn') btn.textContent = 'PayPal — Pagar en USD';
+        }
+      });
+    }
+
+    // 🔁 Cada vez que la página se muestra (incluso al volver con el botón atrás)
+    window.addEventListener('pageshow', enableButtons);
+
+    // 🚀 Lógica de redirección
+    buttons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.preventDefault();
         if (btn.disabled) return;
         btn.disabled = true;
-        const label = btn.textContent.trim();
         btn.textContent = 'Redirigiendo…';
         const href = btn.getAttribute('data-href') || btn.href;
-        if (!href) { btn.textContent = label; btn.disabled = false; return; }
+        if (!href) { btn.disabled = false; enableButtons(); return; }
         window.location.href = href;
       });
     });

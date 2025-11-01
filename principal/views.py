@@ -12,6 +12,7 @@ from .helpers import CheckoutService
 import mercadopago
 from django.http import JsonResponse
 from django.http import HttpResponse
+from .models import Pago
 def home(request):
     return render(request, 'principal/home.html')
 def segunda_pagina(request):
@@ -177,7 +178,20 @@ from django.http import HttpResponse
 
 def pago_exito(request):
     monto = request.session.get("monto")
-    return render(request, "principal/pago_exito.html", {"monto": monto})
+    email = request.session.get("email_verified_address", "sin_email@ejemplo.com")
 
+    if monto:
+        Pago.objects.create(email=email, monto=monto, estado="exitoso")
+
+    return render(request, "principal/pago_exito.html", {"monto": monto})
 def pago_error(request):
+    # Limpiamos el monto de la sesión para que no se reintente el pago
+    if "monto" in request.session:
+        del request.session["monto"]
+        request.session.modified = True
+
+    # Guardamos también el intento cancelado
+    email = request.session.get("email_verified_address", "sin_email@ejemplo.com")
+    Pago.objects.create(email=email, monto=0, estado="cancelado")
+
     return render(request, "principal/pago_error.html")

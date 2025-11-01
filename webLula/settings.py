@@ -86,10 +86,15 @@ WSGI_APPLICATION = 'webLula.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'lula',          # nombre de tu base
+        'USER': 'postgres',      # usuario de PostgreSQL (por defecto)
+        'PASSWORD': 'hola',  # reemplazá por tu contraseña real
+        'HOST': 'localhost',     # o 127.0.0.1
+        'PORT': '5432',          # puerto por defecto de PostgreSQL
     }
 }
+
 
 
 # Password validation
