@@ -1,0 +1,77 @@
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="row align-items-center mb-5 g-5">
+    <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start z-1">
+        <h1 class="display-4 fw-bold mb-3" style="color: #212529;">
+            Biblioteca <span style="color: #7e2864;">Fitness</span>
+        </h1>
+        <p class="lead text-muted mb-4" style="line-height: 1.6;">
+            Tu colección de guías, ebooks y recursos descargables para aprender más.
+        </p>
+        {% if request.user.is_superuser %}
+            <a href="{% url 'frontend:gestion_biblioteca' %}" class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" style="background-color: #5cb85c; border: none;">
+                <i class="bi bi-gear-fill me-2"></i> Administrar Biblioteca
+            </a>
+        {% endif %}
+    </div>
+    
+  </div>
+
+  <hr class="my-5 opacity-25">
+
+  {% if libros %}
+    <div class="row g-4">
+        {% for item in libros %}
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-hover" 
+                     style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#biblioModal{{ item.id }}">
+                    
+                    <div class="position-relative bg-dark text-center">
+                        {% if item.imagen_portada %}
+                            <img src="{{ item.imagen_portada.url }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center" style="height: 250px; background-color: #f0e6ed;">
+                                <i class="bi bi-book text-muted fs-1"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body p-4 text-center">
+                        <h6 class="fw-bold mb-2 text-dark">{{ item.titulo }}</h6>
+                        <span class="badge bg-light text-secondary border">PDF</span>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="biblioModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 rounded-4 overflow-hidden">
+                            <div class="modal-header border-0 p-0 position-relative" style="height: 200px; background:#333;">
+                                {% if item.imagen_portada %}
+                                    <img src="{{ item.imagen_portada.url }}" class="w-100 h-100" style="object-fit: contain;">
+                                {% endif %}
+                                <button type="button" class="btn-close bg-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <h4 class="fw-bold mb-3">{{ item.titulo }}</h4>
+                                <p class="text-secondary">{{ item.descripcion|linebreaks }}</p>
+                                <a href="{{ item.archivo_pdf.url }}" target="_blank" class="btn btn-primary w-100 rounded-pill fw-bold mt-3" style="background:#7e2864; border:none;">
+                                    <i class="bi bi-download me-2"></i> Descargar PDF
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5 text-muted"><h4>No hay documentos cargados.</h4></div>
+  {% endif %}
+</div>
+<style>.transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }</style>
+{% endblock %}

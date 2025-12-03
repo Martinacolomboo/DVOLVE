@@ -1,0 +1,99 @@
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="row align-items-center mb-5 g-5">
+    
+    <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start z-1">
+        
+        <a href="https://open.spotify.com/" target="_blank" class="d-inline-flex align-items-center text-decoration-none mb-3">
+            <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: #1DB954; color: white; font-weight: 500; font-size: 0.9rem;">
+                <i class="bi bi-spotify me-2"></i> Escuchanos en Spotify
+            </span>
+        </a>
+
+        <h1 class="display-4 fw-bold mb-3" style="color: #212529;">
+            Tu Momento <span style="color: #7e2864;">Podcast</span>
+        </h1>
+        
+        <p class="lead text-muted mb-4" style="line-height: 1.6;">
+            Escuchá charlas inspiradoras, entrevistas y consejos mientras entrenás o descansás.
+        </p>
+        
+        {% if request.user.is_superuser %}
+            <a href="{% url 'frontend:gestion_podcasts' %}" class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" 
+               style="background-color: #5cb85c; border: none;">
+                <i class="bi bi-gear-fill me-2"></i> Administrar Podcasts
+            </a>
+        {% endif %}
+    </div>
+
+   
+    <div class="col-lg-6 order-1 order-lg-2 text-center position-relative">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:320px; height:320px; background-color:#7e2864; opacity:0.08; border-radius:50%; z-index:0;"></div>
+        
+       <img src="{% static 'img/portada_podcast.jpg' %}" 
+             alt="Planes DVOLVE" 
+             class="img-fluid position-relative z-1 shadow-lg"
+             style="object-fit: contain;  max-height: 400px">
+     </div>
+  </div>
+  <hr class="my-5 opacity-25">
+
+  {% if podcasts %}
+    <div class="row g-4">
+        {% for item in podcasts %}
+            <div class="col-12 col-md-6 col-lg-4">
+                
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-hover">
+                    
+                    <div class="position-relative bg-dark text-center">
+                        {% if item.imagen_portada %}
+                            <img src="{{ item.imagen_portada.url }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center" style="height: 250px; background-color: #f0e6ed;">
+                                <i class="bi bi-mic text-muted fs-1"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h5 class="fw-bold mb-2 text-dark">{{ item.titulo }}</h5>
+                        <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.5;">
+                            {{ item.descripcion|truncatechars:100 }}
+                        </p>
+                        
+                        <div class="mt-auto">
+                            {% if item.archivo_pdf %}
+                                <a href="{{ item.archivo_pdf.url }}" target="_blank" class="btn w-100 text-white" style="background-color: #7e2864;">
+                                    <i class="bi bi-play-circle"></i> Leer Episodio
+                                </a>  
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-mic-mute fs-1 d-block mb-3"></i>
+        <h4>No hay episodios subidos aún.</h4>
+    </div>
+  {% endif %}
+
+</div>
+
+<style>
+    .transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }
+    
+    @media (max-width: 991px) {
+        /* En celular achicamos un poco la foto principal */
+        .img-fluid { height: 300px !important; }
+    }
+</style>
+{% endblock %}

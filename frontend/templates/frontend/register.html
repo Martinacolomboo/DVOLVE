@@ -1,46 +1,53 @@
 {% extends "frontend/base.html" %}
 {% load static %}
-{% block title %}Registro{% endblock %}
+
 {% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 85vh; background-color: #fdfdfd;">
+  
+  <div class="p-4 p-md-5 shadow-sm" style="background: white; border-radius: 25px; width: 100%; max-width: 420px;">
 
-<section class="register-section">
-  <div class="container-fluid vh-100 d-flex align-items-center">
-    <div class="row w-100">
-      
-      <!-- Columna izquierda -->
-      <div class="col-md-6 d-flex justify-content-center align-items-center">
-        <img src="{% static 'principal/img/logo-sin.png' %}" alt="DVOLVE Logo" class="logo-login">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold" style="color: #7e2864;">Crear Cuenta</h2>
+      {% if not verified_email %}
+        <p class="text-muted">Comienza tu transformación hoy.</p>
+      {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} rounded-pill text-center mb-3">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if verified_email %}
+      <div class="alert alert-success rounded-3 text-center mb-4" style="background-color: #d4edda; color: #155724; border:none;">
+        <i class="bi bi-check-circle-fill me-2"></i>Email verificado:<br><strong>{{ verified_email }}</strong>
       </div>
-
-      <!-- Columna derecha -->
-      <div class="col-md-6 d-flex justify-content-center align-items-center">
-        <div class="register-box">
-          <h2>Creá tu cuenta</h2>
-
-          {% if error %}
-            <div class="alert alert-danger text-center">{{ error }}</div>
-          {% endif %}
-
-          <form method="post">
-            {% csrf_token %}
-            
-            <div class="mb-3">
-              <label class="form-label">Correo verificado</label>
-              <input type="email" class="form-control" value="{{ verified_email }}" readonly>
-            </div>
-
-            <input type="text" class="form-control mb-3" placeholder="nombre de usuario" name="username" required>
-            <input type="password" class="form-control mb-3" placeholder="contraseña" name="password" required>
-
-            <button type="submit" class="btn btn-login w-100">Registrarme</button>
-          </form>
-
-          <small>¿Ya tenés cuenta? <a href="{% url 'frontend:login' %}">Iniciá sesión</a></small>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="finish_registration" value="true">
+        <div class="mb-3">
+          <input type="text" name="username" class="form-control form-control-lg rounded-pill bg-light border-0 px-4" placeholder="Elegí tu Usuario" required autofocus style="height: 50px;">
         </div>
-      </div>
+        <div class="mb-4">
+          <input type="password" name="password" class="form-control form-control-lg rounded-pill bg-light border-0 px-4" placeholder="Elegí tu Contraseña" required style="height: 50px;">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow-sm" style="background-color: #c875ac; border: none;">Finalizar Registro</button>
+      </form>
+    {% else %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+          <input type="email" name="email" class="form-control form-control-lg rounded-pill bg-light border-0 px-4" placeholder="Tu correo electrónico" required style="height: 50px;">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3 fw-bold shadow-sm" style="background-color: #c875ac; border: none;">Continuar</button>
+      </form>
+    {% endif %}
 
+    <div class="text-center mt-5">
+      <p class="text-muted mb-0">¿Ya tenés una cuenta?</p>
+      <a href="{% url 'frontend:login' %}" class="fw-bold text-decoration-none" style="color: #7e2864;">Iniciar Sesión</a>
     </div>
   </div>
-</section>
-
+</div>
 {% endblock %}

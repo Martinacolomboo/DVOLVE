@@ -1,0 +1,87 @@
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
+{% block content %}
+<section class="py-5" style="background-color: #fffbfd; min-height: 100vh;">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold text-dark"><i class="bi bi-mic text-danger me-2"></i> Gestión de Podcasts</h2>
+      <a href="{% url 'frontend:panel_admin' %}" class="btn btn-outline-secondary rounded-pill">Volver</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-5">
+        <h5 class="fw-bold mb-3 text-muted">{% if item_edit %}Editar Podcast{% else %}Nuevo Podcast{% endif %}</h5>
+        
+        <form method="post" enctype="multipart/form-data" action="">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Título *</label>
+                    <input type="text" name="titulo" class="form-control" value="{{ item_edit.titulo|default:'' }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Imagen de Portada</label>
+                    <input type="file" name="imagen_portada" class="form-control" accept="image/*">
+                    {% if item_edit.imagen_portada %}
+                        <small class="text-muted">Actual: {{ item_edit.imagen_portada.name }}</small>
+                    {% endif %}
+                    <div class="form-text text-muted">Nota: Los nombres de archivo no deben superar los 150 caracteres.</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Descripción</label>
+                <textarea name="descripcion" class="form-control" rows="3">{{ item_edit.descripcion|default:'' }}</textarea>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Archivo PDF (Opcional)</label>
+                <input type="file" name="archivo_pdf" class="form-control" accept=".pdf">
+                {% if item_edit.archivo_pdf %}
+                    <small class="text-success mt-1 d-block"><i class="bi bi-check-circle"></i> PDF cargado: {{ item_edit.archivo_pdf.name }}</small>
+               {% endif %}
+               <div class="form-text text-muted">Nota: Los nombres de archivo no deben superar los 150 caracteres.</div>
+            </div>
+            
+
+            <div class="form-check mb-4">
+                <input type="checkbox" name="destacado" class="form-check-input" id="destacado" {% if item_edit.destacado %}checked{% endif %}>
+                <label for="destacado" class="form-check-label">Destacar este contenido</label>
+            </div>
+
+            <button type="submit" class="btn btn-dark rounded-pill px-4">Guardar</button>
+        </form>
+    </div>
+
+    <div class="row">
+        {% for item in items %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    {% if item.imagen_portada %}
+                        <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light text-center py-5 rounded-top" style="height: 150px;"><i class="bi bi-mic fs-1 text-muted"></i></div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6>{{ item.titulo }}</h6>
+                        
+                       
+
+                        <p class="small text-muted mb-0">{{ item.descripcion|truncatechars:50 }}</p>
+                        
+                        <div class="mt-3 d-flex justify-content-between pt-3 border-top">
+                            <a href="?edit={{ item.id }}" class="btn btn-sm btn-outline-primary rounded-pill">Editar</a>
+                            <form method="post" action="{% url 'frontend:gestion_podcast_delete' item_id=item.id %}" style="display:inline;" onsubmit="return confirm('¿Eliminar?');">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger rounded-pill">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted ms-2">No hay podcasts cargados.</p>
+        {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

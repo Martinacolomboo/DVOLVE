@@ -1,173 +1,115 @@
 {% extends "frontend/pagina_principal.html" %}
 {% load static %}
+
 {% block content %}
-<div class="container py-4">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} text-center rounded-4 mb-4">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-    <h3 class="fw-bold mb-4 text-dark"><i class="bi bi-book-fill text-success"></i> Recetas Saludables</h3>
+<div class="container py-5">
 
-    <div class="card shadow-sm border-0 mb-4 p-3 rounded-4">
-        <h5 class="fw-semibold mb-3"><i class="bi bi-funnel"></i> Filtrar por Categoría</h5>
-        <div class="d-flex flex-wrap gap-2" id="categoria-filtros">
-            <button class="btn btn-outline-secondary border rounded-pill active" data-filter-cat="todos">Todos</button>
-            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="desayuno">Desayuno</button>
-            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="almuerzo">Almuerzo</option>
-            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="cena">Cena</button>
-            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="snack">Snack</button>
-            <button class="btn btn-outline-secondary border rounded-pill" data-filter-cat="post-entreno">Post-entreno</button>
-        </div>
-    </div>
+  <div class="row align-items-center mb-5 g-5">
     
-    {% if request.user.is_superuser %}
-        <div class="mb-4 text-end">
-            <a href="{% url 'frontend:gestion_recetas' %}" class="btn text-white rounded-pill px-4"
-            style="background-color: #5cb85c;">
-            <i class="bi bi-gear"></i> Administrar Recetas
+    <div class="col-lg-6 order-2 order-lg-1">
+        
+        <h1 class="display-4 fw-bold mb-3" style="color: #212529;">
+            <span style="color: #198754;">Recetario</span> Saludable
+        </h1>
+        
+        <p class="lead text-muted mb-4" style="line-height: 1.6;">
+            Descubrí ideas ricas, nutritivas y fáciles para complementar tu entrenamiento y alcanzar tus objetivos.
+        </p>
+        
+        {% if request.user.is_superuser %}
+            <a href="{% url 'frontend:gestion_recetas' %}" class="btn text-white rounded-pill px-4 py-2 shadow-sm fw-bold" 
+               style="background-color: #5cb85c; border: none;">
+                <i class="bi bi-gear-fill me-2"></i> Administrar Recetas
             </a>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 
-    <h4 class="fw-semibold mb-3 text-dark"><i class="bi bi-grid-3x3-gap"></i> Recetas disponibles</h4>
+    <div class="col-lg-6 order-1 order-lg-2 text-center position-relative">
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:320px; height:320px; background-color:#7e2864; opacity:0.08; border-radius:50%; z-index:0;"></div>
+        
+        <img src="{% static 'img/lulaComida.jpg' %}" 
+             alt="Planes DVOLVE" 
+             class="img-fluid position-relative z-1 shadow-lg"
+             style="object-fit: contain; max-height: 400px">
+    </div>
+  </div>
 
-    <div class="row g-4" id="recetas-container">
+  <hr class="my-5 opacity-25">
+
+  <div class="d-flex justify-content-center flex-wrap gap-3 mb-5 align-items-center">
+    <span class="fw-bold text-muted small me-2">CATEGORÍAS:</span>
+    
+    <button class="btn btn-dark rounded-pill px-4 filter-btn active" data-filter="todos">Todas</button>
+    <button class="btn btn-light border rounded-pill px-3 filter-btn" data-filter="desayuno">🥣 Desayuno</button>
+    <button class="btn btn-light border rounded-pill px-3 filter-btn" data-filter="almuerzo">🥗 Almuerzo</button>
+    <button class="btn btn-light border rounded-pill px-3 filter-btn" data-filter="cena">🍲 Cena</button>
+    <button class="btn btn-light border rounded-pill px-3 filter-btn" data-filter="snack">🍎 Snack</button>
+    <button class="btn btn-light border rounded-pill px-3 filter-btn" data-filter="post-entreno">⚡ Post-Entreno</button>
+  </div>
+
+  {% if recetas %}
+    <div class="row g-4">
         {% for receta in recetas %}
-        <div class="col-md-6 receta-card" data-objetivo="{{ receta.objetivo }}" data-categoria="{{ receta.categoria_comida }}">
-            
-            <div class="card shadow-lg border-0 rounded-4 overflow-hidden h-100">
-                
-                {% if receta.destacado %}
-                    <span class="badge text-white px-3 py-2 position-absolute top-0 start-0 m-3 rounded-pill" style="background-color: #8d63d1;">
-                        <i class="bi bi-star-fill"></i> Recomendada
-                    </span>
-                {% endif %}
-
-                {% if receta.imagen_portada %}
-                    <img src="{{ receta.imagen_portada.url }}" class="card-img-top" alt="{{ receta.titulo }}" style="height: 250px; object-fit: cover;">
-                {% else %}
-                    <div class="d-flex align-items-center justify-content-center bg-light" style="height: 250px; background-color: #f0f0f0;">
-                        <i class="bi bi-image" style="font-size: 3rem; color: #aaa;"></i>
+            <div class="col-12 col-md-6 col-lg-3 receta-card" data-categoria="{{ receta.categoria_comida }}">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-hover" 
+                     style="background: white; cursor: pointer;" 
+                     data-bs-toggle="modal" data-bs-target="#recetaModal{{ receta.id }}">
+                    
+                    <div class="position-relative bg-dark">
+                        {% if receta.imagen_portada %}
+                            <img src="{{ receta.imagen_portada.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                                <i class="bi bi-egg-fried text-muted fs-1"></i>
+                            </div>
+                        {% endif %}
+                        <span class="badge bg-success position-absolute top-0 end-0 m-2 rounded-pill shadow-sm">
+                            {{ receta.get_categoria_comida_display }}
+                        </span>
                     </div>
-                {% endif %}
 
-                <div class="card-body">
-                    <h5 class="fw-bold">{{ receta.titulo }}</h5>
-                    <p class="text-muted small mb-3">
-                        {{ receta.descripcion|default:"Plato completo para tu nutrición diaria."|truncatechars:100 }}
-                    </p>
-
-                    <div class="d-flex small text-muted mb-4 gap-4">
-                        {% if receta.tiempo_prep %}
-                            <span><i class="bi bi-clock"></i> {{ receta.tiempo_prep }} min</span>
-                        {% endif %}
-                        {% if receta.porciones %}
-                            <span><i class="bi bi-person"></i> {{ receta.porciones }} pers.</span>
-                        {% endif %}
+                    <div class="card-body p-3">
+                        <h6 class="fw-bold text-dark mb-1">{{ receta.titulo }}</h6>
                         {% if receta.calorias %}
-                            <span><i class="bi bi-heart"></i> {{ receta.calorias }} cal</span>
+                            <small class="text-success fw-bold">{{ receta.calorias }} kcal</small>
                         {% endif %}
-                    </div>
-
-                    <div class="row g-2 mb-4">
-                        <div class="col-4">
-                            <div class="p-3 text-center rounded" style="background-color: #e3f2fd;">
-                                <span class="fw-bold d-block">{{ receta.proteinas|default:'0' }}g</span>
-                                <small class="text-muted">Proteína</small>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 text-center rounded" style="background-color: #e8f5e9;">
-                                <span class="fw-bold d-block">{{ receta.carboidratos|default:'0' }}g</span>
-                                <small class="text-muted">Carbos</small>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 text-center rounded" style="background-color: #fff3e0;">
-                                <span class="fw-bold d-block">{{ receta.grasas|default:'0' }}g</span>
-                                <small class="text-muted">Grasas</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
-                        <a href="{{ receta.archivo.url }}" target="_blank" class="btn btn-sm text-white"
-                            style="background-color: #5cb85c;">
-                            <i class="bi bi-file-earmark-text"></i> Ver Receta
-                        </a>
-                        <span class="badge bg-secondary">{{ receta.get_categoria_comida_display }}</span>
                     </div>
                 </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <p class="text-muted">No hay recetas disponibles aún.</p>
-        </div>
+
+                </div>
         {% endfor %}
     </div>
+  {% else %}
+    <div class="text-center py-5 text-muted">
+        <h4>No hay recetas cargadas aún.</h4>
+    </div>
+  {% endif %}
+
 </div>
+
+<style>
+    .filter-btn.active { background-color: #212529 !important; color: white !important; border-color: #212529 !important; }
+    .filter-btn:hover { background-color: #e9ecef; }
+    .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const objectiveButtons = document.querySelectorAll('[data-filter]');
-    const categoryButtons = document.querySelectorAll('[data-filter-cat]');
-    const recipeCards = document.querySelectorAll('.receta-card');
+  const buttons = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.receta-card');
 
-    let currentObjective = 'todos';
-    let currentCategory = 'todos';
-
-    function updateFilters() {
-        recipeCards.forEach(card => {
-            const cardObjective = card.dataset.objetivo;
-            const cardCategory = card.dataset.categoria;
-
-            const matchesObjective = (currentObjective === 'todos' || currentObjective === cardObjective);
-            const matchesCategory = (currentCategory === 'todos' || currentCategory === cardCategory);
-
-            card.style.display = (matchesObjective && matchesCategory) ? '' : 'none';
-        });
-    }
-
-    objectiveButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Estilo para Objetivo
-            objectiveButtons.forEach(b => {
-                b.classList.remove('active', 'btn-success');
-                b.classList.add('btn-outline-success');
-            });
-            btn.classList.add('active', 'btn-success');
-            btn.classList.remove('btn-outline-success');
-            
-            currentObjective = btn.dataset.filter;
-            updateFilters();
-        });
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => { b.classList.remove('active', 'btn-dark'); b.classList.add('btn-light', 'border'); });
+      btn.classList.add('active', 'btn-dark'); btn.classList.remove('btn-light', 'border');
+      
+      const filtro = btn.dataset.filter;
+      cards.forEach(card => {
+        if (filtro === 'todos' || card.dataset.categoria === filtro) card.style.display = 'block';
+        else card.style.display = 'none';
+      });
     });
-
-    categoryButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Estilo para Categoría
-            categoryButtons.forEach(b => {
-                b.classList.remove('active', 'btn-secondary');
-                b.classList.add('btn-outline-secondary');
-            });
-            btn.classList.add('active', 'btn-secondary');
-            btn.classList.remove('btn-outline-secondary');
-            
-            currentCategory = btn.dataset.filterCat;
-            updateFilters();
-        });
-    });
-
-    // Inicializar estilos
-    document.querySelector('[data-filter="todos"]').classList.add('active', 'btn-success');
-    document.querySelector('[data-filter="todos"]').classList.remove('btn-outline-success');
-
-    document.querySelector('[data-filter-cat="todos"]').classList.add('active', 'btn-secondary');
-    document.querySelector('[data-filter-cat="todos"]').classList.remove('btn-outline-secondary');
+  });
 });
 </script>
 {% endblock %}

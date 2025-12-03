@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.conf import settings
+from django.utils.text import slugify  # <--- ¡AGREGA ESTA LÍNEA!
 
 class Questionario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="questionario_user")
@@ -23,6 +24,7 @@ class Questionario(models.Model):
         ("fuerza", "Ganar fuerza"),
         ("adiposidad", "Bajar adiposidad"),
         ("bienestar", "Bienestar general"),
+        ("perder_peso", "Bajar de peso"),
     ], blank=True, null=True)
 
     training_level = models.CharField(max_length=50, choices=[
@@ -47,6 +49,7 @@ class Questionario(models.Model):
         ("futbol", "Fútbol"),
         ("otra", "Otra"),
     ], default="no")
+    peso_ideal = models.FloatField(blank=True, null=True, help_text="Peso ideal estimado (kg)")
 
     training_days = models.IntegerField(blank=True, null=True)
     training_place = models.CharField(
@@ -111,6 +114,7 @@ class Video(models.Model):
         ("fuerza", "Fuerza"),
         ("adiposidad", "Bajar adiposidad"),
         ("bienestar", "Bienestar general"),
+        ("estiramiento", "Estiramiento"),
     ]
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
@@ -149,11 +153,81 @@ class Video(models.Model):
     def __str__(self):
         return self.titulo
 
+class Plan(models.Model):
+    titulo = models.CharField(max_length=255)
+    descripcion = models.TextField(blank=True, null=True)
+    
+    OBJETIVOS = ( # Definimos las opciones para el campo objetivo
+        ('recomposicion', 'Recomposición corporal'),
+        ('deficit', 'Descenso de masa adiposa'),
+        ('hipertrofia', 'Aumento de masa muscular'),
+        ('fuerza', 'Ganar fuerza'),
+        ('resistencia', 'Resistencia'),
+    )
+    
+    # AGREGAR ESTO: AHORA EL MODELO ACEPTA 'objetivo'
+    objetivo = models.CharField(
+        max_length=50, 
+        choices=OBJETIVOS, 
+        null=True, 
+        blank=True
+    )
+    
+    portada = models.ImageField(upload_to="planes_portada/", blank=True, null=True)
+    slug = models.SlugField(max_length=140, unique=True, blank=True, null=True)
+    destacado = models.BooleanField(default=False)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    modificado_en = models.DateTimeField(auto_now=True)
+    
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="planes_creados"
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.titulo)[:120]
+            i = 1
+            while Plan.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{slugify(self.titulo)[:120]}-{i}"
+                i += 1
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.titulo
+    
+
+class PlanArchivo(models.Model):
+    plan = models.ForeignKey(
+        Plan,
+        on_delete=models.CASCADE,
+        related_name="archivos"
+    )
+    archivo = models.FileField(upload_to="planes_archivos/%Y/%m/%d/", 
+        max_length=255)
+    nombre = models.CharField(max_length=255, blank=True)
+    descripcion = models.TextField(blank=True, null=True)
+    orden = models.PositiveIntegerField(default=0)
+
+    subido_en = models.DateTimeField(auto_now_add=True)
+    @property
+    def es_imagen(self):
+        nombre = self.archivo.name.lower()
+        return nombre.endswith(('.jpg', '.jpeg', '.png', '.webp', '.gif'))
+    class Meta:
+        ordering = ["orden", "-subido_en"]
+
+    def __str__(self):
+        return self.nombre or f"Archivo de {self.plan.titulo}"
+        
 class Receta(models.Model):
     OBJETIVOS = [
         ("resistencia", "Resistencia"),
         ("fuerza", "Fuerza"),
-        ("adiposidad", "Bajar adiposidad"),
+        ("adiposidad","Bajar adiposidad"),
         ("bienestar", "Bienestar general"),
     ]
 
@@ -208,7 +282,9 @@ class Receta(models.Model):
     proteinas = models.IntegerField(blank=True, null=True)
     carbohidratos = models.IntegerField(blank=True, null=True)
     grasas = models.IntegerField(blank=True, null=True)
-
+    
+    # campos...
+    plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas_individuales')
     def __str__(self):
         return self.titulo
 
@@ -226,4 +302,25 @@ class Recomendacion(models.Model):
     destacado = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.titulo} ({self.categoria})"
+class Podcast(models.Model):
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField(blank=True, null=True)
+    archivo_pdf = models.FileField(upload_to='podcasts/', blank=True, null=True)
+    destacado = models.BooleanField(default=False)
+    imagen_portada = models.ImageField(upload_to='podcasts/imgs/', blank=True, null=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.titulo
+class Biblioteca(models.Model):
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField(blank=True, null=True)
+    
+    # EL ARCHIVO IMPORTANTE
+    archivo_pdf = models.FileField(upload_to='biblioteca/pdfs/')
+    
+    imagen_portada = models.ImageField(upload_to='biblioteca/imgs/', blank=True, null=True)
+    destacado = models.BooleanField(default=False)
+    creado_en = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.titulo

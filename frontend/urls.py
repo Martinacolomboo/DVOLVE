@@ -23,6 +23,15 @@ urlpatterns = [
     path("admin/videos/eliminar/<int:video_id>/", views.eliminar_video, name="eliminar_video"),
     path('admin/recetas/editar/<int:receta_id>/', views.gestion_recetas_edit, name='editar_receta'),
     path('admin/recetas/eliminar/<int:receta_id>/', views.gestion_recetas_delete, name='eliminar_receta'),
-
-
+    path("planes/", views.planes_view, name="planes"),
+    path("planes/<int:pk>/", views.plan_detalle, name="plan_detalle"),
+    path('podcast/', views.podcast_view, name='podcast'),
+    path('admin/planes/', views.gestion_planes, name='gestion_planes'),
+    path('admin/planes/editar/<int:plan_id>/', views.gestion_planes_edit, name='gestion_planes_edit'),
+    path('admin/planes/eliminar/<int:plan_id>/', views.gestion_planes_delete, name='gestion_planes_delete'),    
+    path('biblioteca/', views.biblioteca_view, name='biblioteca_view'),
+    path('admin/biblioteca/', views.gestion_biblioteca, name='gestion_biblioteca'),
+    path('admin/biblioteca/delete/<int:item_id>/', views.gestion_biblioteca_delete, name='gestion_biblioteca_delete'),
+    path("admin/podcast/", views.gestion_podcasts, name="gestion_podcasts"),
+    path("admin/podcast/delete/<int:item_id>/", views.gestion_podcast_delete, name="gestion_podcast_delete"),
 ]

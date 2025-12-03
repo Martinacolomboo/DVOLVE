@@ -1,197 +1,132 @@
-from urllib import request
-from django.shortcuts import render
-from django.contrib import messages
-from django.shortcuts import redirect, render
-from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from urllib.parse import quote_plus
-from django.contrib import messages
 from django.shortcuts import render, redirect
-from .helpers import CheckoutService
-import mercadopago
+from django.conf import settings
 from django.http import JsonResponse
-from django.http import HttpResponse
-from .models import Pago
+from django.utils import timezone
+from datetime import timedelta
+import mercadopago
+import requests
+
+from .models import Pago, VerifiedEmail
+from .helpers import CheckoutService
+
 def home(request):
     return render(request, 'principal/home.html')
+
 def segunda_pagina(request):
     return render(request, 'principal/segunda_pagina.html')
+
 def pagos(request):
     return render(request, 'principal/pagos.html')
+
 def privacidad(request):
     return render(request, "principal/privacidad.html")
+
 def metodos_pago(request):
-    # Si el flujo de checkout exige email verificado, lo chequeamos
     response = CheckoutService.chequear_email_verificado(request)
-    if response is not None:
-        return response
+    if response is not None: return response
 
-    # Obtener monto (viene por GET desde el paso anterior o desde sesión)
     monto_raw = request.GET.get("monto") or request.session.get("monto_ars") or request.session.get("monto")
-    print("🟩 (metodos_pago) monto_raw recibido:", monto_raw)
+    if monto_raw is None: return redirect("principal:pagos")
 
-    if monto_raw is None:
-        print("⚠️ No hay monto, redirigiendo a /pagos/")
-        return redirect("principal:pagos")
-
-    # Normalizamos y guardamos en sesión (monto_ars y monto_usd)
     try:
         monto_ars = float(monto_raw)
     except (ValueError, TypeError):
-        # si no es parseable, redirigimos a pagar/seleccionar plan
-        print("⚠️ monto no numérico:", monto_raw)
         return redirect("principal:pagos")
 
     tasa = getattr(settings, "ARS_PER_USD", 1000.0)
     monto_usd = round(monto_ars / tasa, 2)
 
-    # Guardar en sesión (para pasos siguientes)
     request.session["monto_ars"] = monto_ars
     request.session["monto_usd"] = monto_usd
     request.session.modified = True
-    print("🟩 monto guardado en sesión:", monto_ars, "ARS ->", monto_usd, "USD")
 
-    # Renderizar template con ambos valores
     return render(request, "principal/metodos_pago.html", {
         "monto_ars": monto_ars,
         "monto_usd": monto_usd,
     })
-import requests
+
 def pagar_mercadopago(request):
     monto = request.GET.get("monto") or request.session.get("monto")
-    print("💰 [MercadoPago] Monto recibido:", monto)
-
-    # 2️⃣ Validar monto
     try:
         monto = float(monto)
-        if monto <= 0:
-            raise ValueError
-    except (TypeError, ValueError):
-        return JsonResponse({"error": f"Monto inválido o no especificado: {monto}"}, status=400)
+    except:
+        return JsonResponse({"error": "Monto inválido"}, status=400)
 
-    sdk = mercadopago.SDK("APP_USR-4007951274971270-100619-4c629452bb54b3574510afa870fde8f9-2909305533")
+    sdk = mercadopago.SDK("APP_USR-5502964087105800-111709-a8ae00a46f645083b1f541c7deef133b-288938557") # Tu Key
     domain = request.build_absolute_uri("/")[:-1]
-    print("🟢 Dominio construido:", domain)
-
+    
     preference_data = {
-        "items": [
-            {
-                "id": "plan_dvolve",
-                "title": "Plan DVOLVE",
-                "quantity": 1,
-                "currency_id": "ARS",
-                "unit_price": float(monto)
-            }
-        ],
-        "payer": {
-            "email": request.session.get("email_verified_address", "test_user@test.com")
-        },
+        "items": [{"id": "plan_dvolve", "title": "Plan DVOLVE", "quantity": 1, "currency_id": "ARS", "unit_price": monto}],
+        "payer": {"email": request.session.get("email_verified_address", "test@test.com")},
         "back_urls": {
             "success": f"{domain}/pago/exito/",
             "failure": f"{domain}/pago/error/",
             "pending": f"{domain}/pago/error/",
         }
     }
-
-    # ✅ Solo agregar auto_return si NO estás en localhost
-    if not any(host in domain for host in ["127.0.0.1", "localhost"]):
+    if not any(h in domain for h in ["127.0.0.1", "localhost"]):
         preference_data["auto_return"] = "approved"
-    else:
-        print("🚫 Ambiente local detectado, se omite auto_return")
-
-    # 🔧 Limpieza extra (por si el SDK lo agrega igual)
-    if "127.0.0.1" in domain or "localhost" in domain:
-        if "auto_return" in preference_data:
-            del preference_data["auto_return"]
-            print("🧹 auto_return eliminado del payload (entorno local detectado)")
-
-    import json
-    print("📦 Payload FINAL enviado:", json.dumps(preference_data, indent=2))
 
     preference_response = sdk.preference().create(preference_data)
-    print("🔍 Respuesta completa:", preference_response)
+    init_point = preference_response.get("response", {}).get("init_point")
 
-    response_data = preference_response.get("response", {})
-    init_point = response_data.get("init_point")
-
-    if not init_point:
-        return JsonResponse({
-            "error": "Mercado Pago no devolvió init_point",
-            "detalle": response_data
-        }, status=400)
-
-    return redirect(init_point)
-
-import requests
+    if init_point: return redirect(init_point)
+    return JsonResponse({"error": "Error MP"}, status=400)
 
 def pagar_paypal(request):
-    # 🔹 Igual que antes, obtenemos el monto
     monto = request.GET.get("monto") or request.session.get("monto")
-    if not monto:
-        return JsonResponse({"error": "Monto no especificado."}, status=400)
-
+    if not monto: return JsonResponse({"error": "Monto no especificado"}, status=400)
     monto = float(monto)
 
-    client_id = "TU_CLIENT_ID_PAYPAL"
-    client_secret = "TU_CLIENT_SECRET_PAYPAL"
+    client_id = "AalcWldyg9yHJYf26pbtDiLDt1g9BvW5Q6Vn8Dqx3kfAbDwelAAWLR---LV6yMbdIq5p8xsmfugoBz-g" # Tu Client ID
+    client_secret = "EEm1fdOWzFLyFuVmhQob01FkJ7u4Rq9Jt6TyGFmPTHfpUKVSBVaIZH1KHj3B2aofELnJQVfm1L6Fs7LV" # Tu Secret
 
-    
-    # Obtener token de acceso de PayPal
-    auth_response = requests.post(
-        "https://api-m.sandbox.paypal.com/v1/oauth2/token",
-        headers={"Accept": "application/json", "Accept-Language": "en_US"},
-        data={"grant_type": "client_credentials"},
-        auth=(client_id, client_secret),
-    ).json()
+    auth_resp = requests.post("https://api-m.sandbox.paypal.com/v1/oauth2/token", auth=(client_id, client_secret), data={"grant_type": "client_credentials"})
+    access_token = auth_resp.json().get("access_token")
 
-    access_token = auth_response["access_token"]
-
-    # Crear orden de pago
-    order_data = {
-        "intent": "CAPTURE",
-        "purchase_units": [
-            {"amount": {"currency_code": "USD", "value": str(monto)}}
-        ],
-        "application_context": {
-            "return_url": request.build_absolute_uri("/pago/exito/"),
-            "cancel_url": request.build_absolute_uri("/pago/error/")
-        }
-    }
-
-    order_response = requests.post(
+    order_resp = requests.post(
         "https://api-m.sandbox.paypal.com/v2/checkout/orders",
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {access_token}"
-        },
-        json=order_data,
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={
+            "intent": "CAPTURE",
+            "purchase_units": [{"amount": {"currency_code": "USD", "value": str(monto)}}],
+            "application_context": {"return_url": request.build_absolute_uri("/pago/exito/"), "cancel_url": request.build_absolute_uri("/pago/error/")}
+        }
     ).json()
 
-    # Redirigir al link de aprobación
-    for link in order_response["links"]:
-        if link["rel"] == "approve":
-            return redirect(link["href"])
-
-    return JsonResponse(order_response)
-from django.http import HttpResponse
+    for link in order_resp.get("links", []):
+        if link["rel"] == "approve": return redirect(link["href"])
+    return JsonResponse(order_resp)
 
 def pago_exito(request):
-    monto = request.session.get("monto")
-    email = request.session.get("email_verified_address", "sin_email@ejemplo.com")
+    monto = request.session.get('monto')
+    email = request.session.get('checkout_email')
+    
+    if not monto or not email:
+        return redirect('principal:home')
 
-    if monto:
-        Pago.objects.create(email=email, monto=monto, estado="exitoso")
+    # Detectar Plan y Días
+    es_trimestral = float(monto) > 50000
+    dias = 90 if es_trimestral else 30
+    nombre_plan = 'Trimestral' if es_trimestral else 'Mensual'
 
-    return render(request, "principal/pago_exito.html", {"monto": monto})
+    # 1. Guardar Historial
+    Pago.objects.create(email=email, monto=monto, tipo_plan=nombre_plan, estado="exitoso")
+
+    # 2. Actualizar Vencimiento en la tabla de SUSCRIPCIONES
+    usuario, created = VerifiedEmail.objects.get_or_create(email=email)
+    ahora = timezone.now()
+
+    if usuario.vencimiento and usuario.vencimiento > ahora:
+        usuario.vencimiento += timedelta(days=dias)
+    else:
+        usuario.vencimiento = ahora + timedelta(days=dias)
+    
+    usuario.save()
+    request.session['monto'] = None
+    
+    return render(request, 'principal/pago_exito.html', {'monto': monto, 'plan': nombre_plan})
+
 def pago_error(request):
-    # Limpiamos el monto de la sesión para que no se reintente el pago
-    if "monto" in request.session:
-        del request.session["monto"]
-        request.session.modified = True
-
-    # Guardamos también el intento cancelado
-    email = request.session.get("email_verified_address", "sin_email@ejemplo.com")
-    Pago.objects.create(email=email, monto=0, estado="cancelado")
-
+    if "monto" in request.session: del request.session["monto"]
     return render(request, "principal/pago_error.html")

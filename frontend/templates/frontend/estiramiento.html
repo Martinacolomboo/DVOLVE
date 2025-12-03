@@ -1,0 +1,45 @@
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold text-dark mb-0"> 
+        <i class="bi bi-play-circle"></i>Video Estiramientos
+    </h3>
+
+    <a href="{% url 'frontend:video' %}" class="btn rounded-pill text-white px-4 py-2"
+       style="background: linear-gradient(45deg, #8d63d1, #5cb85c); box-shadow: 0 3px 8px rgba(0,0,0,0.15);">
+      <i class="bi bi-play-circle"></i> Volver a Entrenar
+    </a>
+  </div>
+
+  <div class="row g-4">
+    {% for video in videos %}
+      <div class="col-md-6 video-card">
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+          {% if video.thumbnail %}
+            <img src="{{ video.thumbnail.url }}" class="card-img-top" alt="{{ video.titulo }}">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-light" 
+                style="height: 200px; background-color: #f6effa;">
+              <i class="bi bi-play-circle" style="font-size: 3rem; color: #b48cc3;"></i>
+            </div>
+          {% endif %}
+
+          <div class="card-body">
+            <h5 class="fw-bold">{{ video.titulo }}</h5>
+            <p class="text-muted small mb-2">{{ video.descripcion|default:"Video de estiramiento para mejorar tu flexibilidad."|truncatechars:100 }}</p>
+            <a href="{{ video.archivo.url }}" target="_blank" class="btn w-100 text-white" style="background-color: #b48cc3;">
+              <i class="bi bi-play-circle"></i> Ver Video
+            </a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">No hay videos de estiramiento disponibles aún.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

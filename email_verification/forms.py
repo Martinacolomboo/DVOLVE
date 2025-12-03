@@ -1,9 +1,17 @@
 from django import forms
 
 class RequestCodeForm(forms.Form):
-    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={
-        'placeholder': 'tu@correo.com', 'class': 'input'
-    }))
+    email = forms.EmailField(
+        label='Email', 
+        error_messages={
+            'invalid': 'Ingresá un correo electrónico válido.',
+            'required': 'El correo electrónico es obligatorio.',
+        },
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'tu@correo.com', 'class': 'pm-input ev-input',   # ambas clases para estilo y compatibilidad
+            'autocomplete': 'email',
+        })
+    )
 
 class VerifyCodeForm(forms.Form):
     code = forms.CharField(

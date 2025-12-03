@@ -117,14 +117,21 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
+# En settings.py
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = '96fb27001@smtp-brevo.com'     
+# Tu dirección de Gmail REAL
+EMAIL_HOST_USER = 'dvolveprogram@gmail.com'
+
+# La contraseña la lee del archivo .env (¡No la escribas acá!)
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = 'DVOLVE <dvolvefit@gmail.com>'  
+
+# El remitente que verán los usuarios
+DEFAULT_FROM_EMAIL = 'DVOLVE <dvolveprogram@gmail.com>'  
 
 # Verificación
 EMAIL_CODE_TTL_MINUTES = 10

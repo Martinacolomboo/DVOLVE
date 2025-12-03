@@ -32,6 +32,46 @@
           <h5><i class="bi bi-droplet"></i> Hidratación</h5>
           <p class="tag">{{ cuestionario.get_hydration_display }}</p>
         </div>
+        <!-- Datos personales / IMC -->
+        <div class="dashboard-card">
+          <h5><i class="bi bi-person-lines-fill"></i> Tus datos</h5>
+
+          <p><strong>Peso:</strong>
+            {% if cuestionario and cuestionario.weight %}{{ cuestionario.weight }} kg{% else %}—{% endif %}
+          </p>
+
+          <p><strong>Altura:</strong>
+            {% if cuestionario and cuestionario.height %}{{ cuestionario.height }} cm{% else %}—{% endif %}
+          </p>
+
+          <p><strong>Peso ideal:</strong>
+            {% if cuestionario and cuestionario.peso_ideal %}{{ cuestionario.peso_ideal }} kg{% else %}—{% endif %}
+          </p>
+
+          {% if bmi %}
+            <p><strong>Indice de Masa Corporal:</strong> {{ bmi }}</p>
+          {% endif %}
+        </div>
+
+        {# Recomendación por sobrepeso #}
+        {% if is_overweight %}
+          <div class="recomendacion" style="border:1px solid #fde2e6; background:#fff6f7;">
+            <i class="bi bi-exclamation-triangle"></i>
+            <div>
+              <strong>Recomendación personalizada</strong>
+              {% if overweight_reason == "bmi" %}
+                <p>Tu IMC indica sobrepeso (IMC ≥ 25). Te recomendamos un plan combinado: aumentar actividad cardiovascular y ajustar ingesta calórica. Empezá por sesiones moderadas de 30–45 min, 3–4 veces por semana.</p>
+              {% elif overweight_reason == "peso_ideal" %}
+                <p>Tu peso actual está más del 10% por encima de tu peso ideal estimado. Te recomendamos un enfoque progresivo: control de calorías + entrenamiento de fuerza y cardio. Consultá el glosario para términos y rutinas sugeridas.</p>
+              {% else %}
+                <p>Basado en tus datos, te recomendamos revisar rutinas de cardio y alimentación. Podés empezar por nuestro <a href="{{ recommendation_url }}">Glosario Fitness</a>.</p>
+              {% endif %}
+
+              <p><a class="btn btn-sm pm-btn" href="{{ recommendation_url }}">Ir al Glosario Fitness</a></p>
+            </div>
+          </div>
+        {% endif %}
+
       </div>
     </div>
 
@@ -77,15 +117,7 @@
       {% endif %}
     </div>
 
-    <!-- Progreso -->
-    <div class="progreso mb-5">
-      <h4><i class="bi bi-graph-up-arrow"></i> Tu Progreso Semanal</h4>
-      <ul class="list-unstyled mt-3">
-        <li>Entrenamientos completados <span class="badge">3/4</span></li>
-        <li>Comidas registradas <span class="badge">12/21</span></li>
-        <li>Hidratación diaria <span class="badge">1.8L / 2.5L</span></li>
-      </ul>
-    </div>
+    
 
     <!-- Próximos Objetivos -->
     <div class="proximos">

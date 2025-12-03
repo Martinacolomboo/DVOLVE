@@ -1,27 +1,121 @@
 {% extends "frontend/pagina_principal.html" %}
+{% load static %}
+
 {% block content %}
-<section class="admin-panel">
-  <div class="container py-5 text-center">
-    <h2 class="fw-bold mb-4">Panel de Administración</h2>
-    <p class="text-muted mb-5">Gestioná el contenido de DVOLVE desde aquí.</p>
+<section class="py-5 bg-light" style="min-height: 80vh; display: flex; align-items: center;">
+  
+  <div class="container"> 
+
+    <div class="text-center mb-5">
+      <h2 class="fw-bold" style="color: #2c1a32;">Panel de Administración</h2>
+      <p class="text-muted">Gestioná todo el contenido de DVOLVE desde un solo lugar.</p>
+    </div>
 
     <div class="row justify-content-center g-4">
-      <div class="col-md-4">
-        <div class="card shadow-sm p-4">
-          <h5 class="fw-bold mb-3">Gestión de Videos</h5>
-          <p class="text-muted">Subí, editá o eliminá videos para los usuarios.</p>
-          <a href="{% url 'frontend:gestion_videos' %}" class="btn btn-dark w-100">Ir a Videos</a>
+
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4 text-center hover-card">
+          <div class="card-body p-4 d-flex flex-column">
+            
+            <div class="mb-3 text-primary">
+              <i class="bi bi-play-circle-fill" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h4 class="fw-bold mb-2">Videos</h4>
+            <p class="text-muted small mb-4 flex-grow-1">
+              Subí clases nuevas, editá títulos o eliminá videos antiguos.
+            </p>
+            
+            <a href="{% url 'frontend:gestion_videos' %}" class="btn btn-dark w-100 rounded-pill py-2 mt-auto">
+              Gestionar Videos
+            </a>
+          </div>
         </div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card shadow-sm p-4">
-          <h5 class="fw-bold mb-3">Gestión de Recetas</h5>
-          <p class="text-muted">Agregá o actualizá recetas saludables.</p>
-          <a href="{% url 'frontend:gestion_recetas' %}" class="btn btn-dark w-100">Ir a Recetas</a>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4 text-center hover-card">
+          <div class="card-body p-4 d-flex flex-column">
+            
+            <div class="mb-3 text-primary">
+              <i class="bi bi-journal-richtext" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h4 class="fw-bold mb-2">Planes</h4>
+            <p class="text-muted small mb-4 flex-grow-1">
+              Creá planes nutricionales y de entrenamiento, y adjuntá archivos PDF.
+            </p>
+            
+            <a href="{% url 'frontend:gestion_planes' %}" class="btn btn-dark w-100 rounded-pill py-2 mt-auto">
+              Gestionar Planes
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4 text-center hover-card">
+          <div class="card-body p-4 d-flex flex-column">
+            
+            <div class="mb-3 text-success">
+              <i class="bi bi-egg-fried" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h4 class="fw-bold mb-2">Recetas</h4>
+            <p class="text-muted small mb-4 flex-grow-1">
+              Agregá nuevas recetas saludables con su información nutricional.
+            </p>
+            
+            <a href="{% url 'frontend:gestion_recetas' %}" class="btn btn-dark w-100 rounded-pill py-2 mt-auto">
+              Gestionar Recetas
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4 text-center hover-card">
+          <div class="card-body p-4 d-flex flex-column">
+            
+            <div class="mb-3 text-success">
+              <i class="bi bi-easel" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h4 class="fw-bold mb-2">Podcast</h4>
+            <p class="text-muted small mb-4 flex-grow-1">
+              Agregá nuevos podcasts para que los usuarios puedan escucharlos.
+            </p>
+            
+            <a href="{% url 'frontend:gestion_podcasts' %}" class="btn btn-dark w-100 rounded-pill py-2 mt-auto">
+              Gestionar Podcast
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4 text-center hover-card">
+          <div class="card-body p-4 d-flex flex-column">
+            
+            <div class="mb-3 text-success">
+              <i class="bi bi-easel" style="font-size: 3rem;"></i>
+            </div>
+            
+            <h4 class="fw-bold mb-2">Bibloteca</h4>
+            <p class="text-muted small mb-4 flex-grow-1">
+              Agregá nuevos ítems a la biblioteca para que los usuarios puedan descargarlos.
+            </p>
+            
+            <a href="{% url 'frontend:gestion_biblioteca' %}" class="btn btn-dark w-100 rounded-pill py-2 mt-auto">
+              Gestionar Biblioteca
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; }
+</style>
 {% endblock %}

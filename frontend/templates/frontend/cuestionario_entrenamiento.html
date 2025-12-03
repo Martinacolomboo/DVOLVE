@@ -50,7 +50,17 @@
         <!-- Altura -->
         <div class="mb-4">
           <label class="fw-bold">Altura (cm)</label>
-          <input type="number" name="height" class="form-control" min="100" max="230" required>
+          <input type="number" id="altura" name="height" class="form-control" min="100" max="230" required>
+
+          <!-- Peso ideal visible -->
+          <div id="ideal-wrapper" style="margin-top:10px; display:none;">
+            <label for="peso-ideal" class="fw-bold">Peso ideal estimado (kg)</label>
+            <input type="text" id="peso-ideal" class="form-control" readonly aria-live="polite" />
+            <small class="text-muted">Calculado con fórmula de referencia.</small>
+          </div>
+
+          <!-- HIDDEN para enviar al servidor -->
+          <input type="hidden" name="peso_ideal" id="peso_ideal_hidden" value="">
         </div>
 
         <!-- Objetivo -->
@@ -62,6 +72,7 @@
             <option value="fuerza">Ganar fuerza</option>
             <option value="adiposidad">Bajar adiposidad</option>
             <option value="bienestar">Bienestar general</option>
+            <option value="perder_peso">Bajar de peso</option>
           </select>
         </div>
 
@@ -149,9 +160,57 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+  
+(function(){
+  const alturaEl = document.getElementById('altura');
+  const wrapper = document.getElementById('ideal-wrapper');
+  const pesoIdealEl = document.getElementById('peso-ideal');
+  const pesoHidden = document.getElementById('peso_ideal_hidden');
+
+  function calcularPesoIdeal(alturaCm){
+    const baseAltura = Math.max(alturaCm, 152.4);
+    const ideal = 45.5 + 0.9 * (baseAltura - 152.4);
+    return Math.round(ideal * 10) / 10;
+  }
+
+  function actualizar(){
+    const v = parseFloat(alturaEl.value);
+    if (!Number.isFinite(v) || v <= 0) {
+      wrapper.style.display = 'none';
+      pesoIdealEl.value = '';
+      pesoHidden.value = '';
+      return;
+    }
+    const min = parseFloat(alturaEl.getAttribute('min')) || 0;
+    const max = parseFloat(alturaEl.getAttribute('max')) || Infinity;
+    if (v < min || v > max) {
+      wrapper.style.display = 'none';
+      pesoIdealEl.value = '';
+      pesoHidden.value = '';
+      return;
+    }
+    const ideal = calcularPesoIdeal(v);
+    pesoIdealEl.value = ideal + ' kg';
+    pesoHidden.value = ideal;           // <-- **IMPORTANTE**: valor numérico enviado al servidor
+    wrapper.style.display = 'block';
+  }
+
+  alturaEl.addEventListener('input', actualizar);
+  alturaEl.addEventListener('blur', actualizar);
+  document.addEventListener('DOMContentLoaded', actualizar);
+})();
   </script>
 
   <style>
+    /* pequeño ajuste visual */
+  #ideal-wrapper .form-control[readonly] {
+    background-color: #fffdfa;
+    border: 1px dashed #d1c4b2;
+    color: #5a4630;
+    font-weight:700;
+    text-align:center;
+  }
+  #ideal-wrapper label { display:block; margin-bottom:6px; }
     .is-invalid {
       border-color: #dc3545 !important;
       box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
