@@ -15,4 +15,8 @@ db.sqlite3
 local_settings.py
 .env
 .DS_Store
+*.sql
+*.backup
+*.dump
+*.db
 datos_prueba/
