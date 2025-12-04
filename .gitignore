@@ -20,3 +20,4 @@ local_settings.py
 *.dump
 *.db
 datos_prueba/
+cargar_datos.py
