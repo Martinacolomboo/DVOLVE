@@ -18,7 +18,9 @@
         <div class="col-md-6">
           <div class="video-container">
             <video controls style="max-width:100%; height:auto;">
-              <source src="{{ MEDIA_URL }}videos/ejemplo1.mp4" type="video/mp4">
+              {% load static %}
+
+             <source src="{% static 'principal/videos/ejemplo1.mp4' %}" type="video/mp4">
               Tu navegador no soporta el video.
             </video>
           </div>
