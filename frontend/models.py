@@ -324,3 +324,16 @@ class Biblioteca(models.Model):
 
     def __str__(self):
         return self.titulo
+
+class SiteConfiguration(models.Model):
+    is_maintenance_mode = models.BooleanField(default=False)
+    maintenance_message = models.TextField(default="Volveremos pronto, estamos mejorando tu experiencia.", blank=True)
+    
+    def save(self, *args, **kwargs):
+        if self.__class__.objects.count():
+            self.pk = self.__class__.objects.first().pk
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Configuración del Sitio"
+        verbose_name_plural = "Configuraciones del Sitio"

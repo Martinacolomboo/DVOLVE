@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<section class="py-5 bg-light" style="min-height: 80vh; display: flex; align-items: center;">
+<section class="py-5 bg-light" style="min-height: 80vh; display: flex; align-items: center;padding-top: 80px;">
   
   <div class="container"> 
 
@@ -110,6 +110,20 @@
           </div>
         </div>
       </div>
+      <form method="post" action="{% url 'frontend:toggle_maintenance_mode' %}">
+                    {% csrf_token %}
+                    
+                    {% if config.is_maintenance_mode %}
+                        <div class="alert alert-danger p-2 mb-2 small">⚠️ MODO ACTIVO</div>
+                        <button type="submit" class="btn btn-outline-danger w-100 rounded-pill py-2 fw-bold">
+                            <i class="bi bi-power"></i> Desactivar Sitio
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold">
+                            <i class="bi bi-cone-striped"></i> Activar Mantenimiento
+                        </button>
+                    {% endif %}
+              </form>
     </div>
   </div>
 </section>

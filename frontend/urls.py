@@ -34,4 +34,5 @@ urlpatterns = [
     path('admin/biblioteca/delete/<int:item_id>/', views.gestion_biblioteca_delete, name='gestion_biblioteca_delete'),
     path("admin/podcast/", views.gestion_podcasts, name="gestion_podcasts"),
     path("admin/podcast/delete/<int:item_id>/", views.gestion_podcast_delete, name="gestion_podcast_delete"),
+    path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
 ]

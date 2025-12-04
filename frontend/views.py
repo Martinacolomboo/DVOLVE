@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.urls import reverse, NoReverseMatch
 from django.contrib import messages
 # MODELOS PROPIOS
-from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca
+from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca, SiteConfiguration
 
 # CORRECCIÓN CRÍTICA: Importamos el modelo de suscripción real
 from principal.models import VerifiedEmail
@@ -698,3 +698,21 @@ def gestion_biblioteca_delete(request, item_id):
         item.delete()
         messages.success(request, "Documento eliminado.")
     return redirect('frontend:gestion_biblioteca')
+@staff_member_required
+def toggle_maintenance_mode(request):
+    if request.method == 'POST':
+        # Obtener el objeto único, o crearlo si no existe
+        config, created = SiteConfiguration.objects.get_or_create(id=1) 
+        config.is_maintenance_mode = not config.is_maintenance_mode # Invertir el estado
+        config.save()
+        messages.success(request, f"Modo mantenimiento {'ACTIVADO' if config.is_maintenance_mode else 'DESACTIVADO'}.")
+    
+    # Volver al panel de administración
+    return redirect('frontend:panel_admin')
+@staff_member_required
+def panel_admin(request):
+    # ESTO FALTABA: Buscar la configuración para saber si está activo o no
+    config, created = SiteConfiguration.objects.get_or_create(id=1)
+    
+    # Pasamos 'config' al template
+    return render(request, "frontend/panel_admin.html", {'config': config})

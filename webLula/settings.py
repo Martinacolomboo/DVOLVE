@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6(hjjjo$7clcarj4ifc3c3-%b6v-i5fsq!h4n@+)_k^jigcfqi'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = []
+
 
 
 # Application definition
@@ -56,8 +56,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'webLula.middleware.MaintenanceModeMiddleware',
 ]
-
+LOGIN_REDIRECT_URL = "/frontend/dashboard/"
+LOGOUT_REDIRECT_URL = "/frontend/login/"
 ROOT_URLCONF = 'webLula.urls'
 
 TEMPLATES = [
@@ -83,15 +85,15 @@ WSGI_APPLICATION = 'webLula.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'lula',          # nombre de tu base
-        'USER': 'postgres',      # usuario de PostgreSQL (por defecto)
-        'PASSWORD': 'hola',  # reemplazá por tu contraseña real
-        'HOST': 'localhost',     # o 127.0.0.1
-        'PORT': '5432',          # puerto por defecto de PostgreSQL
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -118,26 +120,26 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # En settings.py
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_PORT = 465             # <--- CAMBIO CLAVE: Puerto 465
+EMAIL_USE_TLS = False        # <--- CAMBIO: Desactivamos TLS
+EMAIL_USE_SSL = True
+
 
 # Tu dirección de Gmail REAL
-EMAIL_HOST_USER = 'dvolveprogram@gmail.com'
-
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 # La contraseña la lee del archivo .env (¡No la escribas acá!)
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 # El remitente que verán los usuarios
 DEFAULT_FROM_EMAIL = 'DVOLVE <dvolveprogram@gmail.com>'  
+EMAIL_CODE_SECRET = os.getenv("EMAIL_CODE_SECRET")
 
 # Verificación
 EMAIL_CODE_TTL_MINUTES = 10
 EMAIL_CODE_MAX_ATTEMPTS = 5
 EMAIL_CODE_RESEND_COOLDOWN_SECONDS = 60
-EMAIL_CODE_SECRET = 'cambiame-por-una-frase-secreta-larga'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
