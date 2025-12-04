@@ -52,7 +52,7 @@ def pagar_mercadopago(request):
     except:
         return JsonResponse({"error": "Monto inválido"}, status=400)
 
-    sdk = mercadopago.SDK("APP_USR-5502964087105800-111709-a8ae00a46f645083b1f541c7deef133b-288938557") # Tu Key
+    sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     domain = request.build_absolute_uri("/")[:-1]
     
     preference_data = {
@@ -78,8 +78,8 @@ def pagar_paypal(request):
     if not monto: return JsonResponse({"error": "Monto no especificado"}, status=400)
     monto = float(monto)
 
-    client_id = "AalcWldyg9yHJYf26pbtDiLDt1g9BvW5Q6Vn8Dqx3kfAbDwelAAWLR---LV6yMbdIq5p8xsmfugoBz-g" # Tu Client ID
-    client_secret = "EEm1fdOWzFLyFuVmhQob01FkJ7u4Rq9Jt6TyGFmPTHfpUKVSBVaIZH1KHj3B2aofELnJQVfm1L6Fs7LV" # Tu Secret
+    client_id = settings.PAYPAL_CLIENT_ID
+    client_secret = settings.PAYPAL_CLIENT_SECRET
 
     auth_resp = requests.post("https://api-m.sandbox.paypal.com/v1/oauth2/token", auth=(client_id, client_secret), data={"grant_type": "client_credentials"})
     access_token = auth_resp.json().get("access_token")
