@@ -353,16 +353,7 @@ def gestion_videos(request):
 @staff_member_required
 def eliminar_video(request, video_id):
     video = get_object_or_404(Video, id=video_id)
-    if request.method == "POST":
-
-        # ✅ BORRAR VIDEO DE CLOUDINARY
-        if hasattr(video, "archivo") and video.archivo:
-            video.archivo.delete(save=False)
-
-        # ✅ BORRAR DE LA BASE
-        video.delete()
-
-        messages.success(request, "Video eliminado correctamente.")
+    video.delete()
     return redirect("frontend:gestion_videos")
 
 @staff_member_required
@@ -475,10 +466,6 @@ def gestion_recetas_edit(request, receta_id):
 def gestion_recetas_delete(request, receta_id):
     receta = get_object_or_404(Receta, id=receta_id)
     if request.method == 'POST':
-        if hasattr(receta, "imagen_portada") and receta.imagen_portada:
-            receta.imagen_portada.delete(save=False)
-
-        # ✅ BORRAR LA RECETA
         receta.delete()
     return redirect('frontend:gestion_recetas')
 
@@ -576,17 +563,6 @@ def gestion_planes_delete(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
     
     if request.method == 'POST':
-        if hasattr(plan, "archivos"):
-            for archivo in plan.archivos.all():
-                if archivo.archivo:
-                    archivo.archivo.delete(save=False)
-                archivo.delete()
-
-        # ✅ BORRAR IMAGEN DE PORTADA DEL PLAN (SI TIENE)
-        if hasattr(plan, "imagen_portada") and plan.imagen_portada:
-            plan.imagen_portada.delete(save=False)
-
-        # ✅ BORRAR EL PLAN
         plan.delete()
         messages.success(request, f"Plan '{plan.titulo}' eliminado.")
     
@@ -620,14 +596,11 @@ def plan_detalle(request, pk):
 # --- GESTIÓN PODCASTS (ADMIN) ---
 @staff_member_required
 def gestion_podcasts(request):
-    if not request.user.is_superuser:
-        return redirect("frontend:dashboard")
-
+    if not request.user.is_superuser: return redirect("frontend:dashboard")
+    
     item_edit = None
-    edit_id = request.GET.get("edit")
-
-    if edit_id:
-        item_edit = Podcast.objects.filter(id=edit_id).first()
+    if request.GET.get("edit"):
+        item_edit = Podcast.objects.filter(id=request.GET.get("edit")).first()
 
     if request.method == "POST":
         titulo = request.POST.get("titulo")
@@ -635,64 +608,41 @@ def gestion_podcasts(request):
         destacado = request.POST.get("destacado") == "on"
         portada = request.FILES.get("imagen_portada")
         pdf = request.FILES.get("archivo_pdf")
-
-        if not titulo:
-            messages.error(request, "El título es obligatorio.")
-            return redirect("frontend:gestion_podcasts")
-
-        # ✅ SI ES EDICIÓN
         if item_edit:
             item_edit.titulo = titulo
             item_edit.descripcion = descripcion
             item_edit.destacado = destacado
-
-            if portada:
-                item_edit.imagen_portada = portada
-            if pdf:
-                item_edit.archivo_pdf = pdf
-
+            if portada: item_edit.imagen_portada = portada
+            if pdf: item_edit.archivo_pdf = pdf
+            
             item_edit.save()
-            messages.success(request, "Podcast actualizado correctamente.")
-
-        # ✅ SI ES CREACIÓN
+            messages.success(request, "Podcast actualizado.")
         else:
-            nuevo = Podcast.objects.create(
+            Podcast.objects.create(
                 titulo=titulo,
                 descripcion=descripcion,
                 destacado=destacado,
                 imagen_portada=portada,
                 archivo_pdf=pdf
             )
-
-            print("✅ PODCAST CREADO:", nuevo.id)
-            messages.success(request, "Podcast creado correctamente.")
-
+            messages.success(request, "Podcast creado.")
+        
         return redirect("frontend:gestion_podcasts")
 
-    items = Podcast.objects.all().order_by("-creado_en")
-    return render(request, "frontend/gestion_podcast.html", {
-        "items": items,
-        "item_edit": item_edit
-    })
-
+    items = Podcast.objects.all().order_by('-creado_en')
+    return render(request, "frontend/gestion_podcast.html", {"items": items, "item_edit": item_edit})
 @staff_member_required  # 1. SEGURIDAD: Solo vos (admin) podés usarla.
-def gestion_podcast_delete(request, item_id):
+def gestion_podcast_delete(request, podcast_id):
     # 2. BÚSQUEDA: Busca el podcast exacto por su ID. Si no existe, da error 404.
-    podcast = get_object_or_404(Podcast, id=item_id)
+    podcast = get_object_or_404(Podcast, id=podcast_id)
     
     # 3. ACCIÓN: Solo borra si la petición es POST (por seguridad web).
     if request.method == 'POST':
-        if podcast.archivo_pdf:
-            podcast.archivo_pdf.delete(save=False)
-
-        if podcast.imagen_portada:
-            podcast.imagen_portada.delete(save=False)
-
-        podcast.delete()
+        podcast.delete()  # <--- ACÁ SE BORRA DE LA BASE DE DATOS
         messages.success(request, "Podcast eliminado correctamente.")
-            
+    
     # 4. SALIDA: Te recarga la página de gestión para que veas la lista actualizada.
-    return redirect('frontend:gestion_podcasts')
+    return redirect('frontend:gestion_podcast')
 # --- BIBLIOTECA (USUARIO) ---
 @login_required
 def biblioteca_view(request):
@@ -745,10 +695,6 @@ def gestion_biblioteca(request):
 def gestion_biblioteca_delete(request, item_id):
     item = get_object_or_404(Biblioteca, id=item_id)
     if request.method == 'POST':
-        if hasattr(item, "archivo_pdf") and item.archivo_pdf:
-            item.archivo_pdf.delete(save=False)
-
-        # ✅ BORRAR REGISTRO DE LA BASE
         item.delete()
         messages.success(request, "Documento eliminado.")
     return redirect('frontend:gestion_biblioteca')
