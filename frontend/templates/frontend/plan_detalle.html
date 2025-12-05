@@ -89,12 +89,20 @@
                                   <div class="carousel-inner">
 
                                       <!-- Portada siempre primera -->
-                                      {% if plan.portada %}
-                                      <div class="carousel-item active">
-                                          <img src="{{ plan.portada.url }}" class="d-block w-100"
-                                              style="height:400px; object-fit:contain;">
+                                      <div class="position-relative bg-dark text-center" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#planModal{{ plan.id }}">
+                                          {% if plan.portada and plan.portada.url|lower|slice:"-4:" in ".jpg.jpeg.png.webp.gif" %}
+                                              <img src="{{ plan.portada.url }}" class="card-img-top" style="height:220px; object-fit:contain;">
+                                          {% else %}
+                                              <div class="bg-light d-flex align-items-center justify-content-center" style="height:220px;">
+                                                  <i class="bi bi-image text-muted" style="font-size:3rem;"></i>
+                                              </div>
+                                          {% endif %}
+
+                                          <span class="badge bg-white text-dark position-absolute bottom-0 start-0 m-3 shadow-sm px-3 py-2 rounded-pill border">
+                                              {{ plan.get_objetivo_display }}
+                                          </span>
                                       </div>
-                                      {% endif %}
+
 
                                       <!-- Mostrar imágenes del plan -->
                                       {% for archivo in plan.archivos.all %}
