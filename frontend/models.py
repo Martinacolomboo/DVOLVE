@@ -118,8 +118,8 @@ class Video(models.Model):
     ]
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    archivo = models.FileField(upload_to="videos/")  
-    thumbnail = models.ImageField(upload_to="videos/thumbnails/", blank=True, null=True)
+    thumbnail = CloudinaryField('image', blank=True, null=True)
+    archivo = CloudinaryField('video', resource_type='video', blank=True, null=True)
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # 👈 acá
     destacado = models.BooleanField(default=False)  # 👈 recomendado para dashboard
     objetivo = models.CharField(max_length=50, choices=OBJETIVOS, blank=True, null=True)  # 👈 relacion con cuestionario
@@ -206,8 +206,8 @@ class PlanArchivo(models.Model):
         on_delete=models.CASCADE,
         related_name="archivos"
     )
-    archivo = models.FileField(upload_to="planes_archivos/%Y/%m/%d/", 
-        max_length=255)
+    archivo = CloudinaryField('file', resource_type='raw', blank=True, null=True)  # pdf, zip, docx, etc
+    
     nombre = models.CharField(max_length=255, blank=True)
     descripcion = models.TextField(blank=True, null=True)
     orden = models.PositiveIntegerField(default=0)
@@ -247,7 +247,8 @@ class Receta(models.Model):
 
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    archivo = models.FileField(upload_to="recetas/")
+    imagen_portada = CloudinaryField('image', blank=True, null=True)
+    archivo = CloudinaryField('file', resource_type='raw', blank=True, null=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     objetivo = models.CharField(max_length=50, choices=OBJETIVOS, blank=True, null=True)
@@ -273,8 +274,7 @@ class Receta(models.Model):
     )
 
     destacado = models.BooleanField(default=False)
-    imagen_portada = models.ImageField(upload_to="recetas/portadas/", blank=True, null=True)
-
+    
     # Valores nutricionales
     tiempo_prep = models.IntegerField(blank=True, null=True)
     porciones = models.IntegerField(blank=True, null=True)
@@ -305,9 +305,10 @@ class Recomendacion(models.Model):
 class Podcast(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    archivo_pdf = models.FileField(upload_to='podcasts/', blank=True, null=True)
+    
+    imagen_portada = CloudinaryField('image', blank=True, null=True)
+    archivo_pdf = CloudinaryField('file', resource_type='raw', blank=True, null=True)
     destacado = models.BooleanField(default=False)
-    imagen_portada = models.ImageField(upload_to='podcasts/imgs/', blank=True, null=True)
     creado_en = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.titulo
@@ -316,9 +317,8 @@ class Biblioteca(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     
     # EL ARCHIVO IMPORTANTE
-    archivo_pdf = models.FileField(upload_to='biblioteca/pdfs/')
-    
-    imagen_portada = models.ImageField(upload_to='biblioteca/imgs/', blank=True, null=True)
+    imagen_portada = CloudinaryField('image', blank=True, null=True)
+    archivo_pdf = CloudinaryField('file', resource_type='raw', blank=True, null=True)
     destacado = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
 
