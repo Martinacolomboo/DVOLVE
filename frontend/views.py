@@ -353,7 +353,16 @@ def gestion_videos(request):
 @staff_member_required
 def eliminar_video(request, video_id):
     video = get_object_or_404(Video, id=video_id)
-    video.delete()
+    if request.method == "POST":
+
+        # ✅ BORRAR VIDEO DE CLOUDINARY
+        if hasattr(video, "archivo") and video.archivo:
+            video.archivo.delete(save=False)
+
+        # ✅ BORRAR DE LA BASE
+        video.delete()
+
+        messages.success(request, "Video eliminado correctamente.")
     return redirect("frontend:gestion_videos")
 
 @staff_member_required
@@ -466,6 +475,10 @@ def gestion_recetas_edit(request, receta_id):
 def gestion_recetas_delete(request, receta_id):
     receta = get_object_or_404(Receta, id=receta_id)
     if request.method == 'POST':
+        if hasattr(receta, "imagen_portada") and receta.imagen_portada:
+            receta.imagen_portada.delete(save=False)
+
+        # ✅ BORRAR LA RECETA
         receta.delete()
     return redirect('frontend:gestion_recetas')
 
@@ -563,6 +576,17 @@ def gestion_planes_delete(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
     
     if request.method == 'POST':
+         if hasattr(plan, "archivos"):
+            for archivo in plan.archivos.all():
+                if archivo.archivo:
+                    archivo.archivo.delete(save=False)
+                archivo.delete()
+
+        # ✅ BORRAR IMAGEN DE PORTADA DEL PLAN (SI TIENE)
+        if hasattr(plan, "imagen_portada") and plan.imagen_portada:
+            plan.imagen_portada.delete(save=False)
+
+        # ✅ BORRAR EL PLAN
         plan.delete()
         messages.success(request, f"Plan '{plan.titulo}' eliminado.")
     
@@ -721,6 +745,10 @@ def gestion_biblioteca(request):
 def gestion_biblioteca_delete(request, item_id):
     item = get_object_or_404(Biblioteca, id=item_id)
     if request.method == 'POST':
+        if hasattr(item, "archivo_pdf") and item.archivo_pdf:
+            item.archivo_pdf.delete(save=False)
+
+        # ✅ BORRAR REGISTRO DE LA BASE
         item.delete()
         messages.success(request, "Documento eliminado.")
     return redirect('frontend:gestion_biblioteca')
