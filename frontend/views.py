@@ -676,9 +676,9 @@ def gestion_podcasts(request):
     })
 
 @staff_member_required  # 1. SEGURIDAD: Solo vos (admin) podés usarla.
-def gestion_podcast_delete(request, podcast_id):
+def gestion_podcast_delete(request, item_id):
     # 2. BÚSQUEDA: Busca el podcast exacto por su ID. Si no existe, da error 404.
-    podcast = get_object_or_404(Podcast, id=podcast_id)
+    podcast = get_object_or_404(Podcast, id=item_id)
     
     # 3. ACCIÓN: Solo borra si la petición es POST (por seguridad web).
     if request.method == 'POST':
