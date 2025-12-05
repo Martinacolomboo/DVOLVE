@@ -583,7 +583,7 @@ def planes_view(request):
     slug = sugerir_plan_por_cuestionario(cuestionario)
     recommended_plan = Plan.objects.filter(slug=slug).first() if slug else None
 
-    return render(request, "frontend/plan_detalle.html", {
+    return render(request, "frontend/planes.html", {
         "planes": planes,
         "recommended_plan": recommended_plan,
         "cuestionario": cuestionario,

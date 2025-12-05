@@ -1,0 +1,7 @@
+<!-- frontend/planes.html -->
+<h1>Planes disponibles</h1>
+<ul>
+    {% for plan in planes %}
+        <li><a href="{% url 'plan_detalle' plan.id %}">{{ plan.nombre }}</a></li>
+    {% endfor %}
+</ul>
