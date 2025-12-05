@@ -642,7 +642,7 @@ def gestion_podcast_delete(request, item_id):
         messages.success(request, "Podcast eliminado correctamente.")
     
     # 4. SALIDA: Te recarga la página de gestión para que veas la lista actualizada.
-    return redirect('frontend:gestion_podcast')
+    return redirect('frontend:gestion_podcasts')
 # --- BIBLIOTECA (USUARIO) ---
 @login_required
 def biblioteca_view(request):
