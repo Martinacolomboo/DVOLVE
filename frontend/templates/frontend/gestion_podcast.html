@@ -56,11 +56,14 @@
         {% for item in items %}
             <div class="col-md-4 mb-4">
                 <div class="card h-100 border-0 shadow-sm rounded-4">
-                    {% if item.imagen_portada %}
-                        <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
-                    {% else %}
-                        <div class="bg-light text-center py-5 rounded-top" style="height: 150px;"><i class="bi bi-mic fs-1 text-muted"></i></div>
-                    {% endif %}
+                {% if item.imagen_portada_url %}
+                    <img src="{{ item.imagen_portada_url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                {% elif item.imagen_portada %}
+                    <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="bg-light text-center py-5 rounded-top" style="height: 150px;"><i class="bi bi-mic fs-1 text-muted"></i></div>
+                {% endif %}
+
                     <div class="card-body">
                         <h6>{{ item.titulo }}</h6>
                         

@@ -134,35 +134,51 @@
                               </p>
 
                               <div class="bg-light rounded-4 p-4 border">
-                                  <h5 class="fw-bold mb-3 d-flex align-items-center">
-                                      <i class="bi bi-cloud-arrow-down-fill text-success me-2 fs-4"></i> Archivos para descargar
-                                  </h5>
+                                <h5 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="bi bi-cloud-arrow-down-fill text-success me-2 fs-4"></i> Archivos para descargar
+                                </h5>
 
-                                  {% if plan.archivos.all %}
-                                      <div class="list-group shadow-sm rounded-3">
-                                          {% for archivo in plan.archivos.all %}
-                                              <a href="{{ archivo.archivo.url }}" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center p-3 border-0 mb-1 rounded-3">
-                                                  <div class="me-3 d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm" style="width: 45px; height: 45px;">
-                                                      {% if archivo.es_imagen %}
-                                                          <i class="bi bi-file-image text-primary fs-5"></i>
-                                                      {% else %}
-                                                          <i class="bi bi-file-earmark-pdf text-danger fs-5"></i>
-                                                      {% endif %}
-                                                  </div>
-                                                  <div class="flex-grow-1">
-                                                      <div class="fw-bold text-dark">{{ archivo.nombre|default:"Documento adjunto" }}</div>
-                                                      <small class="text-muted">Clic para ver/descargar</small>
-                                                  </div>
-                                                  <i class="bi bi-download text-secondary"></i>
-                                              </a>
-                                          {% endfor %}
-                                      </div>
-                                  {% else %}
-                                      <div class="text-center text-muted py-3">
-                                          No hay archivos cargados en este plan todavía.
-                                      </div>
-                                  {% endif %}
+                                {% if plan.archivos.all %}
+                                    <div class="list-group shadow-sm rounded-3">
+                                        {% for archivo in plan.archivos.all %}
+                                            
+                                            {# 🔹 Si es PDF o archivo → descarga directa #}
+                                            {% if not archivo.es_imagen %}
+                                            <a href="{{ archivo.archivo.url }}?fl_attachment=1" 
+                                              target="_blank"
+                                              class="list-group-item list-group-item-action d-flex align-items-center p-3 border-0 mb-1 rounded-3">
+                                            {% else %}
+                                            {# 🔹 Si es imagen → vista normal + descarga al abrir #}
+                                            <a href="{{ archivo.archivo.url }}?fl_attachment=1" 
+                                              target="_blank"
+                                              class="list-group-item list-group-item-action d-flex align-items-center p-3 border-0 mb-1 rounded-3">
+                                            {% endif %}
+
+                                                <div class="me-3 d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm" style="width: 45px; height: 45px;">
+                                                    {% if archivo.es_imagen %}
+                                                        <i class="bi bi-file-image text-primary fs-5"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-file-earmark-pdf text-danger fs-5"></i>
+                                                    {% endif %}
+                                                </div>
+
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-bold text-dark">{{ archivo.nombre|default:"Documento adjunto" }}</div>
+                                                    <small class="text-muted">Clic para descargar</small>
+                                                </div>
+
+                                                <i class="bi bi-download text-secondary"></i>
+                                            </a>
+
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="text-center text-muted py-3">
+                                        No hay archivos cargados en este plan todavía.
+                                    </div>
+                                {% endif %}
                               </div>
+
                           </div>
                       </div>
                             

@@ -214,9 +214,24 @@ class PlanArchivo(models.Model):
 
     subido_en = models.DateTimeField(auto_now_add=True)
     @property
-    def es_imagen(self):
+    def es_image(self):
         nombre = self.archivo.name.lower()
         return nombre.endswith(('.jpg', '.jpeg', '.png', '.webp', '.gif'))
+    @property
+    def url(self):
+        return self.archivo.url if self.archivo else None
+
+    @property
+    def is_image(self):
+        return str(self.archivo.resource_type) == 'image'
+
+    @property
+    def is_video(self):
+        return str(self.archivo.resource_type) == 'video'
+
+    @property
+    def is_pdf(self):
+        return str(self.archivo.public_id).lower().endswith(".pdf")
     class Meta:
         ordering = ["orden", "-subido_en"]
 
