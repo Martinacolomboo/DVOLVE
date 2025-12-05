@@ -647,7 +647,7 @@ def gestion_podcast_delete(request, podcast_id):
 @login_required
 def biblioteca_view(request):
     libros = Biblioteca.objects.all().order_by('-destacado', '-creado_en')
-    return render(request, "frontend/biblioteca.html    ", {"libros": libros})
+    return render(request, "frontend/biblioteca.html", {"libros": libros})
 
 # --- GESTIÓN BIBLIOTECA (ADMIN) ---
 @staff_member_required
