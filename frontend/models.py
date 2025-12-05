@@ -317,7 +317,7 @@ class Biblioteca(models.Model):
     descripcion = models.TextField(blank=True, null=True)
     
     # EL ARCHIVO IMPORTANTE
-    imagen_portada = CloudinaryField('image', blank=True, null=True)
+    imagen_portada = CloudinaryField('image',resource_type='image', blank=True, null=True)
     archivo_pdf = CloudinaryField('file', resource_type='raw', blank=True, null=True)
     destacado = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
