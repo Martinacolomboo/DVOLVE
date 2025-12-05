@@ -1,5 +1,10 @@
 from pathlib import Path
 import os
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from cloudinary.storage import MediaCloudinaryStorage
+from cloudinary import config
 from dotenv import load_dotenv
 load_dotenv()
 
