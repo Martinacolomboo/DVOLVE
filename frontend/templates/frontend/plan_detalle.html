@@ -104,10 +104,10 @@
                                                   archivo.archivo.url|lower endswith ".png" or
                                                   archivo.archivo.url|lower endswith ".webp" or
                                                   archivo.archivo.url|lower endswith ".gif" %}
-                                            <div class="carousel-item {% if not plan.portada and forloop.first %}active{% endif %}">
-                                                <img src="{{ archivo.archivo.url }}" class="d-block w-100"
-                                                    style="height:400px; object-fit:contain;">
-                                            </div>
+                                                    <div class="carousel-item {% if not plan.portada and forloop.first %}active{% endif %}">
+                                                        <img src="{{ archivo.archivo.url }}" class="d-block w-100"
+                                                            style="height:400px; object-fit:contain;">
+                                                    </div>
                                             {% endif %}
                                         {% endfor %}
                                     </div>
