@@ -658,11 +658,17 @@ def gestion_podcast_delete(request, podcast_id):
     
     # 3. ACCIÓN: Solo borra si la petición es POST (por seguridad web).
     if request.method == 'POST':
-        podcast.delete()  # <--- ACÁ SE BORRA DE LA BASE DE DATOS
+        if podcast.archivo_pdf:
+            podcast.archivo_pdf.delete(save=False)
+
+        if podcast.imagen_portada:
+            podcast.imagen_portada.delete(save=False)
+
+        podcast.delete()
         messages.success(request, "Podcast eliminado correctamente.")
-    
+            
     # 4. SALIDA: Te recarga la página de gestión para que veas la lista actualizada.
-    return redirect('frontend:gestion_podcast')
+    return redirect('frontend:gestion_podcasts')
 # --- BIBLIOTECA (USUARIO) ---
 @login_required
 def biblioteca_view(request):
