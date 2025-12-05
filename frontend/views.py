@@ -576,7 +576,7 @@ def gestion_planes_delete(request, plan_id):
     plan = get_object_or_404(Plan, id=plan_id)
     
     if request.method == 'POST':
-         if hasattr(plan, "archivos"):
+        if hasattr(plan, "archivos"):
             for archivo in plan.archivos.all():
                 if archivo.archivo:
                     archivo.archivo.delete(save=False)
