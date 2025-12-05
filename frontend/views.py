@@ -596,11 +596,14 @@ def plan_detalle(request, pk):
 # --- GESTIÓN PODCASTS (ADMIN) ---
 @staff_member_required
 def gestion_podcasts(request):
-    if not request.user.is_superuser: return redirect("frontend:dashboard")
-    
+    if not request.user.is_superuser:
+        return redirect("frontend:dashboard")
+
     item_edit = None
-    if request.GET.get("edit"):
-        item_edit = Podcast.objects.filter(id=request.GET.get("edit")).first()
+    edit_id = request.GET.get("edit")
+
+    if edit_id:
+        item_edit = Podcast.objects.filter(id=edit_id).first()
 
     if request.method == "POST":
         titulo = request.POST.get("titulo")
@@ -608,29 +611,45 @@ def gestion_podcasts(request):
         destacado = request.POST.get("destacado") == "on"
         portada = request.FILES.get("imagen_portada")
         pdf = request.FILES.get("archivo_pdf")
+
+        if not titulo:
+            messages.error(request, "El título es obligatorio.")
+            return redirect("frontend:gestion_podcasts")
+
+        # ✅ SI ES EDICIÓN
         if item_edit:
             item_edit.titulo = titulo
             item_edit.descripcion = descripcion
             item_edit.destacado = destacado
-            if portada: item_edit.imagen_portada = portada
-            if pdf: item_edit.archivo_pdf = pdf
-            
+
+            if portada:
+                item_edit.imagen_portada = portada
+            if pdf:
+                item_edit.archivo_pdf = pdf
+
             item_edit.save()
-            messages.success(request, "Podcast actualizado.")
+            messages.success(request, "Podcast actualizado correctamente.")
+
+        # ✅ SI ES CREACIÓN
         else:
-            Podcast.objects.create(
+            nuevo = Podcast.objects.create(
                 titulo=titulo,
                 descripcion=descripcion,
                 destacado=destacado,
                 imagen_portada=portada,
                 archivo_pdf=pdf
             )
-            messages.success(request, "Podcast creado.")
-        
+
+            print("✅ PODCAST CREADO:", nuevo.id)
+            messages.success(request, "Podcast creado correctamente.")
+
         return redirect("frontend:gestion_podcasts")
 
-    items = Podcast.objects.all().order_by('-creado_en')
-    return render(request, "frontend/gestion_podcast.html", {"items": items, "item_edit": item_edit})
+    items = Podcast.objects.all().order_by("-creado_en")
+    return render(request, "frontend/gestion_podcast.html", {
+        "items": items,
+        "item_edit": item_edit
+    })
 
 @staff_member_required  # 1. SEGURIDAD: Solo vos (admin) podés usarla.
 def gestion_podcast_delete(request, podcast_id):
