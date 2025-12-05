@@ -85,12 +85,11 @@
 
                             <div class="modal-body">
 
-                                <!-- ===================== CARRUSEL SOLO PARA IMÁGENES ===================== -->
-                                <div id="carousel{{ plan.id }}" class="carousel slide" data-bs-ride="carousel">
+                               <div id="carousel{{ plan.id }}" class="carousel slide" data-bs-ride="carousel">
 
                                     <div class="carousel-inner">
 
-                                        <!-- Portada primero -->
+                                        <!-- Portada como primera imagen -->
                                         {% if plan.portada %}
                                         <div class="carousel-item active">
                                             <img src="{{ plan.portada.url }}" class="d-block w-100"
@@ -98,24 +97,22 @@
                                         </div>
                                         {% endif %}
 
-                                        <!-- Mostrar solo imágenes del plan -->
+                                        <!-- Mostrar solo archivos que sean imágenes -->
                                         {% for archivo in plan.archivos.all %}
                                             {% if archivo.archivo.url|lower endswith ".jpg" or
                                                   archivo.archivo.url|lower endswith ".jpeg" or
                                                   archivo.archivo.url|lower endswith ".png" or
-                                                  archivo.archivo.url|lower endswith ".webp" %}
+                                                  archivo.archivo.url|lower endswith ".webp" or
+                                                  archivo.archivo.url|lower endswith ".gif" %}
                                             <div class="carousel-item {% if not plan.portada and forloop.first %}active{% endif %}">
                                                 <img src="{{ archivo.archivo.url }}" class="d-block w-100"
                                                     style="height:400px; object-fit:contain;">
-                                                <div class="carousel-caption d-none d-md-block">
-                                                    <h5>{{ archivo.nombre }}</h5>
-                                                </div>
                                             </div>
                                             {% endif %}
                                         {% endfor %}
                                     </div>
 
-                                    <!-- Flechas -->
+                                    <!-- Controles del carrusel -->
                                     <button class="carousel-control-prev" type="button"
                                             data-bs-target="#carousel{{ plan.id }}" data-bs-slide="prev">
                                         <span class="carousel-control-prev-icon"></span>
@@ -124,8 +121,8 @@
                                             data-bs-target="#carousel{{ plan.id }}" data-bs-slide="next">
                                         <span class="carousel-control-next-icon"></span>
                                     </button>
-
                                 </div>
+
 
                                 <hr>
 
