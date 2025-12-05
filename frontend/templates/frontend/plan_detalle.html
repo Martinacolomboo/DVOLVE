@@ -106,15 +106,13 @@
 
                                       <!-- Mostrar imágenes del plan -->
                                       {% for archivo in plan.archivos.all %}
-                                          {% with archivo.archivo.url|lower as url %}
-                                              {% if '.jpg' in url or '.jpeg' in url or '.png' in url or '.webp' in url or '.gif' in url %}
-                                              <div class="carousel-item {% if not plan.portada and forloop.first %}active{% endif %}">
-                                                  <img src="{{ archivo.archivo.url }}" class="d-block w-100"
-                                                      style="height:400px; object-fit:contain;">
-                                              </div>
-                                              {% endif %}
-                                          {% endwith %}
-                                      {% endfor %}
+                                            {% if archivo.is_pdf %}
+                                                <a href="{{ archivo.url }}" target="_blank" class="btn btn-primary">
+                                                    Ver / Descargar PDF
+                                                </a>
+                                            {% endif %}
+                                        {% endfor %}
+
                                   </div>
 
                                   <!-- Controles -->
