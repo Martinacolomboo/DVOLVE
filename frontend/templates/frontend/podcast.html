@@ -67,12 +67,13 @@
                         
                         <div class="mt-auto">
                             {% if item.archivo_pdf %}
-                              <a href="{{ item.archivo_pdf.url }}?fl_attachment" 
+                              <a href="{{ item.archivo_pdf.url }}" 
                                 target="_blank"
                                 class="btn w-100 text-white" 
                                 style="background-color: #7e2864;">
-                                  <i class="bi bi-file-earmark-pdf"></i> Descargar Episodio
+                                  <i class="bi bi-file-earmark-pdf"></i> Ver / Descargar Episodio
                               </a>
+
                           {% else %}
                               <button class="btn w-100 btn-secondary" disabled>
                                   No hay PDF

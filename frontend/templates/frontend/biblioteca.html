@@ -58,9 +58,13 @@
                             <div class="modal-body p-4">
                                 <h4 class="fw-bold mb-3">{{ item.titulo }}</h4>
                                 <p class="text-secondary">{{ item.descripcion|linebreaks }}</p>
-                                <a href="{{ item.archivo_pdf.url }}?fl_attachment=1" target="_blank" class="btn btn-primary w-100 rounded-pill fw-bold mt-3" style="background:#7e2864; border:none;">
-                                    <i class="bi bi-download me-2"></i> Descargar PDF
+                                <a href="{{ item.archivo_pdf.url }}" 
+                                    target="_blank" 
+                                    class="btn btn-primary w-100 rounded-pill fw-bold mt-3" 
+                                    style="background:#7e2864; border:none;">
+                                        <i class="bi bi-download me-2"></i> Ver / Descargar PDF
                                 </a>
+
 
                             </div>
                         </div>
