@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils.text import slugify  # <--- ¡AGREGA ESTA LÍNEA!
-
+from cloudinary.models import CloudinaryField
 class Questionario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="questionario_user")
 
@@ -173,7 +173,7 @@ class Plan(models.Model):
         blank=True
     )
     
-    portada = models.ImageField(upload_to="planes_portada/", blank=True, null=True)
+    portada = CloudinaryField('image', blank=True, null=True)
     slug = models.SlugField(max_length=140, unique=True, blank=True, null=True)
     destacado = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
