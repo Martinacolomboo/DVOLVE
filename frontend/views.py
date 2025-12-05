@@ -631,6 +631,7 @@ def gestion_podcasts(request):
 
     items = Podcast.objects.all().order_by('-creado_en')
     return render(request, "frontend/gestion_podcast.html", {"items": items, "item_edit": item_edit})
+
 @staff_member_required  # 1. SEGURIDAD: Solo vos (admin) podés usarla.
 def gestion_podcast_delete(request, podcast_id):
     # 2. BÚSQUEDA: Busca el podcast exacto por su ID. Si no existe, da error 404.
