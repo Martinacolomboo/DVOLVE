@@ -63,8 +63,6 @@ WSGI_APPLICATION = 'webLula.wsgi.application'
 # Database → se define en development y production
 DATABASES = {}
 
-EMAIL_CODE_SECRET = os.getenv("EMAIL_CODE_SECRET")
-
 EMAIL_CODE_TTL_MINUTES = 10
 EMAIL_CODE_MAX_ATTEMPTS = 5
 EMAIL_CODE_RESEND_COOLDOWN_SECONDS = 60

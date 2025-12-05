@@ -32,3 +32,7 @@ PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+# El remitente
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", 'DVOLVE <dvolveprogram@gmail.com>')
