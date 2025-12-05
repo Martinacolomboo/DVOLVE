@@ -98,17 +98,15 @@
                                         {% endif %}
 
                                         <!-- Mostrar solo archivos que sean imágenes -->
-                                        {% for archivo in plan.archivos.all %}
-                                            {% if archivo.archivo.url|lower endswith ".jpg" or
-                                                  archivo.archivo.url|lower endswith ".jpeg" or
-                                                  archivo.archivo.url|lower endswith ".png" or
-                                                  archivo.archivo.url|lower endswith ".webp" or
-                                                  archivo.archivo.url|lower endswith ".gif" %}
-                                                    <div class="carousel-item {% if not plan.portada and forloop.first %}active{% endif %}">
-                                                        <img src="{{ archivo.archivo.url }}" class="d-block w-100"
-                                                            style="height:400px; object-fit:contain;">
-                                                    </div>
-                                            {% endif %}
+                                         {% for archivo in plan.archivos.all %}
+                                            {% with archivo.archivo.url|lower as url %}
+                                                {% if '.jpg' in url or '.jpeg' in url or '.png' in url or '.webp' in url or '.gif' in url %}
+                                                <div class="carousel-item {% if not plan.portada and forloop.first %}active{% endif %}">
+                                                    <img src="{{ archivo.archivo.url }}" class="d-block w-100"
+                                                        style="height:400px; object-fit:contain;">
+                                                </div>
+                                                {% endif %}
+                                            {% endwith %}
                                         {% endfor %}
                                     </div>
 
