@@ -314,25 +314,37 @@ def panel_admin(request):
 
 @staff_member_required
 def gestion_videos(request):
-    if not request.user.is_superuser: return redirect("frontend:dashboard")
-    
+    if not request.user.is_superuser:
+        return redirect("frontend:dashboard")
+
     video_edit = None
+
+    delete_id = request.GET.get("delete")
+    if delete_id:
+        video = get_object_or_404(Video, id=delete_id)
+        video.delete()  # Esto sí borra archivo + registro
+        messages.success(request, "Video eliminado correctamente.")
+        return redirect("frontend:gestion_videos")
+
     if request.GET.get("edit"):
         video_edit = Video.objects.filter(id=request.GET.get("edit")).first()
-    delete_id = request.GET.get("delete")
+
     if request.method == "POST":
         titulo = request.POST.get("titulo", "").strip()
         archivo = request.FILES.get("archivo")
-        # (Resto de campos simplificados para brevedad, pero mantené tu lógica de form)
-        if delete_id:
-            video = get_object_or_404(Video, id=delete_id)
-            video.delete()
-            return redirect("frontend:gestion_videos")
 
         if video_edit:
             video_edit.titulo = titulo
-            if archivo: video_edit.archivo = archivo
-            # ... actualizar resto de campos ...
+            if archivo:
+                video_edit.archivo = archivo
+            video_edit.descripcion = request.POST.get("descripcion", "")
+            video_edit.objetivo = request.POST.get("objetivo")
+            video_edit.nivel = request.POST.get("nivel")
+            video_edit.entorno = request.POST.get("entorno")
+            video_edit.apto_para = request.POST.get("apto_para")
+            video_edit.requiere_equipo = bool(request.POST.get("requiere_equipo"))
+            if request.FILES.get("portada"):
+                video_edit.thumbnail = request.FILES.get("portada")
             video_edit.save()
             messages.success(request, "Video actualizado.")
         else:
@@ -349,6 +361,7 @@ def gestion_videos(request):
                 thumbnail=request.FILES.get("portada")
             )
             messages.success(request, "Video creado.")
+
         return redirect("frontend:gestion_videos")
 
     videos = Video.objects.all().order_by("-creado_en")
