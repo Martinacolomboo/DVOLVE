@@ -319,15 +319,15 @@ def gestion_videos(request):
     video_edit = None
     if request.GET.get("edit"):
         video_edit = Video.objects.filter(id=request.GET.get("edit")).first()
-
+    delete_id = request.GET.get("delete")
     if request.method == "POST":
         titulo = request.POST.get("titulo", "").strip()
         archivo = request.FILES.get("archivo")
         # (Resto de campos simplificados para brevedad, pero mantené tu lógica de form)
         if delete_id:
-        video = get_object_or_404(Video, id=delete_id)
-        video.delete()
-        return redirect("frontend:gestion_videos")
+            video = get_object_or_404(Video, id=delete_id)
+            video.delete()
+            return redirect("frontend:gestion_videos")
 
         if video_edit:
             video_edit.titulo = titulo
