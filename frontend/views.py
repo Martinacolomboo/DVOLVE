@@ -324,7 +324,11 @@ def gestion_videos(request):
         titulo = request.POST.get("titulo", "").strip()
         archivo = request.FILES.get("archivo")
         # (Resto de campos simplificados para brevedad, pero mantené tu lógica de form)
-        
+        if delete_id:
+        video = get_object_or_404(Video, id=delete_id)
+        video.delete()
+        return redirect("frontend:gestion_videos")
+
         if video_edit:
             video_edit.titulo = titulo
             if archivo: video_edit.archivo = archivo
@@ -350,11 +354,11 @@ def gestion_videos(request):
     videos = Video.objects.all().order_by("-creado_en")
     return render(request, "frontend/gestion_videos.html", {"videos": videos, "video_edit": video_edit})
 
-@staff_member_required
-def eliminar_video(request, video_id):
-    video = get_object_or_404(Video, id=video_id)
-    video.delete()
-    return redirect("frontend:gestion_videos")
+#@staff_member_required
+#def eliminar_video(request, video_id):
+    #video = get_object_or_404(Video, id=video_id)
+   # video.delete()
+  #  return redirect("frontend:gestion_videos")
 
 @staff_member_required
 def gestion_recetas(request):
