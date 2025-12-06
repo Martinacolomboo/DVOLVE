@@ -3,11 +3,20 @@
 
 {% block content %}
 <div class="container py-5"; style="padding-top: 80px;">
+      
 
   <div class="row align-items-center mb-5 g-5">
     
     <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start z-1">
-        
+        {% if request.user.is_superuser %}
+          {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+        {% endif %}
         <a href="https://open.spotify.com/show/52gKuGNkRMUff6DU3slz69" target="_blank" class="d-inline-flex align-items-center text-decoration-none mb-3">
           <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: #1DB954; color: white; font-weight: 500; font-size: 0.9rem;">
               <i class="bi bi-spotify me-2"></i> Escuchanos en Spotify

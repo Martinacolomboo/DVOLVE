@@ -6,6 +6,15 @@
 
   <div class="row align-items-center mb-5 g-5">
     <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start z-1">
+        {% if request.user.is_superuser %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endif %}
         <h1 class="display-4 fw-bold mb-3" style="color: #212529;">
             Biblioteca <span style="color: #7e2864;">Fitness</span>
         </h1>
