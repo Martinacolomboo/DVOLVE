@@ -87,5 +87,25 @@
     <div class="text-center py-5 text-muted"><h4>No hay documentos cargados.</h4></div>
   {% endif %}
 </div>
-<style>.transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }</style>
+<style>
+    .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }
+    /* 🔥 Para cortar títulos largos en las tarjetas */
+.card-body h6 {
+    display: block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 🔥 Para cortar textos largos dentro del modal */
+.modal-body h4,
+.modal-body p,
+.modal-body * {
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+</style>
 {% endblock %}

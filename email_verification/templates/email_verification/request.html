@@ -51,19 +51,97 @@
   .ev-resend:hover { background:#c875ac; color:white; transform:translateY(-1px); box-shadow:0 3px 8px rgba(0,0,0,0.2); }
   
   @media (max-width:576px){ .pm-card{ padding:18px;} }
+  /* ==== RESPONSIVE PARA CELULARES === */
+@media (max-width: 480px) {
+
+  /* Achica la tarjeta y deja márgenes */
+  .pm-card {
+    max-width: 90% !important;
+    width: 90% !important;
+    margin: 0 auto;
+    padding: 18px !important;
+    border-width: 2px;
+  }
+
+  .pm-card h1 {
+    font-size: 1.2rem !important;
+  }
+
+  .pm-card p {
+    font-size: 0.95rem !important;
+    line-height: 1.4;
+    word-break: break-word;   /* ← Esto evita que el email rompa el diseño */
+  }
+
+  /* Botones más chicos, centrados */
+  .pm-btn {
+    font-size: 1rem !important;
+    padding: 10px !important;
+    width: 100% !important;
+  }
+
+  .ev-resend {
+    font-size: 0.95rem !important;
+    padding: 8px 10px !important;
+  }
+
+  /* Inputs más pequeños */
+  .pm-input, 
+  .ev-input {
+    font-size: 1rem !important;
+    padding: 10px !important;
+  }
+
+  /* Reduce tamaño del icono check del plan activo */
+  .bi-check-circle-fill {
+    font-size: 2.4rem !important;
+  }
+
+  .alert {
+    font-size: 0.95rem !important;
+    padding: 10px !important;
+  }
+}
+
 </style>
 
 <div class="pm-wrapper" id="request-wrapper" data-wait="{{ resend_wait|default:0 }}">
   <div class="pm-card">
 
     {% if already_verified %}
-      <h1>Correo verificado</h1>
-      <p>El correo <strong>{{ request.session.verified_email }}</strong> ya fue verificado.</p>
-      <a href="{% url 'principal:metodos_pago' %}{% if request.session.monto %}?monto={{ request.session.monto|urlencode }}{% endif %}" class="pm-btn">Ir a pagar</a>
-      <p class="pm-note">Si querés cambiar el plan, podés volver atrás.</p>
-      <div class="pm-back" style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
-       <a href="{% url 'principal:pagos' %}{% if request.session.monto %}?monto={{ request.session.monto|urlencode }}{% endif %}" class="ev-resend">Volver a seleccionar plan</a>
-      </div>
+      
+      {% if plan_activo %}
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+          <h1 class="mt-2">¡Ya tenés acceso!</h1>
+          
+          <div class="alert alert-success rounded-4 text-center border-0" style="background-color: #d4edda; color: #155724;">
+              Tu plan está activo hasta el <strong>{{ vencimiento|date:"d/m/Y" }}</strong>.
+          </div>
+          
+          <p>No debes pagar de nuevo para entrenar.</p>
+
+          <div class="d-grid gap-2 mt-4">
+              <a href="{% url 'frontend:login' %}" class="pm-btn">
+                  <i class="bi bi-box-arrow-in-right"></i> Ir a Iniciar Sesión
+              </a>
+              
+              
+          </div>
+
+    {% else %}
+        <h1>Correo verificado</h1>
+        <p>El correo <strong>{{ email }}</strong> está verificado pero 
+          {% if vencimiento %}tu plan venció el {{ vencimiento|date:"d/m/Y" }}{% else %}no tiene un plan activo{% endif %}.
+        </p>
+          
+        <a href="{% url 'principal:metodos_pago' %}{% if request.session.monto %}?monto={{ request.session.monto|urlencode }}{% endif %}" class="pm-btn">
+          Ir a pagar
+        </a>
+          
+        <div class="pm-back mt-3">
+          <a href="{% url 'principal:pagos' %}" class="ev-resend">Cambiar Plan</a>
+        </div>
+    {% endif %}
 
     {% else %}
       <h1>Verificá tu email</h1>

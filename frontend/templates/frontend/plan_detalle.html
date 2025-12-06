@@ -141,6 +141,61 @@
     
     /* Filtros activos */
     .btn-dark.active { background-color: #7e2864; border-color: #7e2864; }
+  
+    /* 🔥 Para cortar títulos largos en las tarjetas */
+    .plan-card h5 {
+        display: block;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* 🔥 Para cortar textos largos dentro del modal */
+    .modal-body h4,
+    .modal-body p,
+    .modal-body * {
+        max-width: 100%;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }/* Cortar títulos en cards */
+.card-body h5 {
+    display: block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Cortar título del modal */
+.modal-title {
+    max-width: 85%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Cortar nombres de archivos largos */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.list-group-item span.nombre-archivo {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Evitar que descripciones muy largas agranden el modal */
+.modal-body p.text-muted {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
 </style>
 
 <script>

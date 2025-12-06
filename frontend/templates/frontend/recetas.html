@@ -137,6 +137,25 @@
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important;
 }
+/* Evita que el nombre del archivo rompa el modal */
+.modal-body {
+  word-break: break-word !important;
+}
+
+/* Para cualquier botón o bloque que se deforme */
+.modal-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Si tu PDF está dentro de un botón o contenedor */
+.nombre-archivo {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  white-space: normal !important;
+}
+
 </style>
 
 <script>

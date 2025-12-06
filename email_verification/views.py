@@ -27,27 +27,39 @@ def request_code_view(request):
             email = form.cleaned_data['email'].lower()
             ip = _client_ip(request)
 
-            # --- CASO 1: SI YA ESTÁ VERIFICADO ---
-            if VerifiedEmail.objects.filter(email=email).exists():
+            # --- CASO 1: USUARIO YA VERIFICADO ---
+            # Buscamos el objeto completo para ver sus fechas
+            usuario_verif = VerifiedEmail.objects.filter(email=email).first()
+
+            if usuario_verif:
                 request.session['verified_email'] = email
                 request.session['checkout_email'] = email
                 request.session.pop('ev_email', None)
                 
-                # Decidir destino
+                # CHEQUEO INTELIGENTE: ¿Tiene plan activo?
+                plan_activo = False
+                fecha_vencimiento = None
+                
+                if usuario_verif.vencimiento and usuario_verif.vencimiento > timezone.now():
+                    plan_activo = True
+                    fecha_vencimiento = usuario_verif.vencimiento
+
+                # A. Si venía de registrarse, lo dejamos pasar
                 if request.session.get('verification_next'):
-                     return redirect(request.session['verification_next'])
+                    return redirect(request.session['verification_next'])
+                
+                # B. Si venía a pagar, le mostramos la situación real
                 else:
                     return render(request, 'email_verification/request.html', {
                         'form': form,
                         'already_verified': True,
                         'email': email,
+                        'plan_activo': plan_activo,       # <--- NUEVA VARIABLE
+                        'vencimiento': fecha_vencimiento  # <--- NUEVA VARIABLE
                     })
-                    # monto_s = request.session.get("monto")
-                     
-                    #url = reverse('principal:metodos_pago')
-                    #return redirect(f"{url}?monto={monto_s}" if monto_s else url)
 
-            # --- CASO 2: SI NO ESTÁ VERIFICADO (Enviar código) ---
+            # --- CASO 2: NO VERIFICADO (Enviar código) ---
+            # ... (Este bloque sigue igual que antes) ...
             last = EmailVerification.objects.filter(email=email).order_by('-sent_at').first()
             if last and (timezone.now() - last.sent_at).total_seconds() < RESEND_COOLDOWN:
                 messages.error(request, "Esperá unos segundos para reenviar.")
@@ -65,11 +77,12 @@ def request_code_view(request):
             send_code_email(email, code)
             request.session['ev_email'] = email
             return redirect('email_verification:verify')
+            
     else:
         form = RequestCodeForm(initial={'email': request.session.get('ev_email')})
         
     return render(request, 'email_verification/request.html', {'form': form})
-
+    
 @require_http_methods(["GET", "POST"])
 def verify_code_view(request):
     email = request.session.get('ev_email')
