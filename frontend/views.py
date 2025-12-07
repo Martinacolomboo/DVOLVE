@@ -319,54 +319,80 @@ def gestion_videos(request):
 
     video_edit = None
 
+    # ✅ ELIMINAR
     delete_id = request.GET.get("delete")
     if delete_id:
         video = get_object_or_404(Video, id=delete_id)
-        video.delete()  # Esto sí borra archivo + registro
+        video.delete()
         messages.success(request, "Video eliminado correctamente.")
         return redirect("frontend:gestion_videos")
 
+    # ✅ EDITAR
     if request.GET.get("edit"):
         video_edit = Video.objects.filter(id=request.GET.get("edit")).first()
 
+    # ✅ CREAR / ACTUALIZAR
     if request.method == "POST":
         titulo = request.POST.get("titulo", "").strip()
         archivo = request.FILES.get("archivo")
 
+        # ✅ SOLO OBJETIVO ES MÚLTIPLE
+        objetivo_list = request.POST.getlist("objetivo")
+        objetivo = ",".join(objetivo_list)
+
+        nivel = request.POST.get("nivel")
+        entorno = request.POST.get("entorno")
+        apto_para = request.POST.get("apto_para")
+
+        requiere_equipo = bool(request.POST.get("requiere_equipo"))
+
         if video_edit:
             video_edit.titulo = titulo
+
             if archivo:
                 video_edit.archivo = archivo
+
             video_edit.descripcion = request.POST.get("descripcion", "")
-            video_edit.objetivo = request.POST.get("objetivo")
-            video_edit.nivel = request.POST.get("nivel")
-            video_edit.entorno = request.POST.get("entorno")
-            video_edit.apto_para = request.POST.get("apto_para")
-            video_edit.requiere_equipo = bool(request.POST.get("requiere_equipo"))
+            video_edit.objetivo = objetivo
+            video_edit.nivel = nivel
+            video_edit.entorno = entorno
+            video_edit.apto_para = apto_para
+            video_edit.requiere_equipo = requiere_equipo
+
             if request.FILES.get("portada"):
                 video_edit.thumbnail = request.FILES.get("portada")
+
             video_edit.save()
-            messages.success(request, "Video actualizado.")
+            messages.success(request, "Video actualizado correctamente.")
+
         else:
             Video.objects.create(
                 titulo=titulo,
                 descripcion=request.POST.get("descripcion", ""),
-                objetivo=request.POST.get("objetivo"),
-                nivel=request.POST.get("nivel"),
-                entorno=request.POST.get("entorno"),
-                apto_para=request.POST.get("apto_para"),
-                requiere_equipo=bool(request.POST.get("requiere_equipo")),
+                objetivo=objetivo,
+                nivel=nivel,
+                entorno=entorno,
+                apto_para=apto_para,
+                requiere_equipo=requiere_equipo,
                 creado_por=request.user,
                 archivo=archivo,
                 thumbnail=request.FILES.get("portada")
             )
-            messages.success(request, "Video creado.")
+            messages.success(request, "Video creado correctamente.")
 
         return redirect("frontend:gestion_videos")
 
     videos = Video.objects.all().order_by("-creado_en")
-    return render(request, "frontend/gestion_videos.html", {"videos": videos, "video_edit": video_edit})
 
+    return render(
+        request,
+        "frontend/gestion_videos.html",
+        {
+            "videos": videos,
+            "video_edit": video_edit
+        }
+    )
+  
 #@staff_member_required
 #def eliminar_video(request, video_id):
     #video = get_object_or_404(Video, id=video_id)
@@ -389,7 +415,8 @@ def gestion_recetas(request):
             titulo = request.POST.get('titulo')
             descripcion = request.POST.get('descripcion')
             objetivo = request.POST.get('objetivo')
-            categoria = request.POST.get('categoria_comida', 'almuerzo')
+            categoria_comida_list = request.POST.getlist('categoria_comida')
+            categoria_comida = ",".join(categoria_comida_list)
             restriccion = request.POST.get('diet_restrictions', 'ninguna')
             tiroides = request.POST.get('thyroid', 'ninguna')
             destacado = request.POST.get('destacado') == 'on'
@@ -413,7 +440,7 @@ def gestion_recetas(request):
                 receta_edit.titulo = titulo
                 receta_edit.descripcion = descripcion
                 receta_edit.objetivo = objetivo
-                receta_edit.categoria_comida = categoria
+                receta_edit.categoria_comida = categoria_comida
                 receta_edit.diet_restrictions = restriccion
                 receta_edit.thyroid = tiroides
                 receta_edit.destacado = destacado
@@ -438,7 +465,7 @@ def gestion_recetas(request):
                     titulo=titulo,
                     descripcion=descripcion,
                     objetivo=objetivo,
-                    categoria_comida=categoria,
+                    categoria_comida=categoria_comida,
                     diet_restrictions=restriccion,
                     thyroid=tiroides,
                     destacado=destacado,

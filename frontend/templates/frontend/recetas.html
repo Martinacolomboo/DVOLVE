@@ -56,7 +56,7 @@
     <div class="row g-4">
         {% for receta in recetas %}
             <div class="col-12 col-md-6 col-lg-3 receta-card" 
-                 data-categoria="{{ receta.categoria_comida }}">
+                data-categoria="{{ receta.categoria_comida|default:'' }}">
 
                 <!-- CARD -->
                 <div class="card h-100 shadow-sm rounded-4 overflow-hidden transition-hover"
@@ -99,8 +99,8 @@
                                 {% endif %}
 
                                 <!-- ✅ BOTÓN PDF FUNCIONANDO -->
-                                {% if receta.archivo_pdf %}
-                                    <a href="{{ receta.archivo_pdf.url }}" 
+                                {% if receta.archivo %}
+                                    <a href="{{ receta.archivo.url }}" 
                                        target="_blank"
                                        class="btn btn-success w-100 mt-3 rounded-pill fw-bold">
                                         <i class="bi bi-download me-2"></i> Ver / Descargar Receta
@@ -170,8 +170,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const filtro = btn.dataset.filter;
       cards.forEach(card => {
+        const categorias = card.dataset.categoria ? card.dataset.categoria.split(',') : [];
         card.style.display =
-          filtro === 'todos' || card.dataset.categoria === filtro
+          filtro === 'todos' || categorias.includes(filtro)
           ? 'block'
           : 'none';
       });

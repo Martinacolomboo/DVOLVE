@@ -122,7 +122,7 @@ class Video(models.Model):
     archivo = CloudinaryField('video', resource_type='video', blank=True, null=True)
     creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # 👈 acá
     destacado = models.BooleanField(default=False)  # 👈 recomendado para dashboard
-    objetivo = models.CharField(max_length=50, choices=OBJETIVOS, blank=True, null=True)  # 👈 relacion con cuestionario
+    objetivo = models.CharField(max_length=200, help_text="Separar por coma si hay más de uno")
     nivel = models.CharField(max_length=50, choices=[
         ("nunca", "Nunca entrené"),
         ("intermedio", "Intermedio"),
@@ -149,7 +149,10 @@ class Video(models.Model):
     )
     requiere_equipo = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
-
+    def get_objetivo_list(self):
+        if self.objetivo:
+            return self.objetivo.split(",")
+        return []
     def __str__(self):
         return self.titulo
 
@@ -267,18 +270,8 @@ class Receta(models.Model):
     creado_en = models.DateTimeField(auto_now_add=True)
 
     objetivo = models.CharField(max_length=50, choices=OBJETIVOS, blank=True, null=True)
-    categoria_comida = models.CharField(
-        max_length=20,
-        choices=[
-            ("desayuno", "Desayuno"),
-            ("almuerzo", "Almuerzo"),
-            ("cena", "Cena"),
-            ("snack", "Snack"),
-            ("post-entreno", "Post-entreno"),
-        ],
-        default="almuerzo",
-        verbose_name="Tipo de Comida"
-    )
+    categoria_comida = models.CharField(max_length=200, help_text="Separar por coma si hay más de uno")
+   
 
     # 👇 NUEVOS CAMPOS
     diet_restrictions = models.CharField(
@@ -300,6 +293,10 @@ class Receta(models.Model):
     
     # campos...
     plan = models.ForeignKey(Plan, on_delete=models.SET_NULL, null=True, blank=True, related_name='recetas_individuales')
+    def get_categoria_comida_list(self):
+        if self.categoria_comida:
+            return self.categoria_comida.split(",")
+        return []
     def __str__(self):
         return self.titulo
 

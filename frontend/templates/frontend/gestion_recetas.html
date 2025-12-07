@@ -54,16 +54,48 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Tipo de Comida *</label>
-                        <select name="categoria_comida" class="form-select" required>
-                            <option value="desayuno" {% if receta_edit and receta_edit.categoria_comida == "desayuno" %}selected{% endif %}>Desayuno</option>
-                            <option value="almuerzo" {% if receta_edit and receta_edit.categoria_comida == "almuerzo" %}selected{% endif %}>Almuerzo</option>
-                            <option value="cena" {% if receta_edit and receta_edit.categoria_comida == "cena" %}selected{% endif %}>Cena</option>
-                            <option value="snack" {% if receta_edit and receta_edit.categoria_comida == "snack" %}selected{% endif %}>Snack</option>
-                            <option value="post-entreno" {% if receta_edit and receta_edit.categoria_comida == "post-entreno" %}selected{% endif %}>Post-entreno</option>
-                        </select>
+                    <div class="d-flex flex-wrap gap-2">
+                        <label class="form-label fw-semibold">Categoría de comida *</label>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categoria_comida"
+                                id="comida_desayuno" value="desayuno"
+                                {% if receta_edit and "desayuno" in receta_edit.get_categoria_comida_list %}checked{% endif %}>
+                            <label class="form-check-label" for="comida_desayuno">Desayuno</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categoria_comida"
+                                id="comida_almuerzo" value="almuerzo"
+                                {% if receta_edit and "almuerzo" in receta_edit.get_categoria_comida_list %}checked{% endif %}>
+                            <label class="form-check-label" for="comida_almuerzo">Almuerzo</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categoria_comida"
+                                id="comida_cena" value="cena"
+                                {% if receta_edit and "cena" in receta_edit.get_categoria_comida_list %}checked{% endif %}>
+                            <label class="form-check-label" for="comida_cena">Cena</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categoria_comida"
+                                id="comida_snack" value="snack"
+                                {% if receta_edit and "snack" in receta_edit.get_categoria_comida_list %}checked{% endif %}>
+                            <label class="form-check-label" for="comida_snack">Snack</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categoria_comida"
+                                id="comida_post" value="post-entreno"
+                                {% if receta_edit and "post-entreno" in receta_edit.get_categoria_comida_list %}checked{% endif %}>
+                            <label class="form-check-label" for="comida_post">Post-entreno</label>
+                        </div>
                     </div>
+
+                    <small class="text-muted">Podés elegir más de una opción.</small>
+
+
                 </div>
 
                 <div class="row mb-4">
