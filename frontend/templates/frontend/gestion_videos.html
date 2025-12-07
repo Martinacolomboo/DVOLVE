@@ -77,7 +77,11 @@
                             {% if video_edit and "bienestar" in video_edit.objetivo %}checked{% endif %}>
                             <label class="form-check-label">Bienestar general</label>
                         </div>
-
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="objetivo" value="estiramiento"
+                            {% if video_edit and "estiramiento" in video_edit.objetivo %}checked{% endif %}>
+                            <label class="form-check-label">Estiramiento</label>
+                        </div>
                         </div>
 
                  
