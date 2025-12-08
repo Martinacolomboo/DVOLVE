@@ -212,43 +212,52 @@ def videos_view(request):
     videos = Video.objects.all().order_by("-creado_en")
     return render(request, "frontend/video.html", {"videos": videos, "recomendados": recomendados})
 
+from django.db.models import Q
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def recetas_view(request):
-    recetas_filtradas = Receta.objects.all().order_by('-destacado', '-creado_en')
+    recetas_base = Receta.objects.all().order_by('-destacado', '-creado_en')
+
     user_restrictions = "ninguna"
     user_thyroid = "ninguna"
+    recetas_filtradas = recetas_base  # ✅ SIEMPRE HAY BACKUP
 
-    # Solo intentamos filtrar si NO es admin
-    if not (request.user.is_superuser or request.user.is_staff):
-        try:
-            cuestionario = Questionario.objects.get(user=request.user)
-            
-            # Filtros personalizados
-            user_restrictions = cuestionario.diet_restrictions
-            user_thyroid = cuestionario.thyroid
+    try:
+        cuestionario = Questionario.objects.get(user=request.user)
 
-            q_filters = Q(objetivo=cuestionario.training_goal) | Q(objetivo=cuestionario.diet_goal)
-            restricciones_q = Q(diet_restrictions="ninguna") | Q(diet_restrictions=user_restrictions)
-            thyroid_q = Q(thyroid="ninguna") | Q(thyroid=user_thyroid)
+        user_restrictions = cuestionario.diet_restrictions
+        user_thyroid = cuestionario.thyroid
 
-            recetas_filtradas = Receta.objects.filter(
-                q_filters & restricciones_q & thyroid_q
-            ).order_by('-destacado', '-creado_en')
+        filtros = (
+            Q(diet_restrictions="ninguna") | Q(diet_restrictions=user_restrictions)
+        ) & (
+            Q(thyroid="ninguna") | Q(thyroid=user_thyroid)
+        )
 
-        except Questionario.DoesNotExist:
-            # ESTA ES LA CLAVE: Mensaje único si no hay cuestionario
-            # Usamos el nivel 'info' para que sea menos alarmante que 'warning'
+        recetas_filtradas = recetas_base.filter(filtros)
+
+        # ✅ SI LOS FILTROS DEJAN VACÍO → MOSTRAMOS TODAS
+        if not recetas_filtradas.exists():
+            recetas_filtradas = recetas_base
+
+    except Questionario.DoesNotExist:
+        if not (request.user.is_superuser or request.user.is_staff):
             messages.info(
-                request, 
-                "Para ver recetas personalizadas según tu objetivo, completá tu cuestionario de alimentación."
+                request,
+                "Para ver recetas personalizadas según tu perfil, completá tu cuestionario."
             )
+
 
     context = {
         'recetas': recetas_filtradas,
         'user_restrictions': user_restrictions,
         'user_thyroid': user_thyroid,
     }
+
     return render(request, 'frontend/recetas.html', context)
+
 # ==============================================================================
 # 3. CUESTIONARIOS
 # ==============================================================================
