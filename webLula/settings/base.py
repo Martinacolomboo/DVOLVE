@@ -13,7 +13,7 @@ if not SECRET_KEY:
 
 DEBUG = False   # se sobreescribe en development.py
 
-ALLOWED_HOSTS = []  # se completa en cada settings
+ALLOWED_HOSTS = ["*"]  # se completa en cada settings
 
 INSTALLED_APPS = [
     'django.contrib.admin',
