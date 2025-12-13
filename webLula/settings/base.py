@@ -14,7 +14,7 @@ if not SECRET_KEY:
 DEBUG = False   # se sobreescribe en development.py
 
 ALLOWED_HOSTS = ["*"]  # se completa en cada settings
-
+DOLLAR_FALLBACK = 1464.55 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

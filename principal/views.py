@@ -21,6 +21,14 @@ def pagos(request):
 def privacidad(request):
     return render(request, "principal/privacidad.html")
 
+def obtener_dolar_oficial():
+    try:
+        response = requests.get("https://dolarapi.com/v1/dolares/oficial")
+        data = response.json()
+        return float(data["venta"])  
+    except Exception:
+        return getattr(settings, "DOLLAR_FALLBACK", 1464.55) 
+
 def metodos_pago(request):
     response = CheckoutService.chequear_email_verificado(request)
     if response is not None: return response
@@ -33,7 +41,7 @@ def metodos_pago(request):
     except (ValueError, TypeError):
         return redirect("principal:pagos")
 
-    tasa = getattr(settings, "ARS_PER_USD", 1000.0)
+    tasa = obtener_dolar_oficial()
     monto_usd = round(monto_ars / tasa, 2)
 
     request.session["monto_ars"] = monto_ars
