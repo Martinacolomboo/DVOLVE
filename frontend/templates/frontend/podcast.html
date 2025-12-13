@@ -59,11 +59,11 @@
                 <div class="card h-100 border-0 shadow-sm rounded-4">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#podcastModal{{ item.id }}" style="text-decoration:none;">
                         {% if item.imagen_portada_url %}
-                            <img src="{{ item.imagen_portada_url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                            <img src="{{ item.imagen_portada_url }}" class="card-img-top rounded-top" style="height: 250px; object-fit: cover;">
                         {% elif item.imagen_portada %}
-                            <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                            <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 250px; object-fit: cover;">
                         {% else %}
-                            <div class="bg-light text-center py-5 rounded-top" style="height: 150px;">
+                            <div class="bg-light text-center py-5 rounded-top" style="height: 250px;">
                                 <i class="bi bi-mic fs-1 text-muted"></i>
                             </div>
                         {% endif %}
