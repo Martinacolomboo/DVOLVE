@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.urls import reverse, NoReverseMatch
 from django.contrib import messages
 # MODELOS PROPIOS
-from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca, SiteConfiguration
+from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca, SiteConfiguration, PodcastArchivo
 
 # CORRECCIÓN CRÍTICA: Importamos el modelo de suscripción real
 from principal.models import VerifiedEmail
