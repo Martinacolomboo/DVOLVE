@@ -660,24 +660,26 @@ def gestion_podcasts(request):
         descripcion = request.POST.get("descripcion")
         destacado = request.POST.get("destacado") == "on"
         portada = request.FILES.get("imagen_portada")
-        pdf = request.FILES.get("archivo_pdf")
+        archivos = request.FILES.getlist("archivo_pdf")
         if item_edit:
             item_edit.titulo = titulo
             item_edit.descripcion = descripcion
             item_edit.destacado = destacado
             if portada: item_edit.imagen_portada = portada
-            if pdf: item_edit.archivo_pdf = pdf
-            
             item_edit.save()
+            for f in archivos:
+                PodcastArchivo.objects.create(podcast=item_edit, archivo=f, nombre=f.name)
+           
             messages.success(request, "Podcast actualizado.")
         else:
-            Podcast.objects.create(
+            new_podcast = Podcast.objects.create(
                 titulo=titulo,
                 descripcion=descripcion,
                 destacado=destacado,
                 imagen_portada=portada,
-                archivo_pdf=pdf
             )
+            for f in archivos:
+                PodcastArchivo.objects.create(podcast=new_podcast, archivo=f, nombre=f.name)
             messages.success(request, "Podcast creado.")
         
         return redirect("frontend:gestion_podcasts")
@@ -691,6 +693,7 @@ def gestion_podcast_delete(request, item_id):
     
     # 3. ACCIÓN: Solo borra si la petición es POST (por seguridad web).
     if request.method == 'POST':
+        podcast.podcastarchivos.all().delete()
         podcast.delete()  # <--- ACÁ SE BORRA DE LA BASE DE DATOS
         messages.success(request, "Podcast eliminado correctamente.")
     

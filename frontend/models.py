@@ -317,13 +317,36 @@ class Recomendacion(models.Model):
 class Podcast(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
-    
     imagen_portada = CloudinaryField('image', blank=True, null=True)
-    archivo_pdf = CloudinaryField('file', resource_type='raw', blank=True, null=True)
     destacado = models.BooleanField(default=False)
     creado_en = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return self.titulo
+    def archivos(self):
+        return self.podcastarchivos.all()
+class PodcastArchivo(models.Model):
+    podcast = models.ForeignKey(
+        Podcast,
+        on_delete=models.CASCADE,
+        related_name="podcastarchivos"
+    )
+    archivo = CloudinaryField('file', resource_type='raw', blank=True, null=True)
+    nombre = models.CharField(max_length=255, blank=True)
+    descripcion = models.TextField(blank=True, null=True)
+    subido_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nombre or f"Archivo de {self.podcast.titulo}"
+
+    @property
+    def url(self):
+        return self.archivo.url if self.archivo else None
+
+    @property
+    def is_pdf(self):
+        return str(self.archivo.public_id).lower().endswith(".pdf")
+        
 class Biblioteca(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
