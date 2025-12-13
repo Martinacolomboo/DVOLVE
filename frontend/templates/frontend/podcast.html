@@ -75,8 +75,10 @@
                         </p>
                         
                         <div class="mt-auto">
-                            {% for archivo in podcast.podcastarchivos.all %}
-                                <a href="{{ archivo.url }}">{{ archivo.nombre }}</a>
+                            {% for archivo in item.podcastarchivos.all %}
+                                <a href="{{ archivo.url }}" target="_blank" class="btn btn-outline-primary btn-sm mb-1 d-block">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i> {{ archivo.nombre|default:"Archivo" }}
+                                </a>
                             {% empty %}
                                 <span class="text-muted">Sin archivos</span>
                             {% endfor %}
