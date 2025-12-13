@@ -54,41 +54,52 @@
   {% if podcasts %}
     <div class="row g-4">
         {% for item in podcasts %}
-            <div class="col-12 col-md-6 col-lg-4">
-                
-                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden transition-hover">
-                    
-                    <div class="position-relative bg-dark text-center">
-                        {% if item.imagen_portada %}
-                            <img src="{{ item.imagen_portada.url }}" class="card-img-top" style="height: 250px; object-fit: cover;">
+            <!-- Card Podcast -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#podcastModal{{ item.id }}" style="text-decoration:none;">
+                        {% if item.imagen_portada_url %}
+                            <img src="{{ item.imagen_portada_url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                        {% elif item.imagen_portada %}
+                            <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
                         {% else %}
-                            <div class="d-flex align-items-center justify-content-center" style="height: 250px; background-color: #f0e6ed;">
-                                <i class="bi bi-mic text-muted fs-1"></i>
+                            <div class="bg-light text-center py-5 rounded-top" style="height: 150px;">
+                                <i class="bi bi-mic fs-1 text-muted"></i>
                             </div>
                         {% endif %}
-                    </div>
-
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h5 class="fw-bold mb-2 text-dark">{{ item.titulo }}</h5>
-                        <p class="text-secondary small mb-3 flex-grow-1" style="line-height: 1.5;">
-                            {{ item.descripcion|truncatechars:100 }}
-                        </p>
-                        
-                        <div class="mt-auto">
-                            {% for archivo in item.podcastarchivos.all %}
-                                <a href="{{ archivo.url }}" target="_blank" class="btn btn-outline-primary btn-sm mb-1 d-block">
-                                    <i class="bi bi-file-earmark-pdf me-1"></i> {{ archivo.nombre|default:"Archivo" }}
-                                </a>
-                            {% empty %}
-                                <span class="text-muted">Sin archivos</span>
-                            {% endfor %}
-
-
-
-                        </div>
+                    </a>
+                    <div class="card-body">
+                        <h6>{{ item.titulo }}</h6>
+                        <p class="small text-muted mb-0">{{ item.descripcion|truncatechars:50 }}</p>
+                        <!-- Botón para abrir modal (opcional si quieres un botón además de la imagen) -->
+                        <button class="btn btn-outline-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#podcastModal{{ item.id }}">
+                            Ver archivos
+                        </button>
                     </div>
                 </div>
+            </div>
 
+            <!-- Modal para ver/descargar archivos -->
+            <div class="modal fade" id="podcastModal{{ item.id }}" tabindex="-1" aria-labelledby="podcastModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="podcastModalLabel{{ item.id }}">{{ item.titulo }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    {% if item.podcastarchivos.all %}
+                        {% for archivo in item.podcastarchivos.all %}
+                            <a href="{{ archivo.url }}" target="_blank" class="btn btn-outline-primary w-100 mb-2" download>
+                                <i class="bi bi-file-earmark-pdf me-1"></i> {{ archivo.nombre|default:"Archivo" }}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <span class="text-muted">Sin archivos</span>
+                    {% endif %}
+                </div>
+                </div>
+            </div>
             </div>
         {% endfor %}
     </div>
