@@ -35,8 +35,8 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold">Archivo PDF (Opcional)</label>
-                <input type="file" name="archivo_pdf" class="form-control" accept=".pdf" multiple>
-                {% if item_edit.archivo_pdf %}
+                <input type="file" name="archivo" class="form-control" accept=".pdf" multiple>
+                {% if item_edit %}
                     <div class="mt-2">
                         <label class="form-label fw-semibold">Archivos cargados:</label>
                         {% for archivo in item_edit.podcastarchivos.all %}

@@ -660,7 +660,7 @@ def gestion_podcasts(request):
         descripcion = request.POST.get("descripcion")
         destacado = request.POST.get("destacado") == "on"
         portada = request.FILES.get("imagen_portada")
-        archivos = request.FILES.getlist("archivo_pdf")
+        archivos = request.FILES.getlist("archivo")
         if item_edit:
             item_edit.titulo = titulo
             item_edit.descripcion = descripcion
