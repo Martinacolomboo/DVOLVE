@@ -12,6 +12,7 @@ if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY environment variable missing!")
 
 DEBUG = False   # se sobreescribe en development.py
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 ALLOWED_HOSTS = ["*"]  # se completa en cada settings
 DOLLAR_FALLBACK = 1464.55 
@@ -60,7 +61,6 @@ TEMPLATES = [
         },
     },
 ]
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Config Cloudinary
 cloudinary.config(
