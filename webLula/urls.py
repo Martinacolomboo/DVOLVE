@@ -19,6 +19,12 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
+from frontend.sitemaps import StaticViewSitemap
+from django.contrib.sitemaps.views import sitemap
+sitemaps = {
+    'static': StaticViewSitemap,
+    # Puedes agregar más sitemaps aquí
+}
 urlpatterns = [
     path(
             "google5e26ca91a14ffa1a.html",
@@ -29,6 +35,8 @@ urlpatterns = [
     path('verify-email/', include(('email_verification.urls', 'email_verification'), namespace='email_verification')),
     path("clientes/", include("clientes.urls")),
     path("frontend/", include(('frontend.urls', 'frontend'), namespace='frontend')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+
 ]
 
 if settings.DEBUG:
