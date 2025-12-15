@@ -9,7 +9,6 @@ class StaticViewSitemap(Sitemap):
     def items(self):
         return [
             "principal:principal",      # home
-            "principal:home",
             "principal:segunda_pagina",
             "principal:pagos",
             "principal:privacidad",
