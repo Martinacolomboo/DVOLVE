@@ -96,8 +96,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+STATIC_ROOT = BASE_DIR / 'static_root'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
 
 
