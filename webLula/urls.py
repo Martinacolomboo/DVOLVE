@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.views.generic import TemplateView
 urlpatterns = [
+    path(
+            "google5e26ca91a14ffa1a.html",
+            TemplateView.as_view(template_name="google5e26ca91a14ffa1a.html"),
+        ),
     path('admin/', admin.site.urls),
     path('', include(('principal.urls', 'principal'), namespace='principal')),
     path('verify-email/', include(('email_verification.urls', 'email_verification'), namespace='email_verification')),
