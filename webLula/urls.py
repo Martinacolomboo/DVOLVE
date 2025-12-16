@@ -27,8 +27,8 @@ sitemaps = {
 }
 urlpatterns = [
     path(
-            "googled64f2cdb0ed07b77.html",
-            TemplateView.as_view(template_name="googled64f2cdb0ed07b77.html"),
+            "google5e26ca91a14ffa1a.html",
+            TemplateView.as_view(template_name="google5e26ca91a14ffa1a.html"),
         ),
     path('admin/', admin.site.urls),
     path('', include(('principal.urls', 'principal'), namespace='principal')),
