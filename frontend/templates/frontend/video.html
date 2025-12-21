@@ -70,7 +70,7 @@
                     <!-- ✅ IMAGEN -->
                     <div class="position-relative bg-dark text-center">
                         {% if video.thumbnail %}
-                            <img src="{{ video.thumbnail.url }}" class="img-fluid" style="height:200px; object-fit:cover;">
+                          <img src="{% url 'frontend:serve_image' 'Video' video.id 'thumbnail' %}" class="img-fluid" style="height:200px; object-fit:cover;">
                         {% endif %}
 
                         <span class="badge bg-dark position-absolute top-0 end-0 m-3">
@@ -119,7 +119,7 @@
                   <div class="modal-body p-4">
 
                     {% if video.thumbnail %}
-                      <img src="{{ video.thumbnail.url }}" class="card-img-top mb-3" style="height: 200px; object-fit: contain;">
+                      <img src="{% url 'frontend:serve_image' 'Video' video.id 'thumbnail' %}" class="card-img-top mb-3" style="height: 200px; object-fit: contain;">
                     {% else %}
                       <div class="d-flex align-items-center justify-content-center mb-3" style="height: 200px; background-color: #f8f9fa;">
                           <i class="bi bi-play-btn text-muted fs-1"></i>
@@ -131,11 +131,11 @@
                     {% endif %}
 
                     {% if video.archivo %}
-                      <a href="{{ video.archivo.url }}" target="_blank"
-                         class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm"
-                         style="background: linear-gradient(45deg, #c875ac, #7e2864); border:none;">
-                        <i class="bi bi-play-fill me-1"></i> Ver Clase
-                      </a>
+                      <video width="100%" height="300" controls controlsList="nodownload noremoteplayback nofullscreen" style="border-radius: 12px; background: #000;"
+                        oncontextmenu="return false;">
+                        <source src="{% url 'frontend:serve_video' video.id %}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                      </video>
                     {% else %}
                       <button class="btn btn-secondary w-100" disabled>No hay video cargado</button>
                     {% endif %}

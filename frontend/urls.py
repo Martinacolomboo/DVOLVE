@@ -4,6 +4,10 @@ from . import views
 app_name = "frontend"
 
 urlpatterns = [
+    path("image/serve/<str:model_name>/<int:object_id>/<str:field_name>/", views.serve_image, name="serve_image"),
+    path("video/stream/<int:video_id>/", views.serve_video, name="serve_video"),
+    path("plan/file/<int:archivo_id>/", views.serve_plan_file, name="serve_plan_file"),
+    path("biblioteca/pdf/<int:item_id>/", views.serve_biblioteca_pdf, name="serve_biblioteca_pdf"),
     path("", views.login_view, name="login"),
     path("registro/", views.register_view, name="registro"),
     path("home/", views.home, name="home"),
@@ -35,4 +39,7 @@ urlpatterns = [
     path("admin/podcast/", views.gestion_podcasts, name="gestion_podcasts"),
     path("admin/podcast/delete/<int:item_id>/", views.gestion_podcast_delete, name="gestion_podcast_delete"),
     path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
+    path("receta/pdf/<int:receta_id>/", views.serve_receta_pdf, name="serve_receta_pdf"),
+    # En frontend/urls.py
+    path('podcast/file/<int:archivo_id>/', views.serve_podcast_file, name='serve_podcast_file'),
 ]

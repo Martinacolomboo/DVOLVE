@@ -13,7 +13,7 @@ if not SECRET_KEY:
 
 DEBUG = False   # se sobreescribe en development.py
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ALLOWED_HOSTS = ["*"]  # se completa en cada settings
 DOLLAR_FALLBACK = 1464.55 
 INSTALLED_APPS = [

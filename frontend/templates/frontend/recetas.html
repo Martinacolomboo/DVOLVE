@@ -42,7 +42,6 @@
 
   <hr class="my-5 opacity-25">
 
-  <!-- FILTROS -->
   <div class="d-flex justify-content-center flex-wrap gap-3 mb-5">
     <button class="btn btn-dark rounded-pill filter-btn active" data-filter="todos">Todas</button>
     <button class="btn btn-light border rounded-pill filter-btn" data-filter="desayuno">🥣 Desayuno</button>
@@ -56,15 +55,15 @@
     <div class="row g-4">
         {% for receta in recetas %}
             <div class="col-12 col-md-6 col-lg-3 receta-card" 
-                data-categoria="{{ receta.categoria_comida|default:'' }}">
+                 data-categoria="{{ receta.categoria_comida|default:'' }}">
 
-                <!-- CARD -->
                 <div class="card h-100 shadow-sm rounded-4 overflow-hidden transition-hover"
+                     style="cursor: pointer;"
                      data-bs-toggle="modal" 
                      data-bs-target="#recetaModal{{ receta.id }}">
 
                     {% if receta.imagen_portada %}
-                        <img src="{{ receta.imagen_portada.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        <img src="{% url 'frontend:serve_image' 'Receta' receta.id 'imagen_portada' %}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     {% else %}
                         <div class="d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
                             <i class="bi bi-egg-fried fs-1 text-muted"></i>
@@ -79,14 +78,13 @@
                     </div>
                 </div>
 
-                <!-- MODAL -->
                 <div class="modal fade" id="recetaModal{{ receta.id }}" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content rounded-4 border-0">
 
                             <div class="modal-header border-0 p-0 position-relative" style="height: 200px;">
                                 {% if receta.imagen_portada %}
-                                    <img src="{{ receta.imagen_portada.url }}" class="w-100 h-100" style="object-fit: cover;">
+                                    <img src="{% url 'frontend:serve_image' 'Receta' receta.id 'imagen_portada' %}" class="w-100 h-100" style="object-fit: cover;">
                                 {% endif %}
                                 <button type="button" class="btn-close bg-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                             </div>
@@ -98,13 +96,12 @@
                                     <p class="text-secondary">{{ receta.descripcion|linebreaks }}</p>
                                 {% endif %}
 
-                                <!-- ✅ BOTÓN PDF FUNCIONANDO -->
                                 {% if receta.archivo %}
-                                    <a href="{{ receta.archivo.url }}" 
-                                       target="_blank"
-                                       class="btn btn-success w-100 mt-3 rounded-pill fw-bold">
-                                        <i class="bi bi-download me-2"></i> Ver / Descargar Receta
-                                    </a>
+                                    <button type="button" class="btn btn-outline-primary w-100 mb-3 rounded-pill"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalPDFReceta{{ receta.id }}">
+                                        <i class="bi bi-eye-fill me-2"></i> Ver Receta Completa
+                                    </button>
                                 {% else %}
                                     <button class="btn btn-secondary w-100 mt-3" disabled>
                                         No hay PDF cargado
@@ -115,8 +112,7 @@
                         </div>
                     </div>
                 </div>
-
-            </div>
+                </div>
         {% endfor %}
     </div>
 
@@ -126,6 +122,41 @@
     </div>
   {% endif %}
 </div>
+
+{% for receta in recetas %}
+  {% if receta.archivo %}
+    <div class="modal fade" id="modalPDFReceta{{ receta.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-white">
+                
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">{{ receta.titulo }}</h5>
+                    <button type="button" class="btn-close btn-close-white" 
+                            data-bs-dismiss="modal" 
+                            onclick="$('#recetaModal{{ receta.id }}').modal('show');">
+                    </button>
+                </div>
+                
+                <div class="modal-body p-0" style="height: 80vh;">
+                    <embed 
+                        src="{% url 'frontend:serve_receta_pdf' receta.id %}#toolbar=0&navpanes=0&scrollbar=0" 
+                        type="application/pdf"
+                        width="100%" 
+                        height="100%" 
+                        style="border: none;">
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button class="btn btn-secondary" data-bs-target="#recetaModal{{ receta.id }}" data-bs-toggle="modal">
+                        <i class="bi bi-arrow-left"></i> Volver a la Receta
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+  {% endif %}
+{% endfor %}
 
 <style>
 .filter-btn.active {
@@ -137,25 +168,10 @@
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important;
 }
-/* Evita que el nombre del archivo rompa el modal */
-.modal-body {
-  word-break: break-word !important;
-}
 
-/* Para cualquier botón o bloque que se deforme */
 .modal-content {
-  max-width: 100%;
   overflow-wrap: break-word;
 }
-
-/* Si tu PDF está dentro de un botón o contenedor */
-.nombre-archivo {
-  display: block;
-  max-width: 100%;
-  overflow-wrap: break-word;
-  white-space: normal !important;
-}
-
 </style>
 
 <script>

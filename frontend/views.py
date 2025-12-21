@@ -1,3 +1,4 @@
+# --- IMPORTS ---
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -7,9 +8,194 @@ from django.db.models import Q
 from django.utils import timezone
 from django.urls import reverse, NoReverseMatch
 from django.contrib import messages
-# MODELOS PROPIOS
 from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca, SiteConfiguration, PodcastArchivo
+from django.http import HttpResponse, Http404
+from django.conf import settings
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+import cloudinary.utils
+import requests
+import mimetypes
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.http import FileResponse
+# Vista protegida para servir archivos PDF de biblioteca
+# En frontend/views.py
 
+@xframe_options_exempt
+def serve_biblioteca_pdf(request, item_id):
+    # 1. Buscamos el libro
+    # Asegurate de importar 'Biblioteca' al principio del archivo
+    item = get_object_or_404(Biblioteca, id=item_id)
+    
+    if not item.archivo_pdf:
+        raise Http404("El archivo no existe")
+
+    try:
+        # 2. URL de Cloudinary
+        url = item.archivo_pdf.url
+        
+        # 3. Descarga al vuelo
+        r = requests.get(url, stream=True)
+        if r.status_code != 200:
+            raise Http404("No se pudo acceder al archivo remoto")
+            
+        content_type = r.headers.get('Content-Type', 'application/pdf')
+        
+        # 4. Respuesta
+        response = HttpResponse(r.iter_content(chunk_size=8192), content_type=content_type)
+        
+        # 5. Inline para el modal
+        nombre = item.titulo or "documento.pdf"
+        response['Content-Disposition'] = f'inline; filename="{nombre}.pdf"'
+        
+        return response
+        
+    except Exception as e:
+        print(f"Error sirviendo biblioteca: {e}")
+        raise Http404(f"Error interno: {e}")
+# Vista protegida para servir PDF de receta
+# En frontend/views.py
+
+@xframe_options_exempt
+def serve_receta_pdf(request, receta_id):
+    # 1. Buscamos la receta
+    receta = get_object_or_404(Receta, id=receta_id)
+    
+    if not receta.archivo:
+        raise Http404("El archivo no existe")
+
+    try:
+        # 2. Obtenemos la URL de la nube (Cloudinary)
+        url = receta.archivo.url
+        
+        # 3. Descargamos el contenido "al vuelo"
+        r = requests.get(url, stream=True)
+        if r.status_code != 200:
+            raise Http404("No se pudo acceder al archivo remoto")
+            
+        # 4. Detectamos el tipo (generalmente PDF)
+        content_type = r.headers.get('Content-Type', 'application/pdf')
+        
+        # 5. Creamos la respuesta
+        response = HttpResponse(r.iter_content(chunk_size=8192), content_type=content_type)
+        
+        # 6. 'inline' para ver en el Modal
+        nombre_archivo = f"Receta_{receta.titulo}.pdf"
+        response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
+        
+        return response
+        
+    except Exception as e:
+        print(f"Error sirviendo receta: {e}")
+        raise Http404(f"Error interno: {e}")
+# Vista protegida para servir archivos de planes
+# Asegurate de tener estos imports arriba (ya los tenés, pero chequealo):
+# import requests
+# from django.http import HttpResponse
+
+@xframe_options_exempt
+def serve_plan_file(request, archivo_id):
+    # 1. Buscamos el objeto
+    archivo_obj = get_object_or_404(PlanArchivo, id=archivo_id)
+    
+    if not archivo_obj.archivo:
+        raise Http404("El archivo no existe")
+
+    try:
+        # 2. Obtenemos la URL de la nube (Cloudinary)
+        url = archivo_obj.archivo.url
+        
+        # 3. Descargamos el contenido "al vuelo"
+        r = requests.get(url, stream=True)
+        if r.status_code != 200:
+            raise Http404("No se pudo acceder al archivo remoto")
+            
+        # 4. Detectamos el tipo de archivo (PDF, imagen, etc.)
+        content_type = r.headers.get('Content-Type', 'application/pdf')
+        
+        # 5. Creamos la respuesta con el contenido descargado
+        response = HttpResponse(r.iter_content(chunk_size=8192), content_type=content_type)
+        
+        # 6. 'inline' es la clave para que se vea en el Modal
+        nombre_archivo = archivo_obj.nombre or "documento.pdf"
+        response['Content-Disposition'] = f'inline; filename="{nombre_archivo}"'
+        
+        return response
+        
+    except Exception as e:
+        print(f"Error sirviendo archivo plan: {e}")
+        raise Http404(f"Error interno: {e}")
+# Vista protegida para servir imágenes
+@login_required
+def serve_image(request, model_name, object_id, field_name):
+    from django.apps import apps
+    Model = apps.get_model('frontend', model_name)
+    obj = get_object_or_404(Model, id=object_id)
+    image_field = getattr(obj, field_name, None)
+    if not image_field:
+        raise Http404("Imagen no encontrada")
+    url = image_field.url
+    r = requests.get(url, stream=True)
+    if r.status_code != 200:
+        raise Http404("No se pudo acceder a la imagen")
+    content_type = r.headers.get('Content-Type', 'image/jpeg')
+    response = HttpResponse(r.iter_content(chunk_size=8192), content_type=content_type)
+    response["Content-Disposition"] = "inline; filename=imagen.jpg"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response
+
+# Vista protegida para servir videos sin descarga directa
+@login_required
+def serve_video(request, video_id):
+    from .models import Video
+    video = get_object_or_404(Video, id=video_id)
+    # Opcional: chequear permisos extra aquí
+    if not video.archivo:
+        raise Http404("Video no encontrado")
+    # Obtener la URL temporal de Cloudinary (si usás Cloudinary)
+    url = video.archivo.url
+    # Descarga el video y lo sirve como streaming
+    r = requests.get(url, stream=True)
+    if r.status_code != 200:
+        raise Http404("No se pudo acceder al video")
+    response = HttpResponse(r.iter_content(chunk_size=8192), content_type="video/mp4")
+    response["Content-Disposition"] = "inline; filename=video.mp4"
+    response["X-Content-Type-Options"] = "nosniff"
+    # Opcional: limitar referer/origen
+    return response
+# En frontend/views.py
+
+@xframe_options_exempt
+def serve_podcast_file(request, archivo_id):
+    # 1. Buscamos el archivo de PODCAST (PodcastArchivo)
+    archivo_obj = get_object_or_404(PodcastArchivo, id=archivo_id)
+    
+    if not archivo_obj.archivo:
+        raise Http404("El archivo no existe")
+
+    try:
+        # 2. Obtenemos la URL de Cloudinary
+        url = archivo_obj.archivo.url
+        
+        # 3. Descargamos al vuelo
+        r = requests.get(url, stream=True)
+        if r.status_code != 200:
+            raise Http404("No se pudo acceder al archivo remoto")
+            
+        content_type = r.headers.get('Content-Type', 'application/pdf')
+        
+        response = HttpResponse(r.iter_content(chunk_size=8192), content_type=content_type)
+        
+        # 4. Inline para ver en el modal
+        nombre = archivo_obj.nombre or "documento.pdf"
+        response['Content-Disposition'] = f'inline; filename="{nombre}"'
+        
+        return response
+        
+    except Exception as e:
+        print(f"Error sirviendo podcast: {e}")
+        raise Http404(f"Error interno: {e}")
 # CORRECCIÓN CRÍTICA: Importamos el modelo de suscripción real
 from principal.models import VerifiedEmail
 

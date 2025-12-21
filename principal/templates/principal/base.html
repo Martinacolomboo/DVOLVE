@@ -16,6 +16,20 @@
   <!-- CSS propio -->
   <link rel="stylesheet" href="{% static 'principal/css/style.css' %}">
 
+  <!-- Favicon -->
+  <!-- Favicon clásico -->
+  <link rel="icon" href="{% static 'principal/img/favicon.ico' %}" type="image/x-icon">
+  <!-- Favicon PNG para navegadores modernos -->
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'principal/img/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'principal/img/favicon-16x16.png' %}">
+  <!-- Apple Touch Icon para iOS -->
+  <link rel="apple-touch-icon" href="{% static 'principal/img/apple-touch-icon.png' %}">
+  <!-- Android Chrome -->
+  <link rel="icon" type="image/png" sizes="192x192" href="{% static 'principal/img/android-chrome-192x192.png' %}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{% static 'principal/img/android-chrome-512x512.png' %}">
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="{% static 'principal/img/site.webmanifest' %}">
+
   {% block extra_head %}{% endblock %}
 </head>
 

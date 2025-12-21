@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-5"; style="padding-top: 80px;">
+<div class="container py-5" style="padding-top: 80px;">
       
-
   <div class="row align-items-center mb-5 g-5">
     
     <div class="col-lg-6 order-2 order-lg-1 text-center text-lg-start z-1">
@@ -17,11 +16,12 @@
               {% endfor %}
             {% endif %}
         {% endif %}
+        
         <a href="https://open.spotify.com/show/52gKuGNkRMUff6DU3slz69" target="_blank" class="d-inline-flex align-items-center text-decoration-none mb-3">
           <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: #1DB954; color: white; font-weight: 500; font-size: 0.9rem;">
               <i class="bi bi-spotify me-2"></i> Escuchanos en Spotify
           </span>
-       </a>
+        </a>
 
         <h1 class="display-4 fw-bold mb-3" style="color: #212529;">
             Tu Momento <span style="color: #7e2864;">Podcast</span>
@@ -39,29 +39,26 @@
         {% endif %}
     </div>
 
-   
     <div class="col-lg-6 order-1 order-lg-2 text-center position-relative">
         <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:320px; height:320px; background-color:#7e2864; opacity:0.08; border-radius:50%; z-index:0;"></div>
         
        <img src="{% static 'img/portada_podcast.jpg' %}" 
-             alt="Planes DVOLVE" 
+             alt="Podcast Portada" 
              class="img-fluid position-relative z-1 shadow-lg"
-             style="object-fit: contain;  max-height: 400px">
+             style="object-fit: contain; max-height: 400px">
      </div>
   </div>
+  
   <hr class="my-5 opacity-25">
 
   {% if podcasts %}
     <div class="row g-4">
         {% for item in podcasts %}
-            <!-- Card Podcast -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 transition-hover">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#podcastModal{{ item.id }}" style="text-decoration:none;">
-                        {% if item.imagen_portada_url %}
-                            <img src="{{ item.imagen_portada_url }}" class="card-img-top rounded-top" style="height: 250px; object-fit: cover;">
-                        {% elif item.imagen_portada %}
-                            <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 250px; object-fit: cover;">
+                        {% if item.imagen_portada %}
+                            <img src="{% url 'frontend:serve_image' 'Podcast' item.id 'imagen_portada' %}" class="card-img-top rounded-top" style="height: 250px; object-fit: cover;">
                         {% else %}
                             <div class="bg-light text-center py-5 rounded-top" style="height: 250px;">
                                 <i class="bi bi-mic fs-1 text-muted"></i>
@@ -69,37 +66,46 @@
                         {% endif %}
                     </a>
                     <div class="card-body">
-                        <h6>{{ item.titulo }}</h6>
-                        <p class="small text-muted mb-0">{{ item.descripcion|truncatechars:50 }}</p>
-                        <!-- Botón para abrir modal (opcional si quieres un botón además de la imagen) -->
-                        <button class="btn btn-outline-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#podcastModal{{ item.id }}">
+                        <h6 class="fw-bold mb-2">{{ item.titulo }}</h6>
+                        <p class="small text-muted mb-3">{{ item.descripcion|truncatechars:80 }}</p>
+                        
+                        <button class="btn btn-outline-primary btn-sm w-100 rounded-pill" data-bs-toggle="modal" data-bs-target="#podcastModal{{ item.id }}">
                             Ver archivos
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Modal para ver/descargar archivos -->
-            <div class="modal fade" id="podcastModal{{ item.id }}" tabindex="-1" aria-labelledby="podcastModalLabel{{ item.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title" id="podcastModalLabel{{ item.id }}">{{ item.titulo }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal fade" id="podcastModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0">
+                        <div class="modal-header border-0">
+                            <h5 class="modal-title fw-bold">{{ item.titulo }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-muted mb-4">{{ item.descripcion }}</p>
+                            
+                            <h6 class="fw-bold mb-3">Archivos disponibles:</h6>
+                            {% if item.podcastarchivos.all %}
+                                <div class="d-grid gap-2">
+                                {% for archivo in item.podcastarchivos.all %}
+                                    <button type="button" class="btn btn-outline-dark text-start p-3 rounded-3"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalLecturaPodcast{{ archivo.id }}">
+                                        <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
+                                        {{ archivo.nombre|default:"Documento" }}
+                                    </button>
+                                {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light text-center text-muted">
+                                    No hay archivos adjuntos en este episodio.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    {% if item.podcastarchivos.all %}
-                        {% for archivo in item.podcastarchivos.all %}
-                            <a href="{{ archivo.url }}" target="_blank" class="btn btn-outline-primary w-100 mb-2" download>
-                                <i class="bi bi-file-earmark-pdf me-1"></i> {{ archivo.nombre|default:"Archivo" }}
-                            </a>
-                        {% endfor %}
-                    {% else %}
-                        <span class="text-muted">Sin archivos</span>
-                    {% endif %}
-                </div>
-                </div>
-            </div>
             </div>
         {% endfor %}
     </div>
@@ -112,12 +118,46 @@
 
 </div>
 
+{% for item in podcasts %}
+    {% for archivo in item.podcastarchivos.all %}
+    <div class="modal fade" id="modalLecturaPodcast{{ archivo.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-white">
+                
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">{{ archivo.nombre|default:"Archivo" }}</h5>
+                    <button type="button" class="btn-close btn-close-white" 
+                            data-bs-dismiss="modal" 
+                            onclick="$('#podcastModal{{ item.id }}').modal('show');">
+                    </button>
+                </div>
+                
+                <div class="modal-body p-0" style="height: 80vh;">
+                    <embed 
+                        src="{% url 'frontend:serve_podcast_file' archivo.id %}#toolbar=0&navpanes=0&scrollbar=0" 
+                        type="application/pdf"
+                        width="100%" 
+                        height="100%" 
+                        style="border: none;">
+                </div>
+
+                <div class="modal-footer border-0">
+                    <button class="btn btn-secondary" data-bs-target="#podcastModal{{ item.id }}" data-bs-toggle="modal">
+                        <i class="bi bi-arrow-left"></i> Volver al Episodio
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endfor %}
+
 <style>
     .transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
     .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1)!important; }
     
     @media (max-width: 991px) {
-        /* En celular achicamos un poco la foto principal */
         .img-fluid { height: 300px !important; }
     }
 </style>
