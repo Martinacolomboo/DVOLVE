@@ -109,3 +109,7 @@ STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/clientes/"
 LOGOUT_REDIRECT_URL = "/"
+# settings.py
+
+# Si alguien intenta entrar a una zona protegida sin permiso, mandalo acá:
+LOGIN_URL = 'frontend:login'  # <--- Usá el nombre de tu ruta de login

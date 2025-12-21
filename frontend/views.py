@@ -21,7 +21,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.http import FileResponse
 # Vista protegida para servir archivos PDF de biblioteca
 # En frontend/views.py
-
+@login_required
 @xframe_options_exempt
 def serve_biblioteca_pdf(request, item_id):
     # 1. Buscamos el libro
@@ -56,7 +56,7 @@ def serve_biblioteca_pdf(request, item_id):
         raise Http404(f"Error interno: {e}")
 # Vista protegida para servir PDF de receta
 # En frontend/views.py
-
+@login_required
 @xframe_options_exempt
 def serve_receta_pdf(request, receta_id):
     # 1. Buscamos la receta
@@ -93,7 +93,7 @@ def serve_receta_pdf(request, receta_id):
 # Asegurate de tener estos imports arriba (ya los tenés, pero chequealo):
 # import requests
 # from django.http import HttpResponse
-
+@login_required
 @xframe_options_exempt
 def serve_plan_file(request, archivo_id):
     # 1. Buscamos el objeto
@@ -165,7 +165,7 @@ def serve_video(request, video_id):
     # Opcional: limitar referer/origen
     return response
 # En frontend/views.py
-
+@login_required
 @xframe_options_exempt
 def serve_podcast_file(request, archivo_id):
     # 1. Buscamos el archivo de PODCAST (PodcastArchivo)
