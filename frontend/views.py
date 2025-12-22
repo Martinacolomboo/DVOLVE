@@ -962,3 +962,52 @@ def panel_admin(request):
     
     # Pasamos 'config' al template
     return render(request, "frontend/panel_admin.html", {'config': config})
+from django.db.models import Q
+# En frontend/views.py
+
+# En frontend/views.py
+
+# 1. Asegurate de importar el modelo
+from principal.models import VerifiedEmail 
+
+@staff_member_required
+def gestion_clientes(request):
+    if not request.user.is_superuser:
+        return redirect("frontend:dashboard")
+
+    # 1. Traemos los clientes (Cuestionarios + Usuario)
+    clientes_list = Questionario.objects.select_related('user').all().order_by('-user__date_joined')
+
+    # 2. Buscador (mantenemos lo que ya tenías)
+    query = request.GET.get('q')
+    if query:
+        clientes_list = clientes_list.filter(
+            Q(user__first_name__icontains=query) | 
+            Q(user__last_name__icontains=query) |
+            Q(user__username__icontains=query) |
+            Q(user__email__icontains=query)
+        )
+
+    # ==========================================================
+    # 3. NUEVO: Buscar los vencimientos y unirlos por Email
+    # ==========================================================
+    
+    # Creamos una lista con todos los emails de los clientes que estamos viendo
+    emails_clientes = [c.user.email for c in clientes_list]
+
+    # Traemos de la base de datos solo los VerifiedEmail que coinciden con esos emails
+    # Usamos un diccionario { 'email': fecha_vencimiento } para buscar rápido
+    vencimientos_dict = {
+        ve.email: ve.vencimiento 
+        for ve in VerifiedEmail.objects.filter(email__in=emails_clientes)
+    }
+
+    # Ahora recorremos la lista de clientes y le "pegamos" el vencimiento a cada uno
+    for cliente in clientes_list:
+        # Creamos un atributo temporal 'fecha_vencimiento' en el objeto cliente
+        cliente.fecha_vencimiento = vencimientos_dict.get(cliente.user.email)
+
+    return render(request, "frontend/gestion_clientes.html", {
+        "clientes": clientes_list,
+        "query": query
+    })

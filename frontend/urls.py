@@ -42,4 +42,6 @@ urlpatterns = [
     path("receta/pdf/<int:receta_id>/", views.serve_receta_pdf, name="serve_receta_pdf"),
     # En frontend/urls.py
     path('podcast/file/<int:archivo_id>/', views.serve_podcast_file, name='serve_podcast_file'),
+    
+    path('panel-admin/clientes/', views.gestion_clientes, name='gestion_clientes'),
 ]
