@@ -27,6 +27,12 @@
         {% csrf_token %}
         <input type="hidden" name="finish_registration" value="true">
         <div class="mb-3">
+          <input type="text" name="first_name" class="form-control form-control-lg rounded-pill bg-light border-0 px-4" placeholder="Nombre" required style="height: 50px;">
+        </div>
+        <div class="mb-3">
+          <input type="text" name="last_name" class="form-control form-control-lg rounded-pill bg-light border-0 px-4" placeholder="Apellido" required style="height: 50px;">
+        </div>
+        <div class="mb-3">
           <input type="text" name="username" class="form-control form-control-lg rounded-pill bg-light border-0 px-4" placeholder="Elegí tu Usuario" required autofocus style="height: 50px;">
         </div>
         <div class="mb-4">

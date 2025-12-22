@@ -209,6 +209,8 @@ def register_view(request):
     if request.method == "POST":
         # PASO 2: Finalizar registro
         if "finish_registration" in request.POST:
+            first_name = request.POST.get("first_name", "").strip()
+            last_name = request.POST.get("last_name", "").strip()
             username = request.POST.get("username", "").strip()
             password = request.POST.get("password", "").strip()
             
@@ -220,6 +222,8 @@ def register_view(request):
                 return render(request, "frontend/register.html", {"verified_email": verified_email})
 
             user = User.objects.create_user(username=username, email=verified_email, password=password)
+            user.first_name = first_name
+            user.last_name = last_name
             user.is_staff = False
             user.save()
             
