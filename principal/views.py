@@ -60,12 +60,23 @@ def pagar_mercadopago(request):
     except:
         return JsonResponse({"error": "Monto inválido"}, status=400)
 
+    # Obtener el email verificado o el del usuario autenticado
+    email = request.session.get("email_verified_address")
+    if not email and request.user.is_authenticated:
+        email = request.user.email
+    if not email:
+        email = "test@test.com"
+
+    # Guardar el email en la sesión para el checkout
+    request.session["checkout_email"] = email
+    request.session.modified = True
+
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
     domain = request.build_absolute_uri("/")[:-1]
-    
+
     preference_data = {
         "items": [{"id": "plan_dvolve", "title": "Plan DVOLVE", "quantity": 1, "currency_id": "ARS", "unit_price": monto}],
-        "payer": {"email": request.session.get("email_verified_address", "test@test.com")},
+        "payer": {"email": email},
         "back_urls": {
             "success": f"{domain}/pago/exito/",
             "failure": f"{domain}/pago/error/",
@@ -78,7 +89,8 @@ def pagar_mercadopago(request):
     preference_response = sdk.preference().create(preference_data)
     init_point = preference_response.get("response", {}).get("init_point")
 
-    if init_point: return redirect(init_point)
+    if init_point:
+        return redirect(init_point)
     return JsonResponse({"error": "Error MP"}, status=400)
 
 def pagar_paypal(request):
