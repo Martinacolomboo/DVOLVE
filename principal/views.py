@@ -61,11 +61,13 @@ def pagar_mercadopago(request):
         return JsonResponse({"error": "Monto inválido"}, status=400)
 
     # Obtener el email verificado o el del usuario autenticado
+
     email = request.session.get("email_verified_address")
     if not email and request.user.is_authenticated:
         email = request.user.email
-    if not email:
-        email = "test@test.com"
+    if not email or email == "test@test.com":
+        messages.error(request, "Ocurrió un error al identificar tu email. Por favor, intentá de nuevo.")
+        
 
     # Guardar el email en la sesión para el checkout
     request.session["checkout_email"] = email

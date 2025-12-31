@@ -226,7 +226,11 @@ def register_view(request):
             user.last_name = last_name
             user.is_staff = False
             user.save()
-            
+
+            # Asociar pagos previos hechos con este email
+            from principal.models import Pago
+            Pago.objects.filter(email=verified_email, user__isnull=True).update(user=user)
+
             login(request, user)
             return redirect("frontend:bienvenida")
 
@@ -258,6 +262,7 @@ def login_view(request):
     pay_url = None
     error_message = None
 
+
     if request.method == "POST":
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
@@ -267,6 +272,10 @@ def login_view(request):
             if user.is_staff or user.is_superuser:
                 login(request, user)
                 return redirect("frontend:panel_admin")
+
+            # Guardar el email real en la sesión para el pago
+            request.session["email_verified_address"] = user.email
+            request.session.modified = True
 
             # Chequeo de vencimiento de suscripción
             try:
