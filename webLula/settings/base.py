@@ -113,3 +113,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 # Si alguien intenta entrar a una zona protegida sin permiso, mandalo acá:
 LOGIN_URL = 'frontend:login'  # <--- Usá el nombre de tu ruta de login
+
+MERCADOPAGO_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")

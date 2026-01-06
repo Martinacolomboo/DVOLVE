@@ -1,6 +1,9 @@
 from .base import *
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DEBUG = True
 
@@ -11,7 +14,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DATABASES = {
     "default": dj_database_url.parse(
         os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
+        conn_max_age=0,
+        conn_health_checks=True,
         ssl_require=True
     )
 }
@@ -23,9 +27,9 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Pagos
-MERCADOPAGO_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
-PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
+#MERCADOPAGO_ACCESS_TOKEN = os.getenv("MP_ACCESS_TOKEN")
+#PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+#PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
 
 # ✅ MAIL POR SENDGRID (API)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # <--- ESTO ES IMPORTANTE

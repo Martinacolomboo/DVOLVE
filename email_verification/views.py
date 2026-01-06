@@ -16,10 +16,15 @@ def _client_ip(request):
 @require_http_methods(["GET", "POST"])
 def request_code_view(request):
     monto = request.GET.get("monto")
+    plan = request.GET.get("plan")  # ← NUEVO: capturar plan directamente de URL
+    
     if monto:
         try:
             request.session["monto"] = float(monto)
         except ValueError: pass
+    
+    if plan:
+        request.session["tipo_plan"] = plan  # ← NUEVO: guardar plan en sesión
 
     if request.method == 'POST':
         form = RequestCodeForm(request.POST)
@@ -32,8 +37,7 @@ def request_code_view(request):
             usuario_verif = VerifiedEmail.objects.filter(email=email).first()
 
             if usuario_verif:
-                request.session['verified_email'] = email
-                request.session['checkout_email'] = email
+                request.session['checkout_email'] = email  # ← Nombre único
                 request.session.pop('ev_email', None)
                 
                 # CHEQUEO INTELIGENTE: ¿Tiene plan activo?
@@ -129,8 +133,12 @@ def verify_code_view(request):
                     return redirect(next_url)
                 else:
                     monto = request.session.get("monto") or 0
+                    # Recuperamos el plan de la sesión para pasarlo en la URL
+                    plan = request.session.get("tipo_plan") or "Mensual" 
+                    
                     url_destino = reverse('principal:metodos_pago')
-                    return redirect(f"{url_destino}?monto={monto}")
+                    # Pasamos AMBOS datos para que viajen seguros
+                    return redirect(f"{url_destino}?monto={monto}&plan={plan}")
     else:
         form = VerifyCodeForm()
 
