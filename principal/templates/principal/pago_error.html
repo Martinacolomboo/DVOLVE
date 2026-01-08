@@ -8,7 +8,7 @@
   .pm-card h1 { font-size:1.4rem; margin-bottom:8px; color:#7e2864; }
   .pm-card p { color:#5a4630; margin-bottom:12px; }
   .pm-btn { width:100%; display:block; padding:12px 14px; border-radius:10px; background:linear-gradient(45deg,#c875ac,#7e2864); color:#fff; text-decoration:none; text-align:center; font-weight:600; margin-top:14px; }
-  .pm-note { font-size:.9rem; color:#94a3b8; margin-top:8px; }
+  .pm-note { font-size:.9rem; color:#94a3b8; margin-top:16px; } /* Aumenté un poco el margin-top */
   @media (max-width:576px){ .pm-card{ padding:18px;} }
 </style>
 
@@ -17,7 +17,20 @@
     <i class="bi bi-x-circle" style="font-size:48px;color:#ef4444"></i>
     <h1>Ocurrió un error</h1>
     <p>El pago no pudo completarse o fue cancelado.</p>
+    
     <a href="{% url 'principal:pagos' %}" class="pm-btn">Volver a intentarlo</a>
+
+    {# --- AGREGADO: Link de soporte para calmar al usuario --- #}
+    <div class="pm-note">
+        ¿Tenés dudas o el problema persiste? 
+        <br>
+        <a href="mailto:dvolveprogram@gmail.com?subject=Problema%20con%20el%20pago" 
+           class="text-decoration-none fw-bold" 
+           style="color: #7e2864;">
+           Contactar soporte
+        </a>
+    </div>
+
   </div>
 </div>
 {% endblock %}
