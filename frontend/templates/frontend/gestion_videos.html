@@ -1,8 +1,8 @@
 {% extends "frontend/pagina_principal.html" %}
 
 {% load static %}
+{% load cloudinary_filters %}
 {% block content %}
-
 <section class="gestion-section py-5"; style="padding-top: 80px;">
   <div class="container">
 
@@ -149,9 +149,9 @@
                 <div class="col-md-4 mb-4">
                 <div class="card border-0 shadow-sm rounded-4 h-100">
                     {% if video.thumbnail %}
-                    <img src="{{ video.thumbnail.url }}" class="card-img-top rounded-top" alt="{{ video.titulo }}">
+                        <img src="{{ video.thumbnail.url|optimize_url:300 }}" class="card-img-top rounded-top" alt="{{ video.titulo }}" style="height: 150px; object-fit: cover;">
                     {% else %}
-                    <div class="p-5 text-center text-muted">🎬 Sin portada</div>
+                        <div class="p-5 text-center text-muted">🎬 Sin portada</div>
                     {% endif %}
                     <div class="card-body">
                     <h6 class="fw-bold">{{ video.titulo }}</h6>

@@ -24,13 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.sitemaps',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
     'frontend',
     'principal',
     'email_verification',
     'clientes',
     'cloudinary',
-    'cloudinary_storage',
+    
 ]
 SITE_ID = 1
 
@@ -110,7 +111,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/clientes/"
 LOGOUT_REDIRECT_URL = "/"
 # settings.py
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Si alguien intenta entrar a una zona protegida sin permiso, mandalo acá:
 LOGIN_URL = 'frontend:login'  # <--- Usá el nombre de tu ruta de login
 

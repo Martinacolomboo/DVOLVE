@@ -1,6 +1,6 @@
 {% extends "frontend/pagina_principal.html" %}
 {% load static %}
-
+{% load cloudinary_filters %}
 {% block content %}
 <div class="container py-5" style="padding-top: 80px;">
 
@@ -43,7 +43,7 @@
                     
                     <div class="position-relative bg-dark text-center">
                         {% if item.imagen_portada %}
-                            <img src="{% url 'frontend:serve_image' 'Biblioteca' item.id 'imagen_portada' %}" class="card-img-top" style="height: 250px; object-fit: cover;">
+                            <img src="{{ item.imagen_portada.url|optimize_url:400 }}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="{{ item.titulo }}">
                         {% else %}
                             <div class="d-flex align-items-center justify-content-center" style="height: 250px; background-color: #f0e6ed;">
                                 <i class="bi bi-book text-muted fs-1"></i>
@@ -63,7 +63,7 @@
                             
                             <div class="modal-header border-0 p-0 position-relative" style="height: 200px; background:#333;">
                                 {% if item.imagen_portada %}
-                                    <img src="{% url 'frontend:serve_image' 'Biblioteca' item.id 'imagen_portada' %}" class="w-100 h-100" style="object-fit: contain;">
+                                    <img src="{{ item.imagen_portada.url|optimize_url:800 }}" class="w-100 h-100" style="object-fit: contain;" alt="{{ item.titulo }}">
                                 {% endif %}
                                 <button type="button" class="btn-close bg-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                             </div>
@@ -110,7 +110,7 @@
                 
                 <div class="modal-body p-0" style="height: 80vh;">
                     <embed 
-                        src="{% url 'frontend:serve_biblioteca_pdf' item.id %}#toolbar=0&navpanes=0&scrollbar=0" 
+                        src="{{ item.archivo_pdf.url }}#toolbar=0&navpanes=0&scrollbar=0" 
                         type="application/pdf"
                         width="100%" 
                         height="100%" 

@@ -1,5 +1,6 @@
 {% extends "frontend/pagina_principal.html" %}
 {% load static %}
+{% load cloudinary_filters %}
 {% block content %}
 <section class="py-5" style="background-color: #fffbfd; min-height: 100vh;padding-top: 80px;">
   <div class="container">
@@ -21,10 +22,14 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Imagen de Portada</label>
-                    <input type="file" name="imagen_portada" class="form-control" accept="image/*">
-                    {% if item_edit.imagen_portada %}
-                        <small class="text-muted">Actual: {{ item_edit.imagen_portada.name }}</small>
+                    {% if item_edit and item_edit.imagen_portada %}
+                        <div class="mb-2">
+                             {# Previsualización pequeña al editar #}
+                             <img src="{{ item_edit.imagen_portada.url|optimize_url:100 }}" class="rounded" style="width:100px; height:auto;">
+                        </div>
                     {% endif %}
+                    <input type="file" name="imagen_portada" class="form-control" accept="image/*">
+                    
                     <div class="form-text text-muted">Nota: Los nombres de archivo no deben superar los 150 caracteres.</div>
                 </div>
             </div>
@@ -67,10 +72,9 @@
         {% for item in items %}
             <div class="col-md-4 mb-4">
                 <div class="card h-100 border-0 shadow-sm rounded-4">
-                {% if item.imagen_portada_url %}
-                    <img src="{{ item.imagen_portada_url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
-                {% elif item.imagen_portada %}
-                    <img src="{{ item.imagen_portada.url }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;">
+                {% if item.imagen_portada %}
+                    {# --- CAMBIO IMPORTANTE: IMAGEN OPTIMIZADA (300px) --- #}
+                    <img src="{{ item.imagen_portada.url|optimize_url:300 }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;" alt="{{ item.titulo }}">
                 {% else %}
                     <div class="bg-light text-center py-5 rounded-top" style="height: 150px;"><i class="bi bi-mic fs-1 text-muted"></i></div>
                 {% endif %}

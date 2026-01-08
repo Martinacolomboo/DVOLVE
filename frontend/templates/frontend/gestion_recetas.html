@@ -1,8 +1,8 @@
 {% extends "frontend/pagina_principal.html" %}
 
 {% load static %}
+{% load cloudinary_filters %}
 {% block content %}
-
 <section class="gestion-section py-5" style="padding-top: 80px;">
     <div class="container">
 
@@ -127,8 +127,7 @@
                         {% if receta_edit and receta_edit.imagen_portada %}
                             <div class="mb-2">
                                 <p class="small text-muted mb-1">Portada Actual:</p>
-                                <img src="{{ receta_edit.imagen_portada.url }}" alt="Portada de {{ receta_edit.titulo }}" 
-                                     style="max-height: 120px; width: auto; border-radius: 8px; object-fit: cover; display: block;">
+                                <img src="{{ receta_edit.imagen_portada.url|optimize_url:200 }}" class="img-fluid rounded" style="max-height: 120px; width: auto;">
                             </div>
                             <input type="file" name="imagen_portada" class="form-control" accept="image/*">
                             <small class="text-info">Subir un archivo para reemplazar la portada.</small>
@@ -221,8 +220,7 @@
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             
                             {% if receta.imagen_portada %}
-                                <img src="{{ receta.imagen_portada.url }}" class="card-img-top rounded-top" alt="{{ receta.titulo }}" 
-                                    style="height: 150px; object-fit: cover;">
+                                <img src="{{ receta.imagen_portada.url|optimize_url:300 }}" class="card-img-top rounded-top" style="height: 150px; object-fit: cover;" alt="{{ receta.titulo }}">
                             {% else %}
                                 <div class="p-4 text-center text-muted" style="background-color: #f0f8f0;">
                                     <i class="bi bi-image" style="font-size: 1.5rem;"></i> Sin Portada

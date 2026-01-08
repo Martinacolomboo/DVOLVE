@@ -1,6 +1,6 @@
 {% extends "frontend/pagina_principal.html" %}
 {% load static %}
-
+{% load cloudinary_filters %}
 {% block content %}
 <div class="container py-5" style="padding-top: 80px;">
     
@@ -63,7 +63,7 @@
                      data-bs-target="#recetaModal{{ receta.id }}">
 
                     {% if receta.imagen_portada %}
-                        <img src="{% url 'frontend:serve_image' 'Receta' receta.id 'imagen_portada' %}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                          <img src="{{ receta.imagen_portada.url|optimize_url:300 }}" class="card-img-top" style="height: 200px; object-fit: cover;">
                     {% else %}
                         <div class="d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
                             <i class="bi bi-egg-fried fs-1 text-muted"></i>
@@ -84,7 +84,8 @@
 
                             <div class="modal-header border-0 p-0 position-relative" style="height: 200px;">
                                 {% if receta.imagen_portada %}
-                                    <img src="{% url 'frontend:serve_image' 'Receta' receta.id 'imagen_portada' %}" class="w-100 h-100" style="object-fit: cover;">
+                                    {# Agregale el .name al final #}
+                                     <img src="{{ receta.imagen_portada.url|optimize_url:800 }}" class="w-100 h-100" style="object-fit: cover;">
                                 {% endif %}
                                 <button type="button" class="btn-close bg-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
                             </div>
@@ -139,7 +140,7 @@
                 
                 <div class="modal-body p-0" style="height: 80vh;">
                     <embed 
-                        src="{% url 'frontend:serve_receta_pdf' receta.id %}#toolbar=0&navpanes=0&scrollbar=0" 
+                        src="{{ receta.archivo.url }}#toolbar=0&navpanes=0&scrollbar=0" 
                         type="application/pdf"
                         width="100%" 
                         height="100%" 

@@ -1,6 +1,6 @@
 {% extends "frontend/pagina_principal.html" %}
 {% load static %}
-
+{% load cloudinary_filters %}
 {% block content %}
 <div class="container py-5" style="padding-top: 80px;">
   
@@ -70,7 +70,7 @@
                     <!-- ✅ IMAGEN -->
                     <div class="position-relative bg-dark text-center">
                         {% if video.thumbnail %}
-                          <img src="{% url 'frontend:serve_image' 'Video' video.id 'thumbnail' %}" class="img-fluid" style="height:200px; object-fit:cover;">
+                         <img src="{{ video.thumbnail.url|optimize_url:300 }}" class="img-fluid w-100" style="height:200px; object-fit:cover;">
                         {% endif %}
 
                         <span class="badge bg-dark position-absolute top-0 end-0 m-3">
@@ -119,7 +119,7 @@
                   <div class="modal-body p-4">
 
                     {% if video.thumbnail %}
-                      <img src="{% url 'frontend:serve_image' 'Video' video.id 'thumbnail' %}" class="card-img-top mb-3" style="height: 200px; object-fit: contain;">
+                      <img src="{{ video.thumbnail.url|optimize_url:800 }}" class="card-img-top mb-3" style="height: 200px; object-fit: contain;" alt="{{ video.titulo }}">
                     {% else %}
                       <div class="d-flex align-items-center justify-content-center mb-3" style="height: 200px; background-color: #f8f9fa;">
                           <i class="bi bi-play-btn text-muted fs-1"></i>
@@ -133,7 +133,7 @@
                     {% if video.archivo %}
                       <video width="100%" height="300" controls controlsList="nodownload noremoteplayback nofullscreen" style="border-radius: 12px; background: #000;"
                         oncontextmenu="return false;">
-                        <source src="{% url 'frontend:serve_video' video.id %}" type="video/mp4">
+                        <source src="{{ video.archivo.url }}" type="video/mp4">
                         Tu navegador no soporta la reproducción de video.
                       </video>
                     {% else %}

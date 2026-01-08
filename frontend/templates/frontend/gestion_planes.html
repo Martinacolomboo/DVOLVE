@@ -1,5 +1,6 @@
 {% extends "frontend/pagina_principal.html" %}
 {% load static %}
+{% load cloudinary_filters %}
 {% block content %}
 
 <section class="gestion-section py-5" style="padding-top: 80px;">
@@ -36,10 +37,14 @@
                 
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Imagen de Portada (opcional)</label>
-                    <input type="file" name="portada" class="form-control" accept="image/*">
                     {% if plan_edit.portada %}
-                        <p class="small text-muted mt-1">Actual: {{ plan_edit.portada.name }}</p>
+                        <div class="mb-2">
+                            <img src="{{ plan_edit.portada.url|optimize_url:100 }}" class="rounded" style="width:100px; height:auto;">
+                            <p class="small text-muted mt-1 mb-0">Actual: {{ plan_edit.portada.name }}</p>
+                        </div>
                     {% endif %}
+                    <input type="file" name="portada" class="form-control" accept="image/*">
+                    
                 </div>
             </div>
 
@@ -110,8 +115,7 @@
                       <div class="card border-0 shadow-sm rounded-4 h-100">
                           
                           {% if plan.portada %}
-                            <img src="{{ plan.portada.url }}" class="card-img-top rounded-top" alt="{{ plan.titulo }}" style="height: 150px; object-fit: cover;">
-
+                            <img src="{{ plan.portada.url|optimize_url:300 }}" class="card-img-top rounded-top" alt="{{ plan.titulo }}" style="height: 150px; object-fit: cover;">
                           {% else %}
                               <div class="p-4 text-center text-muted" style="background-color: #f0f8f0; height: 150px; display: flex; align-items: center; justify-content: center;">
                                   📑 Sin Portada
