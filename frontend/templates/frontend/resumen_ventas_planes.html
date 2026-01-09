@@ -1,0 +1,77 @@
+{% extends "frontend/pagina_principal.html" %}
+{% block title %}Resumen de Ventas por Plan{% endblock %}
+{% block content %}
+<div class="container my-5">
+        <h1 class="mb-4">Resumen de Ventas por Plan y Precio</h1>
+        <form method="get" class="row g-2 mb-4 align-items-end">
+                <div class="col-md-3">
+                        <label for="fecha_desde" class="form-label">Fecha desde</label>
+                        <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" value="{{ filtros.fecha_desde }}">
+                </div>
+                <div class="col-md-3">
+                        <label for="fecha_hasta" class="form-label">Fecha hasta</label>
+                        <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" value="{{ filtros.fecha_hasta }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+        </form>
+        <!-- Filtros rápidos eliminados -->
+        <div class="mb-3">
+            <b>Total recaudado:</b> ${{ total_recaudado|floatformat:0 }}
+        </div>
+        <table class="table table-bordered table-hover">
+                <thead>
+                        <tr>
+                                <th>Plan</th>
+                                <th>Precio</th>
+                                <th>Ventas</th>
+                                <th>Usuarios distintos</th>
+                                <th>Total vendido</th>
+                                <th>Fecha precio</th>
+                                <th>Descripción precio</th>
+                        </tr>
+                </thead>
+                <tbody>
+                        {% for p in pagos %}
+                        <tr>
+                                <td>{{ p.tipo_plan }}</td>
+                                <td>${{ p.monto|floatformat:0 }}</td>
+                                <td>
+                                    {{ p.cantidad }}
+                                </td>
+                                <td>
+                                    {% if p.historial %}
+                                        <a href="{% url 'frontend:usuarios_por_precio' p.historial.id %}?emails={{ p.usuarios_emails|join:',' }}" class="btn btn-link btn-sm">{{ p.usuarios }}</a>
+                                    {% else %}
+                                        {{ p.usuarios }}
+                                    {% endif %}
+                                </td>
+                                <td>${{ p.total_vendido|floatformat:0 }}</td>
+                                <td>{% if p.historial %}{{ p.historial.fecha|date:"d/m/Y H:i" }}{% else %}-{% endif %}</td>
+                                <td>{% if p.historial %}{{ p.historial.descripcion }}{% else %}-{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                </tbody>
+        </table>
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filtros.fecha_desde %}fecha_desde={{ filtros.fecha_desde }}&{% endif %}{% if filtros.fecha_hasta %}fecha_hasta={{ filtros.fecha_hasta }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                {% endif %}
+                <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if filtros.fecha_desde %}fecha_desde={{ filtros.fecha_desde }}&{% endif %}{% if filtros.fecha_hasta %}fecha_hasta={{ filtros.fecha_hasta }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+</div>
+{% endblock %}

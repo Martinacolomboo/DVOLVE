@@ -10,33 +10,32 @@
 </header>
 
 <div class="container my-5">
-    <div class="promo-banner text-center mb-5">
-        <span class="promo-title">Promo de bienvenida</span><br>
-        <span class="promo-text">Accedé hoy y obtené beneficios exclusivos</span>
-    </div>
+    
 
     <div class="row justify-content-center g-4">
 
-        <!-- Plan Mensual -->
+        {% for plan in planes %}
         <div class="col-md-5 d-flex justify-content-center">
-            <div class="pricing-card">
-                <h3>Plan Mensual</h3>
-                <p class="price">$45.000</p>
-                <p>Accedé a todas las clases en vivo y rutinas personalizadas.</p>
-                <a href="{% url 'email_verification:request' %}?monto=45000&plan=Mensual" class="btn-plan">Pagar</a>
-            </div>
+                            <div class="pricing-card d-flex flex-column justify-content-between {% if plan.nombre == 'Trimestral' %}popular{% endif %}" style="height: 100%;">
+                                {% if plan.nombre == 'Trimestral' %}<span class="badge-popular">Más elegido</span>{% endif %}
+                                    {% if plan.es_descuento %}
+                                        <span class="badge-popular" style="position:static; display:inline-block; margin-bottom:10px; background-color:#ff007f; color:white;">¡Precio promocional!</span>
+                                    {% endif %}
+                                    <h3>Plan {{ plan.nombre }}</h3>
+                                    <p class="price">${{ plan.precio_ars|floatformat:0 }}</p>
+                                    {% if plan.nombre == 'Mensual' %}
+                                        <p>Accedé a todas las clases en vivo y rutinas personalizadas.</p>
+                                    {% elif plan.nombre == 'Trimestral' %}
+                                        <p>Ahorro especial con acceso completo durante 3 meses.</p>
+                                    {% else %}
+                                        <p>{{ plan.descripcion }}</p>
+                                    {% endif %}
+                                    <div class="mt-auto">
+                                        <a href="{% url 'email_verification:request' %}?monto={{ plan.precio_ars|floatformat:0 }}&plan={{ plan.nombre }}" class="btn-plan">Pagar</a>
+                                    </div>
+                        </div>
         </div>
-
-        <!-- Plan Trimestral -->
-        <div class="col-md-5 d-flex justify-content-center">
-            <div class="pricing-card popular">
-                <span class="badge-popular">Más elegido</span>
-                <h3>Plan Trimestral</h3>
-                <p class="price">$130.000</p>
-                <p>Ahorro especial con acceso completo durante 3 meses.</p>
-                <a href="{% url 'email_verification:request' %}?monto=130000&plan=Trimestral" class="btn-plan">Pagar</a>
-            </div>
-        </div>
+        {% endfor %}
 
     </div>
 </div>

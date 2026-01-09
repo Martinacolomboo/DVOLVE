@@ -1,0 +1,49 @@
+{% extends "frontend/pagina_principal.html" %}
+{% load static %}
+
+{% block content %}
+<section class="py-5 bg-light" style="min-height: 80vh; padding-top: 80px;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold" style="color: #2c1a32;">Editar Precio de {{ plan.nombre }}</h2>
+      <p class="text-muted">Modificá el precio y la duración del plan. El cambio quedará registrado en el historial.</p>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="precio_ars" class="form-label">Precio ARS</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="precio_ars" name="precio_ars" value="{{ plan.precio_ars }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="dias_vigencia" class="form-label">Días de vigencia <span class="text-muted small">(Cantidad de días que el usuario tendrá acceso al plan desde la fecha de compra)</span></label>
+            <input type="number" min="1" class="form-control" id="dias_vigencia" name="dias_vigencia" value="{{ plan.dias_vigencia }}" required>
+          </div>
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción (opcional)</label>
+            <textarea class="form-control" id="descripcion" name="descripcion">{{ plan.descripcion }}</textarea>
+          </div>
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="es_descuento" name="es_descuento" value="1" {% if plan.es_descuento %}checked{% endif %}>
+            <label class="form-check-label" for="es_descuento">
+              ¿Este plan tiene un descuento activo?
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          <a href="{% url 'frontend:gestion_precios_planes' %}" class="btn btn-secondary ms-2">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  // Autocompletar días según plan
+  document.addEventListener('DOMContentLoaded', function() {
+    var nombre = "{{ plan.nombre }}";
+    var diasInput = document.getElementById('dias_vigencia');
+    if(nombre === 'Mensual') diasInput.value = 30;
+    if(nombre === 'Trimestral') diasInput.value = 90;
+  });
+</script>
+{% endblock %}

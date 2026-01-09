@@ -11,6 +11,7 @@ import requests
 from .models import Pago, VerifiedEmail
 from .helpers import CheckoutService
 from .constants import get_plan_by_amount, get_plan_duration, get_plan_price # <--- IMPORTANTE: Importar get_plan_price
+from principal.models import PlanPrecio
 
 def home(request):
     return render(request, 'principal/home.html')
@@ -19,7 +20,8 @@ def segunda_pagina(request):
     return render(request, 'principal/segunda_pagina.html')
 
 def pagos(request):
-    return render(request, 'principal/pagos.html')
+    planes = PlanPrecio.objects.filter(activo=True).order_by('dias_vigencia')
+    return render(request, 'principal/pagos.html', {'planes': planes})
 
 def privacidad(request):
     return render(request, "principal/privacidad.html")
@@ -208,6 +210,12 @@ def pago_exito(request):
     user = request.user if request.user.is_authenticated else None
 
     # 1. Guardar Historial (Evitando duplicados)
+    from principal.models import HistorialPrecioPlan
+    historial_precio = HistorialPrecioPlan.objects.filter(
+        plan=nombre_plan,
+        precio_nuevo=monto
+    ).order_by('-fecha').first()
+
     pago_creado = False
     if payment_id_externo:
         pago_existente = Pago.objects.filter(payment_id_externo=payment_id_externo).exists()
@@ -220,7 +228,8 @@ def pago_exito(request):
                 plataforma=plataforma,
                 estado="exitoso",
                 tipo_plan=nombre_plan,
-                payment_id_externo=payment_id_externo
+                payment_id_externo=payment_id_externo,
+                historial_precio=historial_precio
             )
             pago_creado = True
     else:
@@ -233,7 +242,8 @@ def pago_exito(request):
             plataforma=plataforma,
             estado="exitoso",
             tipo_plan=nombre_plan,
-            payment_id_externo=f"manual_{timezone.now().timestamp()}"
+            payment_id_externo=f"manual_{timezone.now().timestamp()}",
+            historial_precio=historial_precio
         )
         pago_creado = True
 

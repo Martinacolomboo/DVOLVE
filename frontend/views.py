@@ -1020,3 +1020,178 @@ def gestion_clientes(request):
         "clientes": clientes_list,
         "query": query
     })
+
+from principal.models import PlanPrecio, HistorialPrecioPlan
+from django.contrib.admin.views.decorators import staff_member_required
+
+import requests
+
+def obtener_dolar_oficial():
+    try:
+        r = requests.get('https://api.bluelytics.com.ar/v2/latest')
+        if r.status_code == 200:
+            data = r.json()
+            return float(data['oficial']['value_avg'])
+    except:
+        pass
+    return 1000  # fallback
+
+@staff_member_required
+def gestion_precios_planes(request):
+    planes = list(PlanPrecio.objects.filter(activo=True).order_by('dias_vigencia'))
+    historial = HistorialPrecioPlan.objects.all().order_by('-fecha')[:20]
+    dolar = obtener_dolar_oficial()
+    for plan in planes:
+        plan.precio_usd_calculado = float(plan.precio_ars) / dolar if dolar else 0
+    return render(request, 'frontend/gestion_precios_planes.html', {'planes': planes, 'historial': historial})
+
+@staff_member_required
+def editar_precio_plan(request, plan_id):
+    plan = get_object_or_404(PlanPrecio, id=plan_id)
+    if request.method == 'POST':
+        precio_anterior = plan.precio_ars
+        plan.precio_ars = request.POST.get('precio_ars')
+        plan.dias_vigencia = request.POST.get('dias_vigencia')
+        plan.descripcion = request.POST.get('descripcion')
+        plan.es_descuento = bool(request.POST.get('es_descuento'))
+        plan.save()
+        if float(precio_anterior) != float(plan.precio_ars):
+            HistorialPrecioPlan.objects.create(plan=plan.nombre, precio_anterior=precio_anterior, precio_nuevo=plan.precio_ars, descripcion=plan.descripcion)
+        return redirect('frontend:gestion_precios_planes')
+    return render(request, 'frontend/editar_precio_plan.html', {'plan': plan})
+# Vista: usuarios que compraron un plan a un precio específico
+@staff_member_required
+def usuarios_por_precio(request, historial_id):
+    from principal.models import Pago, HistorialPrecioPlan
+    from django.db.models import Q
+    historial = HistorialPrecioPlan.objects.get(id=historial_id)
+    emails_param = request.GET.get('emails', '').strip()
+    pagos = Pago.objects.filter(historial_precio=historial).select_related('user')
+    if emails_param:
+        emails_list = [e.strip() for e in emails_param.split(',') if e.strip()]
+        if emails_list:
+            pagos = pagos.filter(email__in=emails_list)
+
+    # Filtros
+    email = request.GET.get('email', '').strip()
+    username = request.GET.get('username', '').strip()
+    fecha_desde = request.GET.get('fecha_desde', '').strip()
+    fecha_hasta = request.GET.get('fecha_hasta', '').strip()
+
+    if email:
+        pagos = pagos.filter(email__icontains=email)
+    if username:
+        pagos = pagos.filter(user__username__icontains=username)
+    from datetime import datetime
+    if fecha_desde:
+        try:
+            fecha_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+            pagos = pagos.filter(fecha__date__gte=fecha_dt.date())
+        except Exception:
+            pass
+    if fecha_hasta:
+        try:
+            fecha_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+            pagos = pagos.filter(fecha__date__lte=fecha_dt.date())
+        except Exception:
+            pass
+
+    # Paginación
+    from django.core.paginator import Paginator
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(pagos.order_by('-fecha'), 10)
+    page_obj = paginator.get_page(page_number)
+
+    total_vendido = pagos.aggregate(total=Sum('monto'))['total'] or 0
+    return render(request, 'frontend/usuarios_por_precio.html', {
+        'historial': historial,
+        'pagos': page_obj.object_list,
+        'page_obj': page_obj,
+        'filtros': {'email': email, 'username': username, 'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta},
+        'total_vendido': total_vendido
+    })
+from principal.models import Pago, HistorialPrecioPlan
+from django.db.models import Count, F, Sum
+# Vista para el admin: resumen de ventas por plan y precio
+@staff_member_required
+def resumen_ventas_planes(request):
+    from datetime import datetime
+    pagos_list = []
+    total_recaudado = 0
+    mes = ''
+    anio = ''
+    fecha_desde = request.GET.get('fecha_desde', '').strip()
+    fecha_hasta = request.GET.get('fecha_hasta', '').strip()
+    pagos_qs = Pago.objects.all()
+    if fecha_desde:
+        try:
+            fecha_dt = datetime.strptime(fecha_desde, '%Y-%m-%d')
+            pagos_qs = pagos_qs.filter(fecha__date__gte=fecha_dt.date())
+        except Exception:
+            pass
+    if fecha_hasta:
+        try:
+            fecha_dt = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+            pagos_qs = pagos_qs.filter(fecha__date__lte=fecha_dt.date())
+        except Exception:
+            pass
+
+    from principal.models import PlanPrecio, HistorialPrecioPlan
+    planes = list(PlanPrecio.objects.filter(activo=True))
+    historial = list(HistorialPrecioPlan.objects.all())
+    # Agrupar historial por plan y precio
+    historial_map = {}
+    for h in historial:
+        historial_map[(h.plan, float(h.precio_nuevo))] = h
+
+    # Obtener todos los grupos posibles (plan, precio actual y precios históricos)
+    grupos = []
+    for plan in planes:
+        # Precio actual
+        grupos.append({
+            'tipo_plan': plan.nombre,
+            'monto': float(plan.precio_ars),
+            'historial_precio': historial_map.get((plan.nombre, float(plan.precio_ars))).id if historial_map.get((plan.nombre, float(plan.precio_ars))) else None,
+            'historial': historial_map.get((plan.nombre, float(plan.precio_ars))),
+        })
+        # Precios históricos
+        for h in historial:
+            if h.plan == plan.nombre and float(h.precio_nuevo) != float(plan.precio_ars):
+                grupos.append({
+                    'tipo_plan': plan.nombre,
+                    'monto': float(h.precio_nuevo),
+                    'historial_precio': h.id,
+                    'historial': h,
+                })
+
+    pagos_list = []
+    if grupos:
+        for g in grupos:
+            pagos_g = pagos_qs.filter(tipo_plan=g['tipo_plan'], monto=g['monto'])
+            cantidad = pagos_g.count()
+            usuarios = pagos_g.values('email').distinct().count()
+            total_vendido = pagos_g.aggregate(total=Sum('monto'))['total'] or 0
+            usuarios_emails = list(pagos_g.values_list('email', flat=True).distinct())
+            pagos_list.append({
+                'tipo_plan': g['tipo_plan'],
+                'monto': g['monto'],
+                'historial_precio': g['historial_precio'],
+                'historial': g['historial'],
+                'cantidad': cantidad,
+                'usuarios': usuarios,
+                'total_vendido': total_vendido,
+                'usuarios_emails': usuarios_emails,
+            })
+        pagos_list = sorted(pagos_list, key=lambda x: (x['tipo_plan'], -x['monto']))
+    # Paginación
+    from django.core.paginator import Paginator
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(pagos_list, 10)
+    page_obj = paginator.get_page(page_number)
+    total_recaudado = pagos_qs.aggregate(total=Sum('monto'))['total'] or 0
+    return render(request, 'frontend/resumen_ventas_planes.html', {
+        'pagos': page_obj.object_list,
+        'page_obj': page_obj,
+        'filtros': {'fecha_desde': fecha_desde, 'fecha_hasta': fecha_hasta, 'mes': mes, 'anio': anio},
+        'total_recaudado': total_recaudado,
+    })

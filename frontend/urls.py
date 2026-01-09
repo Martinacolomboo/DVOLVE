@@ -44,4 +44,8 @@ urlpatterns = [
     path('podcast/file/<int:archivo_id>/', views.serve_podcast_file, name='serve_podcast_file'),
     
     path('panel-admin/clientes/', views.gestion_clientes, name='gestion_clientes'),
+    path('admin/precios-planes/', views.gestion_precios_planes, name='gestion_precios_planes'),
+    path('admin/precios-planes/editar/<int:plan_id>/', views.editar_precio_plan, name='editar_precio_plan'),
+    path('admin/precios-planes/usuarios/<int:historial_id>/', views.usuarios_por_precio, name='usuarios_por_precio'),
+    path('admin/resumen-ventas/', views.resumen_ventas_planes, name='resumen_ventas_planes'),
 ]

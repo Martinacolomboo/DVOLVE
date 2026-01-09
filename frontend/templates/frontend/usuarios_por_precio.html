@@ -1,0 +1,56 @@
+{% extends "frontend/pagina_principal.html" %}
+{% block title %}Usuarios que compraron {{ historial.plan }} a ${{ historial.precio_nuevo }}{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Usuarios que compraron <b>{{ historial.plan }}</b> a <b>${{ historial.precio_nuevo|floatformat:0 }}</b></h2>
+    <p class="text-muted">Fecha de cambio: {{ historial.fecha|date:"d/m/Y H:i" }}</p>
+
+    <form method="get" class="row g-2 mb-4 align-items-end">
+        <div class="col-md-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="text" class="form-control" id="email" name="email" value="{{ filtros.email }}">
+        </div>
+        <div class="col-md-3">
+            <label for="username" class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ filtros.username }}">
+        </div>
+        <div class="col-md-3">
+            <label for="fecha_desde" class="form-label">Fecha desde</label>
+            <input type="date" class="form-control" id="fecha_desde" name="fecha_desde" value="{{ filtros.fecha_desde }}">
+        </div>
+        <div class="col-md-2">
+            <label for="fecha_hasta" class="form-label">Fecha hasta</label>
+            <input type="date" class="form-control" id="fecha_hasta" name="fecha_hasta" value="{{ filtros.fecha_hasta }}">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+        </div>
+    </form>
+    <div class="mb-3">
+        <b>Total vendido:</b> ${{ total_vendido|floatformat:0 }}
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Usuario</th>
+                <th>Fecha de pago</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pago in pagos %}
+            <tr>
+                <td>{{ pago.email }}</td>
+                <td>{% if pago.user %}{{ pago.user.username }}{% else %}-{% endif %}</td>
+                <td>{{ pago.fecha|date:"d/m/Y H:i" }}</td>
+                <td>{{ pago.estado }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No hay pagos registrados para este precio.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'frontend:resumen_ventas_planes' %}" class="btn btn-secondary mt-4">Volver al resumen</a>
+</div>
+{% endblock %}
