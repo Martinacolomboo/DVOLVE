@@ -1,0 +1,103 @@
+{% extends "frontend/pagina_principal.html" %}
+
+{% block content %}
+<div class="container py-5" style="padding-top: 80px;">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-person-badge-fill text-primary"></i> Ayudantes</h2>
+            <p class="text-muted mb-0">Cuentas con acceso limitado a la gestión de planes.</p>
+        </div>
+        <a href="{% url 'frontend:panel_admin' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} rounded-4 shadow-sm">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Registrar nutricionista</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.first_name.label }}</label>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">{{ form.last_name.label }}</label>
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">{{ form.email.label }}</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                        <button type="submit" class="btn btn-dark rounded-pill px-4 w-100">
+                            <i class="bi bi-send-fill me-1"></i> Crear y enviar acceso
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="py-3 ps-4">Ayudante</th>
+                                <th class="py-3">Email</th>
+                                <th class="py-3">Usuario</th>
+                                <th class="py-3">Estado</th>
+                                <th class="py-3 text-end pe-4">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ayudante in ayudantes %}
+                                <tr>
+                                    <td class="ps-4 fw-semibold">{{ ayudante.first_name }} {{ ayudante.last_name }}</td>
+                                    <td>{{ ayudante.email }}</td>
+                                    <td>@{{ ayudante.username }}</td>
+                                    <td>
+                                        {% if ayudante.is_active %}
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2">Habilitada</span>
+                                        {% else %}
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3 py-2">Deshabilitada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <form method="post" action="{% url 'frontend:toggle_ayudante' ayudante.id %}">
+                                            {% csrf_token %}
+                                            {% if ayudante.is_active %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Deshabilitar</button>
+                                            {% else %}
+                                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">Habilitar</button>
+                                            {% endif %}
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">Todavía no hay ayudantes registradas.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

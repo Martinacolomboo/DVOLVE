@@ -17,7 +17,43 @@
   <div id="contenido-principal">
     {% block content %}{% endblock %}
   </div>
+  <!-- Forgot Password Modal (top-level to avoid input blocking) -->
+  <div class="modal fade" id="forgotModal" tabindex="-1" aria-labelledby="forgotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotModalLabel">Recuperar contraseña</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="post" action="{% url 'frontend:forgot_password' %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <p class="small text-muted">Ingresá tu email o nombre de usuario. Te enviaremos una contraseña temporal.</p>
+            <div class="mb-3">
+              <input type="text" name="identifier" class="form-control" placeholder="Email o usuario" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Enviar contraseña temporal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/scripts.js' %}"></script>
+  <script>
+    // Autofocus input when modal opens
+    document.addEventListener('DOMContentLoaded', function() {
+      var forgotModal = document.getElementById('forgotModal');
+      if (forgotModal) {
+        forgotModal.addEventListener('shown.bs.modal', function () {
+          var input = forgotModal.querySelector('input[name="identifier"]');
+          if (input) input.focus();
+        });
+      }
+    });
+  </script>
 </body>
 </html>

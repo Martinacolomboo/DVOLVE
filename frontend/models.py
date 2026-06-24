@@ -103,10 +103,36 @@ class Questionario(models.Model):
         ("buena", "Consumo buena cantidad"),
     ], default="poca")
 
+    fecha_vencimiento_plan = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Cuestionario de {self.user.username}"
+
+
+class HistorialVencimientoPlan(models.Model):
+    questionario = models.ForeignKey(
+        Questionario,
+        on_delete=models.CASCADE,
+        related_name="historial_vencimientos",
+    )
+    fecha_anterior = models.DateField(blank=True, null=True)
+    fecha_nueva = models.DateField()
+    realizado_por = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="extensiones_plan_realizadas",
+    )
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-creado_en"]
+
+    def __str__(self):
+        return f"{self.questionario.user.username}: {self.fecha_anterior} -> {self.fecha_nueva}"
+
 
 class Video(models.Model):
     OBJETIVOS = [

@@ -1,14 +1,22 @@
 # --- IMPORTS ---
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import Group, User
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.crypto import get_random_string
+from django.utils.dateparse import parse_date
+from django.utils.text import slugify
 from django.urls import reverse, NoReverseMatch
 from django.contrib import messages
-from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca, SiteConfiguration, PodcastArchivo
+from django.core.mail import send_mail
+from .models import Questionario, Video, Receta, Recomendacion, Plan, Podcast, PlanArchivo,Biblioteca, SiteConfiguration, PodcastArchivo, HistorialVencimientoPlan
+from .forms import AyudanteAdminForm, ClienteAdminForm
 from django.http import HttpResponse, Http404
 from django.conf import settings
 import cloudinary
@@ -19,6 +27,27 @@ import requests
 import mimetypes
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.http import FileResponse
+
+
+def generar_username_cliente(nombre):
+    base = slugify(nombre).replace("-", "") or "cliente"
+    username = base
+    contador = 1
+    while User.objects.filter(username__iexact=username).exists():
+        contador += 1
+        username = f"{base}{contador}"
+    return username
+
+
+NUTRICIONISTA_GROUP = "Nutricionista"
+
+
+def es_nutricionista(user):
+    return user.is_authenticated and user.groups.filter(name=NUTRICIONISTA_GROUP).exists()
+
+
+def puede_gestionar_planes(user):
+    return user.is_superuser or es_nutricionista(user)
 # Vista protegida para servir archivos PDF de biblioteca
 # En frontend/views.py
 @login_required
@@ -264,7 +293,7 @@ def login_view(request):
 
 
     if request.method == "POST":
-        username = request.POST.get("username", "")
+        username = request.POST.get("username", "").strip()
         password = request.POST.get("password", "")
         user = authenticate(request, username=username, password=password)
 
@@ -273,26 +302,28 @@ def login_view(request):
                 login(request, user)
                 return redirect("frontend:panel_admin")
 
-            # Guardar el email real en la sesión para el pago
-            request.session["email_verified_address"] = user.email
-            request.session.modified = True
+            cuestionario = Questionario.objects.filter(user=user).first()
+            if (
+                cuestionario
+                and cuestionario.fecha_vencimiento_plan
+                and timezone.localdate() >= cuestionario.fecha_vencimiento_plan
+            ):
+                error_message = "Tu plan venció. Para volver a ingresar, debés renovar el pago."
+                return render(request, "frontend/login.html", {
+                    "prefill_email": prefill,
+                    "show_pay_button": show_pay_button,
+                    "pay_url": pay_url,
+                    "error_message": error_message,
+                })
 
-            # Chequeo de vencimiento de suscripción
-            try:
-                verif = VerifiedEmail.objects.get(email=user.email)
-                if verif.vencimiento and verif.vencimiento > timezone.now():
-                    login(request, user)
-                    return redirect("frontend:dashboard")
-                else:
-                    error_message = "Tu plan venció. Por favor renovalo."
-                    show_pay_button = True
-                    pay_url = reverse('principal:pagos')
-            except VerifiedEmail.DoesNotExist:
-                error_message = "No tenés una suscripción activa."
-                show_pay_button = True
-                pay_url = reverse('principal:pagos')
+            login(request, user)
+            return redirect("frontend:dashboard")
         else:
-            error_message = "Credenciales incorrectas."
+            existing_user = User.objects.filter(username=username).first()
+            if existing_user and not existing_user.is_active:
+                error_message = "Tu cuenta fue deshabilitada. Contactá a administración."
+            else:
+                error_message = "Credenciales incorrectas."
 
     return render(request, "frontend/login.html", {
         "prefill_email": prefill,
@@ -301,33 +332,76 @@ def login_view(request):
         "error_message": error_message,
     })
 
+
+def forgot_password_view(request):
+    """Genera y envía una contraseña temporal al email/username provisto."""
+    if request.method == "POST":
+        identifier = request.POST.get("identifier", "").strip()
+        user = None
+        if "@" in identifier:
+            user = User.objects.filter(email__iexact=identifier).first()
+        if not user:
+            user = User.objects.filter(username__iexact=identifier).first()
+
+        if not user:
+            messages.error(request, "No se encontró una cuenta con esos datos.")
+            return redirect("frontend:login")
+
+        if not user.is_active:
+            messages.error(request, "Tu cuenta está deshabilitada. Contactá a administración.")
+            return redirect("frontend:login")
+
+        # Generar contraseña temporal
+        temp_pass = get_random_string(10)
+        user.set_password(temp_pass)
+        user.save()
+
+        # Enviar email con la contraseña temporal
+        subject = "Recuperación de contraseña - DVOLVE"
+        nombre = user.get_full_name() or user.username
+        message = (
+            f"Hola {nombre},\n\n" 
+            f"Generamos una contraseña temporal para que puedas ingresar: {temp_pass}\n\n"
+            "Ingresá con esa contraseña y luego cambiala desde tu perfil.\n\n"
+            "Si no solicitaste esto, por favor contactá a administración.\n"
+        )
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'EMAIL_HOST_USER', None)
+        try:
+            send_mail(subject, message, from_email, [user.email], fail_silently=False)
+            messages.success(request, "Te enviamos una contraseña temporal por email. Revisá tu bandeja de entrada.")
+        except Exception as e:
+            messages.error(request, "No se pudo enviar el email. Revisá la configuración del servidor de correo.")
+
+        return redirect("frontend:login")
+
+    return render(request, "frontend/forgot_password.html")
+
+
+@login_required
+def cambiar_password_view(request):
+    redirect_url = "frontend:panel_admin" if request.user.is_staff else "frontend:dashboard"
+
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Contraseña actualizada correctamente.")
+            return redirect(redirect_url)
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, "frontend/cambiar_password.html", {
+        "form": form,
+        "redirect_url": redirect_url,
+    })
+
 # ==============================================================================
 # 2. VISTAS PRINCIPALES DEL CLIENTE
 # ==============================================================================
 
 @login_required
 def dashboard_view(request):
-    # PORTERO: Chequeo de vencimiento (Doble seguridad al entrar)
-    if not (request.user.is_staff or request.user.is_superuser):
-        try:
-            # Buscamos la suscripción
-            sub = VerifiedEmail.objects.get(email=request.user.email)
-            
-            # CASO 1: Nunca pagó (Vencimiento está vacío)
-            if not sub.vencimiento:
-                messages.info(request, "¡Bienvenida! Para acceder a los entrenamientos, primero elegí tu plan.")
-                return redirect('principal:pagos')
-
-            # CASO 2: Pagó antes, pero ya se le terminó el tiempo
-            elif sub.vencimiento < timezone.now():
-                messages.error(request, "Tu plan finalizó. Por favor renová tu suscripción para continuar.")
-                return redirect('principal:pagos')
-
-        except VerifiedEmail.DoesNotExist:
-            # CASO 3: Error raro (No tiene registro de email verificado)
-            messages.warning(request, "No encontramos una suscripción activa.")
-            return redirect('principal:pagos')
-
     cuestionario = None
     recetas = []
     bmi_display = None
@@ -725,6 +799,9 @@ def gestion_recetas_delete(request, receta_id):
 
 @staff_member_required
 def gestion_planes(request):
+    if not puede_gestionar_planes(request.user):
+        return redirect("frontend:dashboard")
+
     # Detectar edición (para que el botón editar funcione)
     plan_edit = None
     if request.GET.get("edit"):
@@ -737,35 +814,44 @@ def gestion_planes(request):
         objetivo_leido = request.POST.get("objetivo") # <--- Leemos aquí
         destacado = request.POST.get("destacado") == "on"
         portada = request.FILES.get("portada")
-        
-        if plan_edit:
-            # ACTUALIZAR
-            plan_edit.titulo = titulo
-            plan_edit.descripcion = descripcion
-            plan_edit.objetivo = objetivo_leido
-            plan_edit.destacado = destacado
-            if portada: plan_edit.portada = portada
-            plan_edit.save()
-            # Guardar archivos nuevos si hay
-            archivos = request.FILES.getlist("archivo")
-            for f in archivos:
-                PlanArchivo.objects.create(plan=plan_edit, archivo=f, nombre=f.name)
-            messages.success(request, "Plan actualizado.")
-        else:
-            # CREAR
-            new_plan = Plan.objects.create(
-                titulo=titulo,
-                descripcion=descripcion,
-                objetivo=objetivo_leido, # <--- Usamos la variable leída
-                destacado=destacado,
-                portada=portada,
-                creado_por=request.user
+
+        try:
+            if plan_edit:
+                # ACTUALIZAR
+                plan_edit.titulo = titulo
+                plan_edit.descripcion = descripcion
+                plan_edit.objetivo = objetivo_leido
+                plan_edit.destacado = destacado
+                if portada:
+                    plan_edit.portada = portada
+                plan_edit.save()
+                # Guardar archivos nuevos si hay
+                archivos = request.FILES.getlist("archivo")
+                for f in archivos:
+                    PlanArchivo.objects.create(plan=plan_edit, archivo=f, nombre=f.name)
+                messages.success(request, "Plan actualizado.")
+            else:
+                # CREAR
+                new_plan = Plan.objects.create(
+                    titulo=titulo,
+                    descripcion=descripcion,
+                    objetivo=objetivo_leido, # <--- Usamos la variable leída
+                    destacado=destacado,
+                    portada=portada,
+                    creado_por=request.user
+                )
+                # Guardar archivos
+                archivos = request.FILES.getlist("archivo")
+                for f in archivos:
+                    PlanArchivo.objects.create(plan=new_plan, archivo=f, nombre=f.name)
+                messages.success(request, "Plan creado.")
+        except cloudinary.exceptions.Error:
+            messages.error(
+                request,
+                "No se pudo subir a Cloudinary. Revisá CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET en .env."
             )
-            # Guardar archivos
-            archivos = request.FILES.getlist("archivo")
-            for f in archivos:
-                PlanArchivo.objects.create(plan=new_plan, archivo=f, nombre=f.name)
-            messages.success(request, "Plan creado.")
+        except Exception as e:
+            messages.error(request, f"No se pudo guardar el plan: {e}")
 
         return redirect("frontend:gestion_planes")
 
@@ -780,6 +866,9 @@ from .models import Plan, PlanArchivo # Asegúrate de importar PlanArchivo
 
 @staff_member_required
 def gestion_planes_edit(request, plan_id):
+    if not puede_gestionar_planes(request.user):
+        return redirect("frontend:dashboard")
+
     plan_edit = get_object_or_404(Plan, id=plan_id)
     
     if request.method == "POST":
@@ -812,6 +901,9 @@ def gestion_planes_edit(request, plan_id):
 
 @staff_member_required
 def gestion_planes_delete(request, plan_id):
+    if not puede_gestionar_planes(request.user):
+        return redirect("frontend:dashboard")
+
     plan = get_object_or_404(Plan, id=plan_id)
     
     if request.method == 'POST':
@@ -970,7 +1062,10 @@ def panel_admin(request):
     config, created = SiteConfiguration.objects.get_or_create(id=1)
     
     # Pasamos 'config' al template
-    return render(request, "frontend/panel_admin.html", {'config': config})
+    return render(request, "frontend/panel_admin.html", {
+        'config': config,
+        'es_nutricionista': es_nutricionista(request.user),
+    })
 from django.db.models import Q
 # En frontend/views.py
 
@@ -979,10 +1074,128 @@ from django.db.models import Q
 # 1. Asegurate de importar el modelo
 from principal.models import VerifiedEmail 
 
+
+@staff_member_required
+def gestion_ayudantes(request):
+    if not request.user.is_superuser:
+        return redirect("frontend:dashboard")
+
+    form = AyudanteAdminForm()
+    if request.method == "POST":
+        form = AyudanteAdminForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+            first_name = form.cleaned_data["first_name"].strip()
+            last_name = form.cleaned_data["last_name"].strip()
+            username = generar_username_cliente(first_name)
+            password = get_random_string(12)
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                is_staff=True,
+            )
+            group, _ = Group.objects.get_or_create(name=NUTRICIONISTA_GROUP)
+            user.groups.add(group)
+
+            send_mail(
+                "Tu acceso de ayudante a DVOLVE",
+                (
+                    f"Hola {first_name},\n\n"
+                    "Ya tenés creada tu cuenta de ayudante en DVOLVE.\n\n"
+                    f"Usuario: {username}\n"
+                    f"Contraseña: {password}\n\n"
+                    "Al ingresar vas a poder gestionar los planes nutricionales.\n\n"
+                    "Equipo DVOLVE"
+                ),
+                getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                [email],
+                fail_silently=False,
+            )
+
+            messages.success(request, f"Ayudante creada y credenciales enviadas a {email}.")
+            return redirect("frontend:gestion_ayudantes")
+
+    ayudantes = User.objects.filter(groups__name=NUTRICIONISTA_GROUP).order_by("first_name", "username")
+    return render(request, "frontend/gestion_ayudantes.html", {
+        "form": form,
+        "ayudantes": ayudantes,
+    })
+
+
+@staff_member_required
+def toggle_ayudante(request, user_id):
+    if not request.user.is_superuser:
+        return redirect("frontend:dashboard")
+
+    if request.method != "POST":
+        return redirect("frontend:gestion_ayudantes")
+
+    ayudante = get_object_or_404(User, id=user_id, groups__name=NUTRICIONISTA_GROUP)
+    ayudante.is_active = not ayudante.is_active
+    ayudante.save(update_fields=["is_active"])
+
+    estado = "habilitada" if ayudante.is_active else "deshabilitada"
+    messages.success(request, f"Ayudante {ayudante.username} {estado} correctamente.")
+    return redirect("frontend:gestion_ayudantes")
+
+
 @staff_member_required
 def gestion_clientes(request):
     if not request.user.is_superuser:
         return redirect("frontend:dashboard")
+
+    cliente_form = ClienteAdminForm()
+
+    if request.method == "POST":
+        cliente_form = ClienteAdminForm(request.POST)
+        if cliente_form.is_valid():
+            email = cliente_form.cleaned_data["email"]
+            first_name = cliente_form.cleaned_data["first_name"].strip()
+            last_name = cliente_form.cleaned_data["last_name"].strip()
+
+            if User.objects.filter(email__iexact=email).exists():
+                cliente_form.add_error("email", "Ya existe una usuaria con ese email.")
+            else:
+                username = generar_username_cliente(first_name)
+                password = get_random_string(12)
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+
+                cuestionario = cliente_form.save(commit=False)
+                cuestionario.user = user
+                if cuestionario.height and not cuestionario.peso_ideal:
+                    base_altura = max(float(cuestionario.height), 152.4)
+                    cuestionario.peso_ideal = round(45.5 + 0.9 * (base_altura - 152.4), 1)
+                cuestionario.save()
+
+                send_mail(
+                    "Tu acceso a DVOLVE",
+                    (
+                        f"Hola {first_name},\n\n"
+                        "Ya tenés creada tu cuenta en DVOLVE.\n\n"
+                        f"Usuario: {username}\n"
+                        f"Contraseña: {password}\n\n"
+                        "Podés iniciar sesión desde la web de DVOLVE.\n\n"
+                        "Cuando ingreses, podés cambiar tu contraseña desde la opción "
+                        "\"Cambiar contraseña\" del menú.\n\n"
+                        "Equipo DVOLVE"
+                    ),
+                    getattr(settings, "DEFAULT_FROM_EMAIL", None),
+                    [email],
+                    fail_silently=False,
+                )
+
+                messages.success(request, f"Clienta creada y credenciales enviadas a {email}.")
+                return redirect("frontend:gestion_clientes")
 
     # 1. Traemos los clientes (Cuestionarios + Usuario)
     clientes_list = Questionario.objects.select_related('user').all().order_by('-user__date_joined')
@@ -997,29 +1210,71 @@ def gestion_clientes(request):
             Q(user__email__icontains=query)
         )
 
-    # ==========================================================
-    # 3. NUEVO: Buscar los vencimientos y unirlos por Email
-    # ==========================================================
-    
-    # Creamos una lista con todos los emails de los clientes que estamos viendo
-    emails_clientes = [c.user.email for c in clientes_list]
+    paginator = Paginator(clientes_list, 10)
+    page_obj = paginator.get_page(request.GET.get("page"))
 
-    # Traemos de la base de datos solo los VerifiedEmail que coinciden con esos emails
-    # Usamos un diccionario { 'email': fecha_vencimiento } para buscar rápido
-    vencimientos_dict = {
-        ve.email: ve.vencimiento 
-        for ve in VerifiedEmail.objects.filter(email__in=emails_clientes)
-    }
-
-    # Ahora recorremos la lista de clientes y le "pegamos" el vencimiento a cada uno
-    for cliente in clientes_list:
-        # Creamos un atributo temporal 'fecha_vencimiento' en el objeto cliente
-        cliente.fecha_vencimiento = vencimientos_dict.get(cliente.user.email)
+    for cliente in page_obj:
+        cliente.plan_vencido = (
+            cliente.fecha_vencimiento_plan
+            and timezone.localdate() >= cliente.fecha_vencimiento_plan
+        )
+        cliente.historial_vencimientos_list = list(
+            cliente.historial_vencimientos.select_related("realizado_por")
+        )
 
     return render(request, "frontend/gestion_clientes.html", {
-        "clientes": clientes_list,
-        "query": query
+        "clientes": page_obj,
+        "page_obj": page_obj,
+        "query": query,
+        "cliente_form": cliente_form,
     })
+
+
+@staff_member_required
+def extender_plan_cliente(request, questionario_id):
+    if not request.user.is_superuser:
+        return redirect("frontend:dashboard")
+
+    if request.method != "POST":
+        return redirect("frontend:gestion_clientes")
+
+    cliente = get_object_or_404(Questionario.objects.select_related("user"), id=questionario_id)
+    nueva_fecha = parse_date(request.POST.get("fecha_vencimiento_plan", ""))
+
+    if not nueva_fecha:
+        messages.error(request, "Ingresá una fecha de vencimiento válida.")
+        return redirect("frontend:gestion_clientes")
+
+    fecha_anterior = cliente.fecha_vencimiento_plan
+    cliente.fecha_vencimiento_plan = nueva_fecha
+    cliente.save(update_fields=["fecha_vencimiento_plan"])
+
+    HistorialVencimientoPlan.objects.create(
+        questionario=cliente,
+        fecha_anterior=fecha_anterior,
+        fecha_nueva=nueva_fecha,
+        realizado_por=request.user,
+    )
+
+    if cliente.user.email:
+        send_mail(
+            "Tu acceso a DVOLVE fue actualizado",
+            (
+                f"Hola {cliente.user.first_name or cliente.user.username},\n\n"
+                "Tu acceso a DVOLVE ya está habilitado nuevamente.\n\n"
+                f"Podés ingresar hasta el {nueva_fecha.strftime('%d/%m/%Y')}.\n\n"
+                "Equipo DVOLVE"
+            ),
+            getattr(settings, "DEFAULT_FROM_EMAIL", None),
+            [cliente.user.email],
+            fail_silently=False,
+        )
+
+    messages.success(
+        request,
+        f"Plan de {cliente.user.username} extendido hasta el {nueva_fecha.strftime('%d/%m/%Y')}.",
+    )
+    return redirect("frontend:gestion_clientes")
 
 from principal.models import PlanPrecio, HistorialPrecioPlan
 from django.contrib.admin.views.decorators import staff_member_required

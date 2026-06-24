@@ -1,7 +1,14 @@
 from django.contrib import admin
-from .models import Questionario,Video,Receta,Recomendacion,Plan,PlanArchivo
+from .models import Questionario,Video,Receta,Recomendacion,Plan,PlanArchivo,HistorialVencimientoPlan
 
 admin.site.register(Questionario)
+
+
+@admin.register(HistorialVencimientoPlan)
+class HistorialVencimientoPlanAdmin(admin.ModelAdmin):
+    list_display = ("questionario", "fecha_anterior", "fecha_nueva", "realizado_por", "creado_en")
+    list_filter = ("creado_en",)
+    search_fields = ("questionario__user__username", "questionario__user__email", "realizado_por__username")
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):

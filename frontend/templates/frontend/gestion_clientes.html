@@ -7,12 +7,25 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h2 class="fw-bold mb-0">👥 Gestión de Clientes</h2>
-            <p class="text-muted mb-0">Fichas completas, salud, objetivos y vencimientos.</p>
+            <p class="text-muted mb-0">Fichas completas, salud, objetivos y estado de acceso.</p>
         </div>
-        <a href="{% url 'frontend:panel_admin' %}" class="btn btn-outline-secondary rounded-pill px-4">
-            <i class="bi bi-arrow-left"></i> Volver al Panel
-        </a>
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-dark rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#crearClienteModal">
+                <i class="bi bi-person-plus-fill"></i> Agregar clienta
+            </button>
+            <a href="{% url 'frontend:panel_admin' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
     </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} rounded-4 shadow-sm">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
 
     <div class="row mb-4">
         <div class="col-md-6">
@@ -38,6 +51,109 @@
         </div>
     </div>
 
+    <div class="modal fade crear-cliente-modal" id="crearClienteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-header bg-dark text-white border-0">
+                        <div>
+                            <h5 class="modal-title fw-bold mb-1">Agregar clienta</h5>
+                            <small class="text-white-50">Se crea la cuenta, la ficha y se envían las credenciales por email.</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="submit" class="btn btn-light btn-sm rounded-pill px-3 fw-semibold">
+                                <i class="bi bi-send-fill me-1"></i> Crear y enviar
+                            </button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+
+                    <div class="modal-body p-4" style="background-color: #f8f9fa;">
+                        {% if cliente_form.non_field_errors %}
+                            <div class="alert alert-danger">{{ cliente_form.non_field_errors }}</div>
+                        {% endif %}
+
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body">
+                                <h6 class="fw-bold text-uppercase text-secondary mb-3 border-bottom pb-2">
+                                    <i class="bi bi-person-vcard me-2"></i>Datos de acceso
+                                </h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">{{ cliente_form.first_name.label }}</label>
+                                        {{ cliente_form.first_name }}
+                                        {{ cliente_form.first_name.errors }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">{{ cliente_form.last_name.label }}</label>
+                                        {{ cliente_form.last_name }}
+                                        {{ cliente_form.last_name.errors }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">{{ cliente_form.email.label }}</label>
+                                        {{ cliente_form.email }}
+                                        {{ cliente_form.email.errors }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">{{ cliente_form.fecha_vencimiento_plan.label }}</label>
+                                        {{ cliente_form.fecha_vencimiento_plan }}
+                                        {{ cliente_form.fecha_vencimiento_plan.errors }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-white fw-bold text-primary border-bottom-0 pt-3">
+                                        <i class="bi bi-activity me-2"></i>Entrenamiento
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            {% for field in cliente_form %}
+                                                {% if field.name in "health_conditions weight age height training_goal training_level training_place other_activity training_days sleep" %}
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-semibold">{{ field.label }}</label>
+                                                        {{ field }}
+                                                        {{ field.errors }}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-header bg-white fw-bold text-success border-bottom-0 pt-3">
+                                        <i class="bi bi-basket me-2"></i>Alimentación
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            {% for field in cliente_form %}
+                                                {% if field.name in "current_diet diet_restrictions diet_goal thyroid meals snacks meal_schedule hydration" %}
+                                                    <div class="{% if field.name == 'current_diet' %}col-12{% else %}col-md-6{% endif %}">
+                                                        <label class="form-label fw-semibold">{{ field.label }}</label>
+                                                        {{ field }}
+                                                        {{ field.errors }}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -48,7 +164,8 @@
                             <th class="py-3">Vencimiento Plan</th>
                             <th class="py-3">Objetivo</th>
                             <th class="py-3">Nivel</th>
-                            <th class="py-3 text-end pe-4">Ficha</th>
+                            <th class="py-3">Estado</th>
+                            <th class="py-3 text-end pe-4">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,13 +188,13 @@
                             </td>
                             
                             <td>
-                                {% if item.fecha_vencimiento %}
-                                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill">
-                                        <i class="bi bi-calendar-check me-1"></i> {{ item.fecha_vencimiento|date:"d/m/Y" }}
+                                {% if item.fecha_vencimiento_plan %}
+                                    <span class="badge {% if item.plan_vencido %}bg-danger bg-opacity-10 text-danger border border-danger{% else %}bg-success bg-opacity-10 text-success border border-success{% endif %} px-3 py-2 rounded-pill">
+                                        <i class="bi bi-calendar-check me-1"></i> {{ item.fecha_vencimiento_plan|date:"d/m/Y" }}
                                     </span>
                                 {% else %}
                                     <span class="badge bg-secondary bg-opacity-10 text-secondary border px-3 py-2 rounded-pill">
-                                        Sin Plan Activo
+                                        Sin vencimiento
                                     </span>
                                 {% endif %}
                             </td>
@@ -89,8 +206,30 @@
                             </td>
                             
                             <td>{{ item.get_training_level_display|default:"-" }}</td>
+
+                            <td>
+                                {% if item.plan_vencido %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill px-3 py-2">
+                                        Vencido
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3 py-2">
+                                        Habilitado
+                                    </span>
+                                {% endif %}
+                            </td>
                             
                             <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-dark rounded-pill px-3 me-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#extenderPlanModal{{ item.id }}">
+                                    <i class="bi bi-calendar-plus me-1"></i> Extender
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#historialPlanModal{{ item.id }}">
+                                    <i class="bi bi-clock-history me-1"></i> Historial
+                                </button>
                                 <button class="btn btn-sm btn-dark rounded-pill px-3 shadow-sm" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#clienteModal{{ item.id }}">
@@ -98,6 +237,110 @@
                                 </button>
                             </td>
                         </tr>
+
+                        <tr>
+                            <td colspan="6" class="p-0 border-0">
+                        <div class="modal fade" id="extenderPlanModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 border-0">
+                                    <form method="post" action="{% url 'frontend:extender_plan_cliente' item.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-header bg-dark text-white border-0">
+                                            <div>
+                                                <h5 class="modal-title fw-bold">Extender plan</h5>
+                                                <small class="text-white-50">
+                                                    {% if item.user.first_name %}
+                                                        {{ item.user.first_name }} {{ item.user.last_name }}
+                                                    {% else %}
+                                                        {{ item.user.username }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body p-4">
+                                            <label class="form-label fw-semibold">Nueva fecha de vencimiento</label>
+                                            <input type="date"
+                                                   name="fecha_vencimiento_plan"
+                                                   class="form-control"
+                                                   value="{{ item.fecha_vencimiento_plan|date:'Y-m-d' }}"
+                                                   required>
+                                            <small class="text-muted d-block mt-2">
+                                                El acceso queda habilitado hasta antes de esa fecha. El día del vencimiento ya no podrá ingresar.
+                                            </small>
+                                        </div>
+                                        <div class="modal-footer border-0 bg-light rounded-bottom-4">
+                                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-dark rounded-pill px-4">
+                                                <i class="bi bi-check-circle me-1"></i> Guardar fecha
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="historialPlanModal{{ item.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content rounded-4 border-0">
+                                    <div class="modal-header bg-dark text-white border-0">
+                                        <div>
+                                            <h5 class="modal-title fw-bold">Historial de vencimientos</h5>
+                                            <small class="text-white-50">
+                                                {% if item.user.first_name %}
+                                                    {{ item.user.first_name }} {{ item.user.last_name }}
+                                                {% else %}
+                                                    {{ item.user.username }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body p-4">
+                                        <div class="mb-3">
+                                            <span class="text-muted">Vencimiento actual:</span>
+                                            <strong>
+                                                {% if item.fecha_vencimiento_plan %}
+                                                    {{ item.fecha_vencimiento_plan|date:"d/m/Y" }}
+                                                {% else %}
+                                                    Sin vencimiento
+                                                {% endif %}
+                                            </strong>
+                                        </div>
+
+                                        {% if item.historial_vencimientos_list %}
+                                            <div class="table-responsive">
+                                                <table class="table table-hover align-middle mb-0">
+                                                    <thead class="bg-light">
+                                                        <tr>
+                                                            <th>Fecha anterior</th>
+                                                            <th>Fecha nueva</th>
+                                                            <th>Actualizado</th>
+                                                            <th>Realizado por</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for registro in item.historial_vencimientos_list %}
+                                                        <tr>
+                                                            <td>{{ registro.fecha_anterior|date:"d/m/Y"|default:"-" }}</td>
+                                                            <td>{{ registro.fecha_nueva|date:"d/m/Y" }}</td>
+                                                            <td>{{ registro.creado_en|date:"d/m/Y H:i" }}</td>
+                                                            <td>{{ registro.realizado_por.username|default:"-" }}</td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        {% else %}
+                                            <p class="text-muted mb-0">Todavía no hay extensiones registradas.</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal-footer border-0 bg-light rounded-bottom-4">
+                                        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="modal fade" id="clienteModal{{ item.id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -114,8 +357,16 @@
                                             </h5>
                                             <div class="d-flex gap-3 mt-1 text-white-50 small">
                                                 <span><i class="bi bi-envelope"></i> {{ item.user.email }}</span>
-                                                {% if item.fecha_vencimiento %}
-                                                    <span class="text-warning"><i class="bi bi-clock-history"></i> Vence: {{ item.fecha_vencimiento|date:"d/m/Y" }}</span>
+                                                <span><i class="bi bi-calendar-plus"></i> Creado: {{ item.user.date_joined|date:"d/m/Y H:i" }}</span>
+                                                {% if item.fecha_vencimiento_plan %}
+                                                    <span class="{% if item.plan_vencido %}text-danger{% else %}text-success{% endif %}">
+                                                        <i class="bi bi-calendar-check"></i> Vence: {{ item.fecha_vencimiento_plan|date:"d/m/Y" }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if item.plan_vencido %}
+                                                    <span class="text-danger"><i class="bi bi-x-circle"></i> Vencido</span>
+                                                {% else %}
+                                                    <span class="text-success"><i class="bi bi-check-circle"></i> Habilitado</span>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -123,7 +374,6 @@
                                     </div>
                                     
                                     <div class="modal-body p-4" style="background-color: #f8f9fa;">
-                                        
                                         <div class="card border-0 shadow-sm mb-4">
                                             <div class="card-body">
                                                 <h6 class="fw-bold text-uppercase text-secondary mb-3 border-bottom pb-2">
@@ -253,9 +503,11 @@
                                 </div>
                             </div>
                         </div>
+                            </td>
+                        </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <h5 class="text-muted">No se encontraron clientes.</h5>
                             </td>
                         </tr>
@@ -265,5 +517,84 @@
             </div>
         </div>
     </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="d-flex justify-content-center mt-4" aria-label="Paginacion de clientes">
+        <ul class="pagination mb-0">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Anterior</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
+
+<style>
+    .crear-cliente-modal .modal-dialog {
+        max-height: calc(100vh - 32px);
+    }
+    .crear-cliente-modal .modal-content {
+        max-height: calc(100vh - 32px);
+        display: flex;
+        overflow: hidden;
+    }
+    .crear-cliente-modal form {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    .crear-cliente-modal .modal-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        padding-bottom: 1.5rem !important;
+    }
+    .crear-cliente-modal .modal-header {
+        flex-shrink: 0;
+    }
+    @media (max-width: 768px) {
+        .crear-cliente-modal .modal-dialog {
+            margin: 0.5rem;
+            max-height: calc(100vh - 1rem);
+        }
+        .crear-cliente-modal .modal-content {
+            max-height: calc(100vh - 1rem);
+        }
+        .crear-cliente-modal .modal-header {
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+    }
+</style>
+
+{% if cliente_form.errors %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = new bootstrap.Modal(document.getElementById("crearClienteModal"));
+        modal.show();
+    });
+</script>
+{% endif %}
 {% endblock %}

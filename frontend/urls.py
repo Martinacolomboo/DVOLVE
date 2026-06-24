@@ -9,7 +9,9 @@ urlpatterns = [
     path("plan/file/<int:archivo_id>/", views.serve_plan_file, name="serve_plan_file"),
     path("biblioteca/pdf/<int:item_id>/", views.serve_biblioteca_pdf, name="serve_biblioteca_pdf"),
     path("", views.login_view, name="login"),
+    path("forgot-password/", views.forgot_password_view, name="forgot_password"),
     path("registro/", views.register_view, name="registro"),
+    path("cambiar-password/", views.cambiar_password_view, name="cambiar_password"),
     path("home/", views.home, name="home"),
     path("dashboard/", views.dashboard_view, name="dashboard"),
     path("community/", views.community_view, name="community"),
@@ -43,7 +45,10 @@ urlpatterns = [
     # En frontend/urls.py
     path('podcast/file/<int:archivo_id>/', views.serve_podcast_file, name='serve_podcast_file'),
     
+    path('panel-admin/ayudantes/', views.gestion_ayudantes, name='gestion_ayudantes'),
+    path('panel-admin/ayudantes/<int:user_id>/estado/', views.toggle_ayudante, name='toggle_ayudante'),
     path('panel-admin/clientes/', views.gestion_clientes, name='gestion_clientes'),
+    path('panel-admin/clientes/<int:questionario_id>/extender-plan/', views.extender_plan_cliente, name='extender_plan_cliente'),
     path('admin/precios-planes/', views.gestion_precios_planes, name='gestion_precios_planes'),
     path('admin/precios-planes/editar/<int:plan_id>/', views.editar_precio_plan, name='editar_precio_plan'),
     path('admin/precios-planes/usuarios/<int:historial_id>/', views.usuarios_por_precio, name='usuarios_por_precio'),

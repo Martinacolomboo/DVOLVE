@@ -23,6 +23,14 @@
              </div>
           {% endif %}
 
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags|default:'warning' }} text-center py-2 mb-3 small">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+
           <form method="post">
             {% csrf_token %}
             <div class="mb-3">
@@ -37,15 +45,18 @@
             </button>
           </form>
           
-          <div class="mt-3 text-center">
-             <small>¿No tenés cuenta? <a href="{% url 'frontend:registro' %}" style="color: #7e2864; font-weight: 600;">Registrate</a></small>
+          <div class="mt-3 text-center small">
+             <a href="#" data-bs-toggle="modal" data-bs-target="#forgotModal">¿Olvidaste tu contraseña?</a>
           </div>
+
+          <!-- Forgot Password Modal is rendered in base.html to avoid overlay issues -->
         </div>
       </div>
 
     </div>
   </div>
 
+  {% comment %}
   {% if show_pay_button %}
   <div id="errorModal" class="modal-overlay">
     <div class="modal-dialog">
@@ -94,6 +105,20 @@
     }
   </script>
   {% endif %}
+  {% endcomment %}
 
 </section>
 {% endblock %}
+
+<script>
+  // Autofocus field when modal opens
+  document.addEventListener('DOMContentLoaded', function() {
+    var forgotModal = document.getElementById('forgotModal');
+    if (forgotModal) {
+      forgotModal.addEventListener('shown.bs.modal', function () {
+        var input = forgotModal.querySelector('input[name="identifier"]');
+        if (input) input.focus();
+      });
+    }
+  });
+</script>

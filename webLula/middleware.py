@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.contrib.auth import logout
+from django.contrib import messages
+from django.shortcuts import redirect, render
+from django.utils import timezone
 from frontend.models import SiteConfiguration
 
 class MaintenanceModeMiddleware:
@@ -7,6 +10,26 @@ class MaintenanceModeMiddleware:
 
     def __call__(self, request):
         path = request.path
+
+        if request.user.is_authenticated and not request.user.is_active:
+            logout(request)
+            messages.warning(request, "Tu usuario fue deshabilitado.")
+            return redirect('frontend:login')
+
+        if request.user.is_authenticated and not (request.user.is_staff or request.user.is_superuser):
+            cuestionario = getattr(request.user, "questionario_user", None)
+            if (
+                cuestionario
+                and cuestionario.fecha_vencimiento_plan
+                and timezone.localdate() >= cuestionario.fecha_vencimiento_plan
+                and path != '/frontend/'
+                and not path.startswith('/admin/')
+                and not path.startswith('/static/')
+                and not path.startswith('/media/')
+            ):
+                logout(request)
+                messages.warning(request, "Tu plan venció. Para volver a ingresar, debés renovar el pago.")
+                return redirect('frontend:login')
 
         # 1. LISTA BLANCA: Rutas que SIEMPRE pasan (incluso en mantenimiento)
         # Agregamos '/frontend/' porque esa es tu URL de login
